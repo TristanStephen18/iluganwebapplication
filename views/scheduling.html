@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bus Schedule</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+  <style>
+    body {
+      font-family: 'Open Sans', sans-serif;
+      background-color: #f5f5f5;
+    }
+    .sidebar {
+      background: linear-gradient(to bottom, #29924F, #0C2C18);
+      min-height: 100vh;
+      width: 200px;
+      color: white;
+      position: fixed;
+      overflow-x: hidden;
+    }
+    .sidebar .nav-link {
+      color: white;
+      font-size: small;
+      font-weight: bold;
+    }
+    .sidebar .nav-link:hover {
+      background-color: #217841;
+    }
+    .sidebar .nav-link i {
+      margin-right: 8px;
+    }
+    .logo {
+      font-size: 20px;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .logo img {
+      width: 25px; 
+      height: 40px;
+    }
+    .content {
+      padding: 20px;
+      flex-grow: 1;
+      margin-left: 200px;
+    }
+    .table th, .table td {
+      font-size: 13px;
+    }
+    .table thead th {
+      background-color: #29924F; 
+      color: white; 
+    }
+    .table td {
+      background-color: #f0f0f0; 
+    }
+    .table tr {
+      border-bottom: 1px solid #ccc; 
+    }
+    .dataTables_wrapper {
+      margin-top: 20px;
+    }
+    .dataTables_wrapper .dataTables_paginate,
+    .dataTables_wrapper .dataTables_length,
+    .dataTables_wrapper .dataTables_filter {
+      margin: 20px 0; 
+    }
+    /* Floating Action Button (FAB) */
+    .fab {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #29924F;
+      color: white;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+    }
+  </style>
+</head>
+<body>
+  <div class="d-flex">
+    <div class="sidebar p-3">
+      <div class="logo">
+        <img src="/logo" alt="Logo">
+        <span>iLugan</span>
+      </div>
+      <ul class="nav flex-column">
+        <li class="nav-item mb-3"><a href="/dashboard" class="nav-link"><i class="fas fa-tachometer-alt"></i>Dashboard</a></li>
+        <li class="nav-item mb-3"><a href="/analytics" class="nav-link"><i class="fas fa-chart-line"></i>Analytics and Reports</a></li>
+        <li class="nav-item mb-3"><a href="/tracker" class="nav-link"><i class="fas fa-map-marker-alt"></i>Bus Location Tracker</a></li>
+        <li class="nav-item mb-3"><a href="/reservations" class="nav-link"><i class="fas fa-ticket-alt"></i>Reservation Control</a></li>
+        <li class="nav-item mb-3"><a href="#" class="nav-link"><i class="fas fa-calendar-alt"></i>Bus Scheduling</a></li>
+        <li class="nav-item mb-3"><a href="/notifications" class="nav-link"><i class="fas fa-bell"></i>Notifications</a></li>
+        <li class="nav-item mb-3"><a href="/systemlogs" class="nav-link"><i class="fas fa-cog"></i>Settings</a></li>
+        <li class="nav-item mb-3" id="logout"><a href="" class="nav-link"><i class="fas fa-sign-out-alt"></i>Log Out</a></li>
+      </ul>
+    </div>
+    <div class="content">
+      <h2>Bus Schedule</h2>
+      <table id="busSchedule" class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Bus Number</th>
+            <th>Plate Number</th>
+            <th>Destination</th>
+            <th>Conductor</th>
+            <th>Distance from Destination</th>
+            <th>ETA</th>
+            <th>Operation Time</th>
+            <th>Trips Made</th>
+          </tr>
+        </thead>
+        <tbody id="buses">
+          <!-- Bus data rows will go here -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Floating Action Button -->
+  <div class="fab" data-bs-toggle="modal" data-bs-target="#myModal">
+    <i class="fas fa-plus"></i>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="myModalLabel">Add New Bus Schedule</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Modal content (e.g., form fields) goes here -->
+          <form>
+            <div class="mb-3">
+              <label for="busNumber" class="form-label">Bus Number</label>
+              <input type="text" class="form-control" id="busNumber">
+            </div>
+            <div class="mb-3">
+              <label for="plateNumber" class="form-label">Plate Number</label>
+              <input type="text" class="form-control" id="plateNumber">
+            </div>
+            <!-- Additional form fields as needed -->
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      $('#busSchedule').DataTable();
+    });
+  </script>
+  <script type="module" src="/busesjs"></script>
+</body>
+</html>

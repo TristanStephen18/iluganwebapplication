@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <script
+      src="https://kit.fontawesome.com/2a3bd9e9ce.js"
+      crossorigin="anonymous"
+    ></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Open Sans", sans-serif;
+        background-color: #f5f5f5;
+      }
+      .sidebar {
+        background: linear-gradient(to bottom, #29924f, #0c2c18);
+        min-height: 100vh;
+        width: 200px;
+        color: white;
+        position: fixed;
+        overflow-x: hidden;
+      }
+      .sidebar .nav-link {
+        color: white;
+        font-size: small;
+        font-weight: bold;
+      }
+      .sidebar .nav-link:hover {
+        background-color: #217841;
+      }
+      .sidebar .nav-link i {
+        margin-right: 8px;
+      }
+      .logo {
+        font-size: 20px;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 20px;
+        margin-right: 40px;
+      }
+      .logo img {
+        width: 20px;
+        height: 40px;
+        margin-top: 10px;
+      }
+      .main-container {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        width: 60%;
+        height: 35vh;
+        overflow: hidden;
+      }
+      .additional-container {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        width: 35%;
+        height: 35vh;
+        margin-left: 20px;
+        font-size: 10px;
+      }
+      .card {
+        border: 1px solid green;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        padding: 10px;
+        text-align: justify;
+        margin-bottom: 15px;
+        height: 40%;
+        font-size: 10px;
+        background-color: white;
+      }
+
+      .card i {
+        font-size: 24px;
+        color: #1fbf83;
+        margin-bottom: 10px;
+      }
+
+      .square-card {
+        top: 30px;
+        width: 100%;
+        height: 90%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+      .rectangle-card {
+        height: 20%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        top: 10px;
+        font-size: 20px;
+      }
+      .container-title {
+        color: black;
+        font-weight: bold;
+        margin-bottom: -20px;
+        font-size: 15px;
+      }
+      .graph-wrapper {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        padding: 20px;
+      }
+      .main-container .row {
+        display: flex;
+        justify-content: center;
+      }
+      #maincontent{
+        margin-left: 200px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="d-flex">
+      <div class="sidebar p-3">
+        <div class="logo">
+          <img src="/newlogo" alt="Logo" class="mb-2" />
+          <span>iLugan</span>
+        </div>
+        <ul class="nav flex-column">
+          <li class="nav-item mb-3">
+            <a href="#" class="nav-link"
+              ><i class="fas fa-tachometer-alt"></i>Dashboard</a
+            >
+          </li>
+          <li class="nav-item mb-3">
+            <a href="/analytics" class="nav-link"
+              ><i class="fas fa-chart-line"></i>Analytics and Reports</a
+            >
+          </li>
+          <li class="nav-item mb-3">
+            <a href="/tracker" class="nav-link"
+              ><i class="fas fa-map-marker-alt"></i>Bus Location Tracker</a
+            >
+          </li>
+          <li class="nav-item mb-3">
+            <a href="/reservations" class="nav-link"
+              ><i class="fas fa-ticket-alt"></i>Reservation Control</a
+            >
+          </li>
+          <li class="nav-item mb-3">
+            <a href="/busadding" class="nav-link"
+              ><i class="fas fa-calendar-alt"></i>Bus Scheduling</a
+            >
+          </li>
+          <li class="nav-item mb-3">
+            <a href="/notifications" class="nav-link"
+              ><i class="fas fa-bell"></i>Notifications</a
+            >
+          </li>
+          <li class="nav-item mb-3">
+            <a href="/systemlogs" class="nav-link"
+              ><i class="fas fa-cog"></i>Settings</a
+            >
+          </li>
+          <li class="nav-item mb-3" id="logout">
+            <a class="nav-link"><i class="fas fa-sign-out-alt"></i>Log Out</a>
+          </li>
+        </ul>
+      </div>
+      
+      <div class="flex-grow-1 p-4 d-flex flex-column" id="maincontent">
+        <h2 id="cname">Loading data...</h2>
+        <div class="row">
+          <div class="main-container mb-4 col-md-8">
+            <h4 class="container-title">Analytics Overview</h4>
+            <div class="row">
+              <div class="col-md-3">
+                <div class="card square-card text-center">
+                  <i class="fa-solid fa-people-group"></i>
+                  <h5>Total Passenger</h5>
+                  <h3 id="tpassenger">Loading data...</h3>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="card square-card text-center">
+                  <i class="fas fa-ticket-alt"></i>
+                  <h5>Total Reservation</h5>
+                  <h3 id="treservation">Loading data...</h3>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="card square-card text-center">
+                  <i class="fas fa-bus"></i>
+                  <h5>Buses</h5>
+                  <h3 id="nbuses">Loading data...</h3>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="additional-container mb-4 col-md-4">
+            <h4 class="container-title1">Bus Employees</h4>
+            <div class="card rectangle-card text-center">
+              <h6>Conductors:</h6>
+              <h5 id="connum">...</h5>
+            </div>
+            <div class="card rectangle-card text-justify">
+              <h6>Inspectors:</h6>
+              <h5 id="insnum">...</h5>
+            </div>
+          </div>
+        </div>
+        <div>
+          <label for="timeFilter">Filter By:</label>
+          <select id="timeFilter">
+            <option value="weekly">Weekly</option>
+            <option value="monthly">Monthly</option>
+            <option value="yearly">Yearly</option>
+          </select>
+        </div>
+        <div class="row">
+          <div>
+            <h3>Total Passengers Over Time</h3>
+            <canvas id="passengerChart"></canvas>
+          </div>
+
+          <div>
+            <h3>Total Income Over Time</h3>
+            <canvas id="incomeChart"></canvas>
+          </div>
+        </div>
+
+        
+      </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.8.0/chart.min.js"></script>
+    <!-- <script>
+      const ctxLine = document.getElementById("lineChart").getContext("2d");
+      const lineChart = new Chart(ctxLine, {
+        type: "line",
+        data: {
+          labels: ["Day 1", "Day 2", "Day 3", "Day 4", "Day 5", "Day 6"],
+          datasets: [
+            {
+              label: "Walk-in Passengers",
+              borderColor: "#48BB78",
+              backgroundColor: "rgba(79, 209, 197, 0.2)",
+              data: [10, 15, 30, 20, 25, 40],
+              fill: true,
+            },
+            {
+              label: "Online Reservations",
+              borderColor: "#1FBF83",
+              backgroundColor: "rgba(26, 32, 44, 0.2)",
+              data: [5, 10, 15, 10, 20, 30],
+              fill: true,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          scales: {
+            x: {
+              beginAtZero: true,
+            },
+            y: {
+              beginAtZero: true,
+            },
+          },
+        },
+      });
+
+      const ctxBar = document.getElementById("barChart").getContext("2d");
+      const barChart = new Chart(ctxBar, {
+        type: "bar",
+        data: {
+          labels: [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+            "Sunday",
+          ],
+          datasets: [
+            {
+              label: "Online Reservations",
+              backgroundColor: "#48BB78",
+              data: [300, 400, 200, 450, 350, 500, 400],
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          scales: {
+            x: {
+              beginAtZero: true,
+            },
+            y: {
+              beginAtZero: true,
+            },
+          },
+        },
+      });
+    </script> -->
+
+    <script type="module" src="/dashboardjs"></script>
+  </body>
+</html>

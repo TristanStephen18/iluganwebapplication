@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analytic Reports</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+  <style>
+    body {
+      font-family: 'Open Sans', sans-serif;
+      background-color: #f5f5f5;
+    }
+    .sidebar {
+      background: linear-gradient(to bottom, #29924F, #0C2C18);
+      min-height: 100vh;
+      width: 200px;
+      color: white;
+      position: fixed;
+      overflow-x: hidden;
+    }
+    .sidebar .nav-link {
+      color: white;
+      font-size: small;
+      font-weight: bold;
+    }
+    .sidebar .nav-link:hover {
+      background-color: #217841;
+    }
+    .sidebar .nav-link i {
+      margin-right: 8px;
+    }
+    .logo {
+      font-size: 20px;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 30px;
+      margin-right: 40px;
+    }
+    .logo img {
+      width: 20px; 
+      height: 40px;
+    }
+    .main-content {
+      flex-grow: 1;
+      padding: 20px;
+    }
+    .chart-container {
+      position: relative;
+      height: 250px; 
+      width: 100%;
+    }
+    .filters {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    .filter-container {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      margin-bottom: 15px;
+    }
+    .main-container {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    margin-left: 200px;
+  }
+  
+  .left-container {
+    flex: 2;
+  }
+  
+  #map {
+    height: 80vh;
+    width: 900px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .right-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  .status-card {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .status-card h4 {
+    font-size: 1.2em;
+    color: #333;
+    margin-bottom: 10px;
+  }
+  
+  .status-card div {
+    font-size: 2em;
+    font-weight: bold;
+  }
+  
+  /* .marker-info {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 20px;
+    background-color: white;
+    border: 1px solid black;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+  }
+  
+  .hidden {
+    display: none;
+  } */
+
+  .bus-info {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 20px;
+    background-color: white;
+    border-radius: 20px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    width: 300px;
+  }
+  
+  .bus-details {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .bus-image {
+    width: 50px;
+    height: auto;
+    margin-right: 10px;
+  }
+  
+  .locations {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  
+  .seats-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  
+  .seats, .reserved {
+    text-align: center;
+  }
+  
+  .driver-info, .conductor-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  .driver-icon, .conductor-icon {
+    width: 40px;
+    height: auto;
+    margin-right: 10px;
+  }
+  
+  .hidden {
+    display: none;
+  }
+
+  #closeBusInfo{
+    margin-left: 80px;
+    background-color: red;
+    color: White;
+    width: 100px;
+    height: 30px;
+    border-radius: 4px;
+  }
+  </style>
+</head>
+<body>
+  <div class="d-flex">
+    <div class="sidebar p-3">
+      <div class="logo">
+        <img src="/logo1" alt="Logo">
+        <span>iLugan</span>
+      </div>
+      <ul class="nav flex-column">
+        <li class="nav-item mb-3"><a href="/dashboard" class="nav-link"><i class="fas fa-tachometer-alt"></i>Dashboard</a></li>
+        <li class="nav-item mb-3"><a href="/analytics" class="nav-link"><i class="fas fa-chart-line"></i>Analytics and Reports</a></li>
+        <li class="nav-item mb-3"><a href="/tracker" class="nav-link"><i class="fas fa-map-marker-alt"></i>Bus Location Tracker</a></li>
+        <li class="nav-item mb-3"><a href="/reservations" class="nav-link"><i class="fas fa-ticket-alt"></i>Reservation Control</a></li>
+        <li class="nav-item mb-3"><a href="/busadding" class="nav-link"><i class="fas fa-calendar-alt"></i>Bus Scheduling</a></li>
+        <li class="nav-item mb-3"><a href="/notifications" class="nav-link"><i class="fas fa-bell"></i>Notifications</a></li>
+        <li class="nav-item mb-3"><a href="/systemlogs" class="nav-link"><i class="fas fa-cog"></i>Settings</a></li>
+        <li class="nav-item mb-3" id="logout"><a href="" class="nav-link"><i class="fas fa-sign-out-alt"></i>Log Out</a></li>
+      </ul>
+    </div>
+    <div id="busInfoContainer" class="bus-info hidden">
+      <h4>Bus info</h4>
+      <div class="bus-details">
+        <img src="/bicon" alt="Bus" class="bus-image">
+        <div>
+          <p>Bus Number: </p>
+          <p style="font-weight: bold;font-size: 20px;" id="busNumber">Bus Number</p>
+          <br>
+          <p>Plate NUmber: </p>
+          <p id="plateNumber">Plate Number</p>
+        </div>
+      </div>
+    
+      <div class="locations">
+        <div>
+          <p style="font-weight: bold;">Currently at: </p>
+          <p id="currentLocation">2972 Westheimer</p>
+        </div>
+        <div>
+          <p style="font-weight: bold;">Going to: </p>
+          <p id="destination">8502 Preston</p>
+        </div>
+      </div>
+    
+      <div class="seats-info">
+        <div class="seats">
+          <p style="font-weight: bold;">Available seats</p>
+          <p id="availableSeats">23</p>
+        </div>
+        <div class="seats reserved">
+          <p style="font-weight: bold;">Reserved seats</p>
+          <p id="reservedSeats">23</p>
+        </div>
+      </div>
+    
+      <div class="conductor-info">
+        <img src="/conicon" alt="Conductor" class="conductor-icon">
+        <p id="conductorName">Conductor</p>
+      </div>
+    
+      <button id="closeBusInfo">Close</button>
+    </div>
+    
+
+    <div class="main-container">
+      <div class="left-container">
+        <h2>Fleet Vehicles</h2>
+        <div id="map"></div>
+      </div>
+      
+      <div class="right-container">
+        <div class="status-card">
+          <h4>Total Buses</h4>
+          <div id="number_of_buses">50</div>
+        </div>
+        <div class="status-card">
+          <h4>Moving Buses</h4>
+          <div id="moving">25</div>
+        </div>
+        <div class="status-card">
+          <h4>Park Buses</h4>
+          <div id="parked_b">20</div>
+        </div>
+      </div>
+    </div>
+
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAIMuBkc8a_ciIOnIBA5n-3z5A85agZfQ0&callback=initMap&libraries=places&v=weekly"
+      defer
+    ></script>
+
+    <script>
+      let currentMarker = null;
+      let map;
+      let selectedLat = null;
+      let selectedLng = null;
+
+      function initMap() {
+        map = new google.maps.Map(document.getElementById("map"), {
+          center: { lat: 16.056575294903435, lng: 120.32326714096962 },
+          zoom: 10,
+        });
+
+        map.addListener("click", (e) => {
+          const position = {
+            lat: e.latLng.lat(),
+            lng: e.latLng.lng(),
+          };
+
+          selectedLat = e.latLng.lat();
+          selectedLng = e.latLng.lng();
+        });
+      }
+    </script>
+
+    <script src="/fleet" type="module"></script>
+</body>
+</html>

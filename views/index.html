@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Landing Page</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .header {
+      background: linear-gradient(to right, #294935, #62AF7F);
+      padding: 5px 20px;
+      display: flex;
+      justify-content: space-between; 
+      align-items: center;
+    }
+    .header-logo {
+      height: 40px;
+      width: 25px;
+      margin-right: 5px;
+    }
+    .header-title {
+      font-size: 0.8rem;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .header-button {
+      background-color: transparent;
+      color: #fff;
+      border: none;
+      margin-left: 8px; 
+      margin-right: 10px; 
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .header-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
+    }
+    .main-content {
+      display: flex;
+      justify-content: space-between; 
+      align-items: center;
+      height: calc(100vh - 60px - 190px);
+      padding: 20px;
+    }
+    .intro-text {
+      color: #285239;
+      max-width: 40%;
+      margin-left: 50px;
+      margin-top: 60px;
+    }
+    .highlight {
+      color: #288E4E;
+    }
+    .main-image {
+      margin-top: 50px;
+      max-width: 50%;
+      height: auto;
+      margin-right: -20px; 
+    }
+    .footer-image {
+      width: 75%;
+      height: 15%;
+      position: fixed; 
+      bottom: 0; 
+      left: 35%;
+      transform: translateX(-50%); 
+    }
+    .footer-stats {
+      position: fixed; 
+      bottom: 4%;
+      left: 40%;
+      transform: translateX(-50%); 
+      display: flex;
+      justify-content: space-around;
+      width: 60%;
+      color: #ffffff;
+      font-size: 1.0rem;
+    }
+    .footer-stats div {
+      text-align: center;
+    }
+    .footer-stats-value {
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    @media (max-width: 576px) {
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 10px 20px;
+      }
+      .header-title {
+        font-size: 0.7rem; 
+        margin-top: 5px;
+      }
+      .header-button {
+        margin-left: 0; 
+        margin-top: 5px; 
+      }
+      .main-content {
+        justify-content: center;
+      }
+      .intro-text {
+        max-width: 100%;
+        text-align: center;
+        font-weight: bolder;
+      }
+    }
+    .intro-text h1 {
+      font-weight: bold;
+      font-size: 50px;
+    }
+    .intro-text p {
+      font-size: 1.0rem;
+      margin-top: 10px;
+      color: #283F36;
+    }
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <div class="d-flex align-items-center">
+    <img src="/logo1" alt="Logo" class="header-logo">
+    <span class="header-title flex-grow-1">iLugan: An Intelligent Ultrasonic Sensor Fleet Management System and Seat Reservation for Bus Transportation Companies</span>
+  </div>
+  <div>
+    <button class="header-button" id="loginbtn">Sign In</button>
+    <button class="header-button" id="registerbtn">Register</button>
+  </div>
+</header>
+
+<div class="main-content">
+  <div class="intro-text">
+    <h1>Efficient and Effortless <br> Bus Operations</h1>
+    <h1>Made Easy, Trusted by <br> <span class="highlight">iLugan</span>.</h1>
+    <p>Whether you are overseeing bus services or <br> managing a fleet, iLugan ensures that <br> operations are conducted with ease and efficiency.</p>
+  </div>
+  <img src="/bus" alt="Main Content Image" class="main-image">
+</div>
+
+<img src="/counter" alt="Footer Image" class="footer-image">
+<div class="footer-stats">
+  <div>
+    <div class="footer-stats-value" id="total-sales">+100</div>
+    Monthly Subscribers
+  </div>
+  <div>
+    <div class="footer-stats-value" id="subscribers">+350</div>
+    Mobile App Users
+  </div>
+  <div>
+    <div class="footer-stats-value" id="users">800</div>
+    Users
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  document.getElementById('total-sales').innerText = 2000;
+  document.getElementById('subscribers').innerText = 350;
+  document.getElementById('users').innerText = 800;
+
+  const loginbtn = document.getElementById('loginbtn');
+  const resgisterbtn = document.getElementById('registerbtn');
+
+  loginbtn.addEventListener('click', ()=>{
+    window.location.assign('/login');
+  });
+
+  resgisterbtn.addEventListener('click', ()=>{
+    window.location.assign('/register');
+  });
+</script>
+
+<script type="module" src="/loginchecker"></script>
+
+</body>
+</html>

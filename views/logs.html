@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>System Logs</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Open Sans', sans-serif;
+      background-color: #f5f5f5;
+    }
+    .sidebar {
+      background: linear-gradient(to bottom, #29924F, #0C2C18);
+      min-height: 100vh;
+      width: 200px;
+      color: white;
+      position: fixed;
+      overflow-x: hidden;
+    }
+    .sidebar .nav-link {
+      color: white;
+      font-size: small;
+      font-weight: bold;
+    }
+    .sidebar .nav-link:hover {
+      background-color: #217841;
+    }
+    .sidebar .nav-link i {
+      margin-right: 8px;
+    }
+    .logo {
+      font-size: 20px;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .logo img {
+      width: 25px; 
+      height: 40px;
+    }
+    .content {
+      padding: 20px;
+      flex-grow: 1;
+      margin-left: 200px;
+    }
+    .log-entry {
+      background-color: white;
+      border-radius: 5px;
+      padding: 5px;
+      margin-bottom: 5px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      display: flex;
+      align-items: center;
+      font-size: 0.8rem;
+    }
+    .log-entry i {
+      color: #29924F;
+      margin-right: 5px;
+      font-size: 0.9rem;
+    }
+    .log-entry div {
+      flex: 1;
+    }
+    .log-entry p {
+      margin: 0;
+      font-size: 0.75rem;
+    }
+    .log-entry small {
+      font-size: 0.7rem;
+      color: #666;
+    }
+    #filterDate {
+      width: 180px;
+      border: 2px solid #217841;
+      font-size: 0.85rem;
+    }
+    #filterDate:focus {
+      border-color: #217841;
+      outline: none;
+    }
+    .pagination .page-link {
+      color: #217841;
+    }
+    .pagination .page-link:hover {
+      background-color: #f5f5f5;
+    }
+    .pagination .active .page-link {
+      background-color: #217841;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="d-flex">
+    <div class="sidebar p-3">
+      <div class="logo">
+        <img src="/logo" alt="Logo">
+        <span>iLugan</span>
+      </div>
+      <ul class="nav flex-column">
+        <li class="nav-item mb-3"><a href="/dashboard" class="nav-link"><i class="fas fa-tachometer-alt"></i>Dashboard</a></li>
+        <li class="nav-item mb-3"><a href="/analytics" class="nav-link"><i class="fas fa-chart-line"></i>Analytics and Reports</a></li>
+        <li class="nav-item mb-3"><a href="/tracker" class="nav-link"><i class="fas fa-map-marker-alt"></i>Bus Location Tracker</a></li>
+        <li class="nav-item mb-3"><a href="/reservations" class="nav-link"><i class="fas fa-ticket-alt"></i>Reservation Control</a></li>
+        <li class="nav-item mb-3"><a href="/busadding" class="nav-link"><i class="fas fa-calendar-alt"></i>Bus Scheduling</a></li>
+        <li class="nav-item mb-3"><a href="/notifications" class="nav-link"><i class="fas fa-bell"></i>Notifications</a></li>
+        <li class="nav-item mb-3"><a href="/systemlogs" class="nav-link"><i class="fas fa-cog"></i>Settings</a></li>
+        <li class="nav-item mb-3" id="logout"><a href="" class="nav-link"><i class="fas fa-sign-out-alt"></i>Log Out</a></li>
+      </ul>
+    </div>
+    <div class="content">
+      <h2>System Logs</h2>
+      <div class="mb-3">
+        <label for="filterDate" class="form-label">Filter by Date:</label>
+        <input type="date" id="filterDate" class="form-control" onchange="filterLogs()">
+      </div>
+      <div id="logs">
+        <div class="log-entry">
+          <i class="fas fa-clipboard"></i>
+          <div>
+            <strong>Log Entry 1</strong>
+            <p>This is a system log message.</p>
+            <small>2024-10-31</small>
+          </div>
+        </div>
+        <div class="log-entry">
+          <i class="fas fa-clipboard"></i>
+          <div>
+            <strong>Log Entry 2</strong>
+            <p>This is another log message.</p>
+            <small>2024-10-30</small>
+          </div>
+        </div>
+        <div class="log-entry">
+          <i class="fas fa-clipboard"></i>
+          <div>
+            <strong>Log Entry 3</strong>
+            <p>This is yet another log message.</p>
+            <small>2024-10-29</small>
+          </div>
+        </div>
+      </div>
+      <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+          <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+          <li class="page-item active"><a class="page-link" href="#">1</a></li>
+          <li class="page-item"><a class="page-link" href="#">2</a></li>
+          <li class="page-item"><a class="page-link" href="#">3</a></li>
+          <li class="page-item"><a class="page-link" href="#">Next</a></li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+  <script>
+    function filterLogs() {
+      const inputDate = document.getElementById('filterDate').value;
+      const logs = document.querySelectorAll('.log-entry');
+      logs.forEach(log => {
+        const logDate = log.querySelector('small').textContent;
+        log.style.display = logDate === inputDate ? '' : 'none';
+      });
+    }
+  </script>
+</body>
+</html>
