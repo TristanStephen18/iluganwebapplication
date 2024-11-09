@@ -14,11 +14,6 @@ import {
   onSnapshot,
 } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
 
-// import {sample} from "/models";
-
-// sample();
-// import { checkForNewBusAlerts } from "../scripts/alerts";
-
 const firebaseConfig = {
   apiKey: "AIzaSyAL0I2_e4RNhtnwavuNrncD21sZAsmslmY",
   authDomain: "ilugan-database.firebaseapp.com",
@@ -36,146 +31,12 @@ const db = getFirestore(app);
 let terminalLat;
 let terminalLng;
 let companyId;
+
+// Set up the filter dropdown event listener for real-time changes
 const filter = document.querySelector("#timeFilter");
-
-// console.log(filter.value);
-
-// filter.addEventListener('onchange', ()=>{
-//     // plotCompanyData(filter.value);
-// });
-
-function requestNotificationPermission() {
-  if ("Notification" in window) {
-    Notification.requestPermission().then((permission) => {
-      if (permission === "granted") {
-        console.log("Notification permission granted.");
-        // You can show a welcome notification here if desired
-        // showNotification("hello", {
-        //       body: "You have a new message!",
-        //     });
-      } else {
-        console.log("Notification permission denied.");
-      }
-    });
-  } else {
-    console.log("Browser does not support notifications.");
-  }
-}
-
-async function checkuser() {
-  requestNotificationPermission();
-  onAuthStateChanged(auth, async (user) => {
-    if (user) {
-      console.log("User is logged in:", user.uid);
-      getTerminalCoordinates(user.uid);
-      getCompanyData(user.uid);
-      getnumberofbuses(user.uid);
-      getnumberofconductors(user.uid);
-      getcompanyname(user.uid);
-      // plotCompanyData(user.uid);
-
-      companyId = user.uid;
-      plotCompanyData(filter.value);
-      try {
-        const companyDocRef = doc(db, "companies", user.uid);
-        const companyDocSnap = await getDoc(companyDocRef);
-
-        if (companyDocSnap.exists()) {
-          const companyData = companyDocSnap.data();
-          const notificationsCount = companyData.notifications || 0;
-
-          // Reference to the busalerts subcollection
-          const busAlertsRef = collection(
-            db,
-            "companies",
-            user.uid,
-            "busalerts"
-          );
-
-          // Set up a real-time listener on the busalerts collection
-          onSnapshot(busAlertsRef, async (snapshot) => {
-            const busAlertsCount = snapshot.size; // Number of bus alerts
-
-            // Compare with the stored notifications count
-            if (busAlertsCount > notificationsCount) {
-              console.log("New bus alert detected!");
-
-              // Display a notification if there are new bus alerts
-              showNotification("New Bus Alert", {
-                body: "You have new bus alerts! Check your alerts.",
-                icon: "/path/to/icon.png",
-              });
-
-              // Update the notifications count in the company document
-              await updateDoc(companyDocRef, { notifications: busAlertsCount });
-            }
-          });
-        } else {
-          console.log("No such company document for this user.");
-        }
-      } catch (error) {
-        console.error("Error setting up bus alerts listener:", error);
-      }
-
-      try {
-        // Reference to the current user's company document
-        const companyDocRef = doc(db, "companies", user.uid);
-        const companyDocSnap = await getDoc(companyDocRef);
-
-        if (companyDocSnap.exists()) {
-          const companyData = companyDocSnap.data();
-          const notificationsCount = companyData.inspectionnotifications || 0;
-
-          // Reference to the busalerts subcollection
-          const busAlertsRef = collection(
-            db,
-            "companies",
-            user.uid,
-            "inspectionalerts"
-          );
-
-          // Set up a real-time listener on the busalerts collection
-          onSnapshot(busAlertsRef, async (snapshot) => {
-            const busAlertsCount = snapshot.size; // Number of bus alerts
-
-            // Compare with the stored notifications count
-            if (busAlertsCount > notificationsCount) {
-              console.log("New bus alert detected!");
-
-              // Display a notification if there are new bus alerts
-              showNotification("Inspection Alert", {
-                body: "A bus was inspeted",
-                icon: "/path/to/icon.png",
-              });
-
-              // Update the notifications count in the company document
-              await updateDoc(companyDocRef, {
-                inspectionnotifications: busAlertsCount,
-              });
-            }
-          });
-        } else {
-          console.log("No such company document for this user.");
-        }
-      } catch (error) {
-        console.error("Error setting up bus alerts listener:", error);
-      }
-    } else {
-      console.log("No user is signed in.");
-      window.location.assign("/login");
-    }
-  });
-}
-
-function showNotification(title, options) {
-  if (Notification.permission === "granted") {
-    new Notification(title, options).addEventListener("click", () => {
-      // window.location.assign("fleetmanagement.html");
-    });
-  } else {
-    console.log("Notification permission not granted.");
-  }
-}
+filter.addEventListener("change", () => {
+  updateGraph();
+});
 
 async function getTerminalCoordinates(uid) {
   try {
@@ -188,6 +49,16 @@ async function getTerminalCoordinates(uid) {
         terminalLat = location.latitude;
         terminalLng = location.longitude;
         console.log("Terminal Location:", terminalLat, terminalLng);
+        const position = {
+          lat: terminalLat,
+          lng: terminalLng
+        };
+
+        const marker = new google.maps.Marker({
+          position, 
+          map: map,
+          
+        });
       } else {
         console.log("No terminal location found");
       }
@@ -210,7 +81,7 @@ async function logout() {
   signOut(auth)
     .then(() => {
       alert("Log out successful");
-      window.location.assign("/login");
+      location.assign("/login");
     })
     .catch((error) => {
       Swal.fire({
@@ -320,18 +191,70 @@ async function getnumberofconductors(uid) {
       //   numberofbuses = snapshot.size;
 
       //   busesdisaplyer.innerHTML = `${numberofbuses}`;
-      connum.innerHTML = `${conumcount}`;
-      insnum.innerHTML = `${insnumcount}`;
+      connum.innerHTML = `Conductors: ${conumcount}`;
+      insnum.innerHTML = `Inspectors: ${insnumcount}`;
     });
   } catch (error) {
     console.log(error);
   }
 }
 
-async function plotCompanyData(filter) {
-  // const companyId = "1CzPhECXc8PFJQP4rfGzwW77gKp1"; // replace with actual company ID
-  const dataRef = collection(db, `companies/${companyId}/data`);
+function requestNotificationPermission() {
+  if ("Notification" in window) {
+    Notification.requestPermission().then((permission) => {
+      if (permission === "granted") {
+        console.log("Notification permission granted.");
+      } else {
+        console.log("Notification permission denied.");
+      }
+    });
+  } else {
+    console.log("Browser does not support notifications.");
+  }
+}
 
+async function checkuser() {
+  requestNotificationPermission();
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      companyId = user.uid;
+      console.log("User is logged in:", user.uid);
+      getTerminalCoordinates(user.uid);
+      getCompanyData(user.uid);
+      getnumberofbuses(user.uid);
+      getnumberofconductors(user.uid);
+      getcompanyname(user.uid);
+      
+      // Initial data plot based on the current filter value
+      plotCompanyData(filter.value);
+      
+      // Rest of your code here...
+
+    } else {
+      console.log("No user is signed in.");
+      location.assign("/login");
+    }
+  });
+}
+
+// async function getterminalLocation(uid) {
+//   try{
+//     const companydoc = doc(db, `companies/${uid}`);
+//     const snapshot = await getDoc(companydoc);
+//     console.log(snapshot);
+//   }catch (error){
+//     console.log(error);
+//   }
+// }
+
+// The showNotification, logout, and other utility functions go here...
+
+let passengerChart;
+let incomeChart;
+
+async function plotCompanyData(filter) {
+  const dataRef = collection(db, `companies/${companyId}/data`);
+  
   try {
     const snapshot = await getDocs(dataRef);
 
@@ -342,7 +265,7 @@ async function plotCompanyData(filter) {
 
     // Retrieve raw data
     snapshot.forEach((doc) => {
-      dates.push(doc.id); // use document ID (date) for labels
+      dates.push(doc.id); // Use document ID (date) for labels
       totalPassengers.push(doc.data().total_passengers || 0);
       totalIncome.push(doc.data().total_income || 0);
     });
@@ -356,13 +279,12 @@ async function plotCompanyData(filter) {
     );
 
     // Clear previous charts if they exist
-    //   if (window.passengerChart) window.passengerChart.destroy();
-    //   if (window.incomeChart) window.incomeChart.destroy();
+    if (passengerChart) passengerChart.destroy();
+    if (incomeChart) incomeChart.destroy();
 
     // Plot Passenger Chart
-    const passengerCtx = document
-      .getElementById("passengerChart");
-    window.passengerChart = new Chart(passengerCtx, {
+    const passengerCtx = document.getElementById("passengerChart");
+    passengerChart = new Chart(passengerCtx, {
       type: "line",
       data: {
         labels: filteredDates,
@@ -386,7 +308,7 @@ async function plotCompanyData(filter) {
 
     // Plot Income Chart
     const incomeCtx = document.getElementById("incomeChart");
-    window.incomeChart = new Chart(incomeCtx, {
+    incomeChart = new Chart(incomeCtx, {
       type: "line",
       data: {
         labels: filteredDates,
@@ -413,12 +335,18 @@ async function plotCompanyData(filter) {
 }
 
 // Function to filter data based on time selection
+// Function to filter data based on time selection
 function filterData(dates, passengers, income, filter) {
   const filteredDates = [];
   const filteredPassengers = [];
   const filteredIncome = [];
 
-  if (filter === "weekly") {
+  if (filter === "daily") {
+    // Daily filtering: take data as-is, no aggregation needed
+    filteredDates.push(...dates);
+    filteredPassengers.push(...passengers);
+    filteredIncome.push(...income);
+  } else if (filter === "weekly") {
     for (let i = 0; i < dates.length; i += 7) {
       filteredDates.push(dates[i]);
       filteredPassengers.push(
@@ -447,76 +375,10 @@ function filterData(dates, passengers, income, filter) {
   return { filteredDates, filteredPassengers, filteredIncome };
 }
 
+
 // Function to update graph based on filter selection
 function updateGraph() {
-  const filter = document.getElementById("timeFilter").value;
-  plotCompanyData(filter);
+  plotCompanyData(filter.value);
 }
-
-// Define function to fetch and plot data
-// async function plotCompanyData(companyId) {
-//   const dataRef = collection(db, `companies/${companyId}/data`);
-
-//   try {
-//     const snapshot = await getDocs(dataRef);
-
-//     const dates = [];
-//     const totalPassengers = [];
-//     const totalIncome = [];
-
-//     snapshot.forEach(doc => {
-//       dates.push(doc.id); // use document ID (date) for labels
-//       totalPassengers.push(doc.data().total_passengers || 0);
-//       totalIncome.push(doc.data().total_income || 0);
-//     });
-
-//     // Plot Passenger Chart
-//     const passengerCtx = document.getElementById("passengerChart");
-//     new Chart(passengerCtx, {
-//       type: "line",
-//       data: {
-//         labels: dates,
-//         datasets: [{
-//           label: "Total Passengers",
-//           data: totalPassengers,
-//           backgroundColor: "rgba(75, 192, 192, 0.2)",
-//           borderColor: "rgba(75, 192, 192, 1)",
-//           borderWidth: 1
-//         }]
-//       },
-//       options: {
-//         scales: {
-//           x: { beginAtZero: true },
-//           y: { beginAtZero: true }
-//         }
-//       }
-//     });
-
-//     // Plot Income Chart
-//     const incomeCtx = document.getElementById("incomeChart");
-//     new Chart(incomeCtx, {
-//       type: "line",
-//       data: {
-//         labels: dates,
-//         datasets: [{
-//           label: "Total Income",
-//           data: totalIncome,
-//           backgroundColor: "rgba(153, 102, 255, 0.2)",
-//           borderColor: "rgba(153, 102, 255, 1)",
-//           borderWidth: 1
-//         }]
-//       },
-//       options: {
-//         scales: {
-//           x: { beginAtZero: true },
-//           y: { beginAtZero: true }
-//         }
-//       }
-//     });
-
-//   } catch (error) {
-//     console.error("Error fetching company data:", error);
-//   }
-// }
 
 checkuser();

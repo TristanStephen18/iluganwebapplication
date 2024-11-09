@@ -24,6 +24,7 @@
       body {
         font-family: "Open Sans", sans-serif;
         background-color: #f5f5f5;
+        margin: 0;
       }
       .sidebar {
         background: linear-gradient(to bottom, #29924f, #0c2c18);
@@ -32,6 +33,7 @@
         color: white;
         position: fixed;
         overflow-x: hidden;
+        transition: width 0.3s ease;
       }
       .sidebar .nav-link {
         color: white;
@@ -49,86 +51,199 @@
         font-weight: bold;
         text-align: center;
         margin-bottom: 20px;
-        margin-right: 40px;
       }
       .logo img {
         width: 20px;
         height: 40px;
         margin-top: 10px;
       }
-      .main-container {
+      #maincontent {
+        margin-left: 220px;
+        padding: 20px;
+        transition: margin-left 0.3s ease;
+      }
+      .main-container,
+      .additional-container {
         background-color: white;
         border-radius: 8px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         padding: 20px;
-        width: 60%;
-        height: 35vh;
-        overflow: hidden;
+      }
+      .main-container {
+        width: 100%;
+        margin-bottom: 20px;
       }
       .additional-container {
-        background-color: white;
-        border-radius: 8px;
-        box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1);
-        padding: 20px;
-        width: 35%;
-        height: 35vh;
         margin-left: 20px;
-        font-size: 10px;
+        margin-top: 20px;
       }
       .card {
         border: 1px solid green;
         border-radius: 8px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         padding: 10px;
-        text-align: justify;
-        margin-bottom: 15px;
-        height: 40%;
-        font-size: 10px;
+        text-align: center;
+        font-size: 12px;
         background-color: white;
       }
-
       .card i {
         font-size: 24px;
         color: #1fbf83;
         margin-bottom: 10px;
       }
-
-      .square-card {
-        top: 30px;
-        width: 100%;
-        height: 90%;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-      }
-      .rectangle-card {
-        height: 20%;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        top: 10px;
-        font-size: 20px;
-      }
-      .container-title {
+      .container-title,
+      .container-title1 {
         color: black;
         font-weight: bold;
-        margin-bottom: -20px;
-        font-size: 15px;
+        font-size: 20px;
       }
-      .graph-wrapper {
-        background-color: white;
+      .square-card,
+      .rectangle-card {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .map-container {
+        height: 35vh;
+        margin-left: 170px;
+      }
+
+      #map {
+        margin-left: 20px;
+        padding: 20px;
+        height: 87%;
+        width: 90%;
         border-radius: 8px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      }
+
+      /* Responsive adjustments for the additional containers */
+      @media (max-width: 768px) {
+        .map-container,
+        .additional-container {
+          width: 100%;
+          margin-left: 0;
+        }
+      }
+
+      /* Responsive Adjustments */
+      @media (max-width: 1200px) {
+        #maincontent {
+          margin-left: 200px;
+        }
+      }
+
+      @media (max-width: 992px) {
+        .main-container,
+        .additional-container {
+          width: 100%;
+          margin-left: 0;
+        }
+        .sidebar {
+          width: 180px;
+        }
+        #maincontent {
+          margin-left: 180px;
+          margin-right: 30px;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .sidebar {
+          width: 60px;
+        }
+        #maincontent {
+          margin-left: 70px;
+        }
+        .sidebar .nav-link,
+        .logo span {
+          display: none;
+        }
+        .sidebar .nav-link i {
+          margin: 0;
+        }
+      }
+
+      @media (max-width: 576px) {
+        .d-flex {
+          flex-direction: column;
+        }
+        #maincontent {
+          margin: 0;
+          padding: 10px;
+        }
+        .main-container,
+        .additional-container {
+          width: 100%;
+          margin: 10px 0;
+        }
+        .container-title,
+        .container-title1 {
+          font-size: 15px;
+        }
+        .sidebar {
+          position: relative;
+          width: 100%;
+          height: auto;
+          min-height: auto;
+        }
+        .sidebar .logo {
+          text-align: left;
+          padding-left: 10px;
+        }
+      }
+      .passenger-container,
+      .income-container {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         padding: 20px;
+        margin: 20px 0;
+        width: 100%;
       }
-      .main-container .row {
-        display: flex;
-        justify-content: center;
+
+      /* Make the graphs responsive within the containers */
+      #passengerChart,
+      #incomeChart {
+        width: 100% !important;
+        height: auto !important;
+        max-height: 300px;
       }
-      #maincontent{
-        margin-left: 200px;
+
+      /* Responsive adjustments */
+      @media (max-width: 992px) {
+        .passenger-container,
+        .income-container {
+          margin-top: 10px;
+        }
+        #passengerChart,
+        #incomeChart {
+          max-height: 250px;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .passenger-container,
+        .income-container {
+          padding: 15px;
+        }
+        #passengerChart,
+        #incomeChart {
+          max-height: 200px;
+        }
+      }
+
+      @media (max-width: 576px) {
+        .passenger-container,
+        .income-container {
+          padding: 10px;
+        }
+        #passengerChart,
+        #incomeChart {
+          max-height: 180px;
+        }
       }
     </style>
   </head>
@@ -180,13 +295,13 @@
           </li>
         </ul>
       </div>
-      
+
       <div class="flex-grow-1 p-4 d-flex flex-column" id="maincontent">
         <h2 id="cname">Loading data...</h2>
         <div class="row">
           <div class="main-container mb-4 col-md-8">
-            <h4 class="container-title">Analytics Overview</h4>
-            <div class="row">
+            <h3 class="container-title">Analytics Overview</h3>
+            <div class="row" style="margin-left: 20%">
               <div class="col-md-3">
                 <div class="card square-card text-center">
                   <i class="fa-solid fa-people-group"></i>
@@ -211,20 +326,27 @@
             </div>
           </div>
           <div class="additional-container mb-4 col-md-4">
-            <h4 class="container-title1">Bus Employees</h4>
+            <h4 class="container-title1" style="margin-bottom: 30px">
+              Bus Employees
+            </h4>
             <div class="card rectangle-card text-center">
-              <h6>Conductors:</h6>
-              <h5 id="connum">...</h5>
+              <h6 id="connum">Conductors:</h6>
+              <!-- <h5 id="connum">...</h5> -->
             </div>
             <div class="card rectangle-card text-justify">
-              <h6>Inspectors:</h6>
-              <h5 id="insnum">...</h5>
+              <h6 id="insnum">Inspectors:</h6>
+              <!-- <h5 id="insnum">...</h5> -->
             </div>
+          </div>
+          <div class="additional-container mb-4 col-md-4 map-container">
+            <h4 class="container-title1">Terminal Location</h4>
+            <div id="map"></div>
           </div>
         </div>
         <div>
           <label for="timeFilter">Filter By:</label>
           <select id="timeFilter">
+            <option value="daily">Daily</option>
             <option value="weekly">Weekly</option>
             <option value="monthly">Monthly</option>
             <option value="yearly">Yearly</option>
@@ -232,90 +354,40 @@
         </div>
         <div class="row">
           <div>
-            <h3>Total Passengers Over Time</h3>
-            <canvas id="passengerChart"></canvas>
+            <div class="passenger-container">
+              <h3>Total Passengers Over Time</h3>
+              <canvas id="passengerChart"></canvas>
+            </div>
           </div>
 
           <div>
-            <h3>Total Income Over Time</h3>
-            <canvas id="incomeChart"></canvas>
+            <div class="income-container">
+              <h3>Total Income Over Time</h3>
+              <canvas id="incomeChart"></canvas>
+            </div>
           </div>
         </div>
-
-        
       </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.8.0/chart.min.js"></script>
-    <!-- <script>
-      const ctxLine = document.getElementById("lineChart").getContext("2d");
-      const lineChart = new Chart(ctxLine, {
-        type: "line",
-        data: {
-          labels: ["Day 1", "Day 2", "Day 3", "Day 4", "Day 5", "Day 6"],
-          datasets: [
-            {
-              label: "Walk-in Passengers",
-              borderColor: "#48BB78",
-              backgroundColor: "rgba(79, 209, 197, 0.2)",
-              data: [10, 15, 30, 20, 25, 40],
-              fill: true,
-            },
-            {
-              label: "Online Reservations",
-              borderColor: "#1FBF83",
-              backgroundColor: "rgba(26, 32, 44, 0.2)",
-              data: [5, 10, 15, 10, 20, 30],
-              fill: true,
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-          scales: {
-            x: {
-              beginAtZero: true,
-            },
-            y: {
-              beginAtZero: true,
-            },
-          },
-        },
-      });
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAIMuBkc8a_ciIOnIBA5n-3z5A85agZfQ0&callback=initMap&libraries=places&v=weekly"
+      defer
+    ></script>
 
-      const ctxBar = document.getElementById("barChart").getContext("2d");
-      const barChart = new Chart(ctxBar, {
-        type: "bar",
-        data: {
-          labels: [
-            "Monday",
-            "Tuesday",
-            "Wednesday",
-            "Thursday",
-            "Friday",
-            "Saturday",
-            "Sunday",
-          ],
-          datasets: [
-            {
-              label: "Online Reservations",
-              backgroundColor: "#48BB78",
-              data: [300, 400, 200, 450, 350, 500, 400],
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-          scales: {
-            x: {
-              beginAtZero: true,
-            },
-            y: {
-              beginAtZero: true,
-            },
-          },
-        },
-      });
-    </script> -->
+    <script>
+      let currentMarker = null;
+      let map;
+      let selectedLat = null;
+      let selectedLng = null;
+
+      function initMap() {
+        map = new google.maps.Map(document.getElementById("map"), {
+          center: { lat: 16.056575294903435, lng: 120.32326714096962 },
+          zoom: 8,
+        });
+      }
+    </script>
 
     <script type="module" src="/dashboardjs"></script>
   </body>

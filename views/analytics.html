@@ -104,7 +104,7 @@
             >
           </li>
           <li class="nav-item mb-3">
-            <a href="/reservation" class="nav-link"
+            <a href="/reservations" class="nav-link"
               ><i class="fas fa-ticket-alt"></i>Reservation Control</a
             >
           </li>
@@ -147,19 +147,7 @@
           <div class="col-md-6">
             <div class="card shadow-sm">
               <div class="card-body">
-                <div class="filter-container">
-                  <label for="reservationBusSelect" class="form-label"
-                    >Select Bus</label
-                  >
-                  <select
-                    id="reservationBusSelect"
-                    class="form-select form-select-sm"
-                  >
-                    <option value="bus1">Bus 1</option>
-                    <option value="bus2">Bus 2</option>
-                  </select>
-                </div>
-                <h5>Reservations</h5>
+                <h5>Current Passengers</h5>
                 <div class="chart-container">
                   <canvas id="reservationChart"></canvas>
                 </div>
@@ -170,14 +158,9 @@
             <div class="card shadow-sm">
               <div class="card-body">
                 <div class="filter-container">
-                  <label for="passengerDateSelect" class="form-label"
-                    >Select Date</label
-                  >
-                  <input
-                    type="date"
-                    id="passengerDateSelect"
-                    class="form-control form-control-sm"
-                  />
+                  <select name="datefilter" id="datefilter">
+
+                  </select>
                 </div>
                 <h5>Total Passengers</h5>
                 <div class="chart-container">
@@ -216,60 +199,60 @@
     //   }
     // });
 
-    const ctxReservation = document.getElementById('reservationChart').getContext('2d');
-    const reservationChart = new Chart(ctxReservation, {
-      type: 'pie',
-      data: {
-        labels: ['Reserved', 'Available'],
-        datasets: [{
-          label: 'Reservation Status',
-          data: [65, 35],
-          backgroundColor: ['#29924F', '#e0e0e0'],
-          borderColor: '#fff',
-          borderWidth: 1
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-      }
-    });
+    // const ctxReservation = document.getElementById('reservationChart').getContext('2d');
+    // const reservationChart = new Chart(ctxReservation, {
+    //   type: 'pie',
+    //   data: {
+    //     labels: ['Reserved', 'Available'],
+    //     datasets: [{
+    //       label: 'Reservation Status',
+    //       data: [65, 35],
+    //       backgroundColor: ['#29924F', '#e0e0e0'],
+    //       borderColor: '#fff',
+    //       borderWidth: 1
+    //     }]
+    //   },
+    //   options: {
+    //     responsive: true,
+    //     maintainAspectRatio: false,
+    //   }
+    // });
 
-    const ctxPassenger = document.getElementById('passengerChart').getContext('2d');
-    const passengerChart = new Chart(ctxPassenger, {
-      type: 'pie',
-      data: {
-        labels: ['Online', 'Walk-in'],
-        datasets: [{
-          label: 'Total Passengers',
-          data: [45, 55],
-          backgroundColor: ['#29924F', '#f39c12'],
-          borderColor: '#fff',
-          borderWidth: 1
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-      }
-    });
+    // const ctxPassenger = document.getElementById('passengerChart').getContext('2d');
+    // const passengerChart = new Chart(ctxPassenger, {
+    //   type: 'pie',
+    //   data: {
+    //     labels: ['Online', 'Walk-in'],
+    //     datasets: [{
+    //       label: 'Total Passengers',
+    //       data: [45, 55],
+    //       backgroundColor: ['#29924F', '#f39c12'],
+    //       borderColor: '#fff',
+    //       borderWidth: 1
+    //     }]
+    //   },
+    //   options: {
+    //     responsive: true,
+    //     maintainAspectRatio: false,
+    //   }
+    // });
 
-    const updateReservationChart = () => {
-      const bus = document.getElementById('reservationBusSelect').value;
-      const reservationData = bus === 'bus1' ? [70, 30] : [50, 50]; 
-      reservationChart.data.datasets[0].data = reservationData;
-      reservationChart.update();
-    };
+    // const updateReservationChart = () => {
+    //   const bus = document.getElementById('reservationBusSelect').value;
+    //   const reservationData = bus === 'bus1' ? [70, 30] : [50, 50]; 
+    //   reservationChart.data.datasets[0].data = reservationData;
+    //   reservationChart.update();
+    // };
 
-    const updatePassengerChart = () => {
-      const date = document.getElementById('passengerDateSelect').value;
-      const passengerData = date ? [60, 40] : [45, 55]; 
-      passengerChart.data.datasets[0].data = passengerData;
-      passengerChart.update();
-    };
+    // const updatePassengerChart = () => {
+    //   const date = document.getElementById('passengerDateSelect').value;
+    //   const passengerData = date ? [60, 40] : [45, 55]; 
+    //   passengerChart.data.datasets[0].data = passengerData;
+    //   passengerChart.update();
+    // };
 
-    document.getElementById('reservationBusSelect').addEventListener('change', updateReservationChart);
-    document.getElementById('passengerDateSelect').addEventListener('change', updatePassengerChart);
+    // document.getElementById('reservationBusSelect').addEventListener('change', updateReservationChart);
+    // document.getElementById('passengerDateSelect').addEventListener('change', updatePassengerChart);
   </script>
 
     <script type="module" src="/analyticsjs"></script>

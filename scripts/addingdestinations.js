@@ -40,19 +40,21 @@ async function addDestinations(uid, destinations) {
     try{
         const companydoc = doc(db, `companies/${uid}`);
 
-        await setDoc(companydoc, {
+        await updateDoc(companydoc, {
             endterminals: destinations // save the array in the 'locations' field
           });
 
           console.log("data added to company data");
+          window.location.assign('/terminallocation')
+          
         
     }catch (error){
         console.log(error);
     }
 }
 
-  const nextbtn = document.querySelector(".next-button");
-  nextbtn.addEventListener('click', ()=>{
+  const confirmed = document.querySelector("#confirmlocations");
+  confirmed.addEventListener('click', ()=>{
     console.log('clicked');
     const locationslist = document.getElementById('inputList');
     const values = [];
@@ -86,13 +88,14 @@ async function checkuser() {
 
             console.log(data.terminal_location == null);
             console.log(data.busdestinations == null);
-            if(data.terminal_location != null && data.busdestinations != null){
+            if(data.terminal_location != null && data.endterminals != null){
                 window.location.assign('/dashboard');
-            }else if(data.busdestinations != null && data.terminal_location == null){
+            }else if(data.endterminals != null && data.terminal_location == null){
+                console.log(data.terminal_location);
                 window.location.assign('/terminallocation')
             }
         }else{
-            console.log("data doees not existt");
+            console.log("data doees not exist");
         }
       } else {
         console.log("No user is signed in.");

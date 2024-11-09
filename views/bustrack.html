@@ -76,9 +76,10 @@
   
   #map {
     height: 80vh;
-    width: 900px;
+    width: 1150px;
     border-radius: 10px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    margin-right: 20px;
   }
   
   .right-container {
@@ -107,22 +108,6 @@
     font-size: 2em;
     font-weight: bold;
   }
-  
-  /* .marker-info {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    padding: 20px;
-    background-color: white;
-    border: 1px solid black;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-    z-index: 1000;
-  }
-  
-  .hidden {
-    display: none;
-  } */
 
   .bus-info {
     position: fixed;
@@ -288,8 +273,8 @@
 
       function initMap() {
         map = new google.maps.Map(document.getElementById("map"), {
-          center: { lat: 16.056575294903435, lng: 120.32326714096962 },
-          zoom: 10,
+          center: { lat: 15.977536680307633, lng: 120.56980009655085 },
+          zoom: 11,
         });
 
         map.addListener("click", (e) => {

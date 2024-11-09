@@ -48,7 +48,7 @@ lgin.addEventListener("submit", (e) => {
             await updateDoc(userDocRef, {status: 'online'});
             window.location.assign("/dashboard");
           } else {
-            window.location.assign("/terminallocation");
+            window.location.assign("/destinations");
           }
         } else {
           console.log('Company data was not found on this user');

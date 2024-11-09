@@ -65,7 +65,7 @@ async function addData(id, mail, pass, comp, subscriptionType, expiryDate) {
       icon: "success",
       confirmButtonText: "OK",
     }).then(() => {
-      window.location.assign("login.html");
+      window.location.assign("/login");
     });
   } catch (error) {
     Swal.fire({
