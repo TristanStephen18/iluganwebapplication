@@ -49,7 +49,7 @@ loginForm.addEventListener("submit", (e) => {
     .then(async (userCredential) => {
       const user = userCredential.user;
       const userDocRef = doc(db, "companies", user.uid);
-      counter =  await getlogincounter(user.uid);
+      // counter =  await getlogincounter(user.uid);
       
       try {
         const userDoc = await getDoc(userDocRef);
@@ -94,7 +94,12 @@ forgotpassbtn.addEventListener('click', ()=>{
   console.log(email);
   if(email){
     sendPasswordResetEmail(auth, email).then(()=>{
-      console.log(`Password reset email has been sent to ${email}`);
+      Swal.fire({
+        title: "Password reset email sent!",
+        text: `The email was sent to ${email}`,
+        icon: "success",
+        confirmButtonText: "OK",
+      });
     });
   }else{
     alert('Enter your email first');
