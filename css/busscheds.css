@@ -1,0 +1,106 @@
+body {
+    font-family: "Open Sans", sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+  }
+  
+  /* Sidebar Styling */
+  .sidebar {
+    background: linear-gradient(to bottom, #29924f, #0c2c18);
+    min-height: 100vh;
+    width: 200px;
+    color: white;
+    position: fixed;
+    overflow-x: hidden;
+    transition: width 0.3s ease;
+  }
+  .sidebar .nav-link {
+    color: white;
+    font-size: small;
+    font-weight: bold;
+  }
+  .sidebar .nav-link:hover {
+    background-color: #217841;
+  }
+  .sidebar .nav-link i {
+    margin-right: 8px;
+  }
+  .logo {
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+    margin-left: -50px;
+    margin-top: 20px;
+  }
+  .logo img {
+    width: 25px;
+    height: 40px;
+  }
+  .content {
+    padding: 20px;
+    flex-grow: 1;
+    margin-left: 200px;
+    transition: margin-left 0.3s ease;
+  }
+
+  .table th,
+.table td {
+  text-align: center;
+  font-size: 13px;
+  padding: 10px;
+}
+.table thead th {
+  /* text-transform: uppercase; */
+  text-align: center;
+  background-color: #29924f;
+  color: white;
+  padding: 10px;
+}
+
+/*
+  .table td {
+    background-color: #f0f0f0;
+  } */
+.table tr {
+  border-bottom: 1px solid #ccc;
+}
+
+.update-btn{
+  background-color: green;
+  color: white;
+  width: 70px;
+  border-radius: 5px;
+}
+.update-btn:hover{
+  background-color: white;
+  color: black;
+}
+#no-schedule-buses {
+  display: flex; /* Use flexbox layout */
+  justify-content: flex-start; /* Align items to the left (or use center, space-between, etc., if needed) */
+  gap: 10px; /* Add space between the bus cards */
+  flex-wrap: wrap; /* Allow wrapping if there are too many items */
+  padding: 10px 0; /* Optional: Add some padding for spacing */
+  margin-bottom: 10px;
+}
+
+.bus-container {
+  margin-bottom: 0; /* Remove bottom margin since flexbox handles spacing */
+  align-items: center;
+  text-align: center;
+  background-color: white;
+  border: 0.7px solid gray;
+  width: 100px;
+  height: 100px;
+  border-radius: 10px;
+  display: flex; /* Center content inside each bus card */
+  justify-content: center;
+  flex-direction: column;
+}
+
+.bus-container:hover {
+  background-color: green;
+  border: none;
+}
+

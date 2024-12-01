@@ -1,0 +1,81 @@
+body {
+  font-family: "Open Sans", sans-serif;
+  background-color: #f5f5f5;
+}
+.main-content {
+  margin-left: 200px;
+}
+.sidebar {
+  background: linear-gradient(to bottom, #29924f, #0c2c18);
+  min-height: 100vh;
+  width: 200px;
+  color: white;
+  position: fixed;
+  overflow-x: hidden;
+  transition: width 0.3s ease;
+}
+.sidebar .nav-link {
+  color: white;
+  font-size: small;
+  font-weight: bold;
+}
+.sidebar .nav-link:hover {
+  background-color: #217841;
+}
+.sidebar .nav-link i {
+  margin-right: 8px;
+}
+.logo {
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 20px;
+  margin-left: -50px;
+  margin-top: 20px;
+}
+.logo img {
+  width: 25px;
+  height: 40px;
+}
+.main-content {
+  flex-grow: 1;
+  padding: 20px;
+}
+.top-icons {
+  font-size: 23px;
+}
+
+.top-icon-link {
+  margin-right: 20px;
+  color: #333;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.top-icon-link:hover {
+  color: #1fbf83;
+}
+
+#cname {
+  font-size: 24px;
+  font-weight: bold;
+}
+.chart-container {
+  position: relative;
+  height: 300px; /* Adjust this as needed */
+  max-height: 300px; /* Ensure it doesn’t exceed card body */
+  width: 100%;
+  overflow: hidden; /* Prevent overflow */
+}
+
+.filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+.filter-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 15px;
+}

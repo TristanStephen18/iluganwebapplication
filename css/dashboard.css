@@ -1,0 +1,246 @@
+  body {
+      font-family: "Open Sans", sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+    }
+    .sidebar {
+      background: linear-gradient(to bottom, #29924f, #0c2c18);
+      min-height: 100vh;
+      width: 200px;
+      color: white;
+      position: fixed;
+      overflow-x: hidden;
+      transition: width 0.3s ease;
+    }
+    .sidebar .nav-link {
+      color: white;
+      font-size: small;
+      font-weight: bold;
+    }
+    .sidebar .nav-link:hover {
+      background-color: #217841;
+    }
+    .sidebar .nav-link i {
+      margin-right: 8px;
+    }
+    .logo {
+      font-size: 20px;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 20px;
+      margin-left: -50px;
+      margin-top: 20px;
+    }
+    .logo img {
+      width: 25px;
+      height: 40px;
+    }
+    .top-icons {
+      font-size: 23px;
+    }
+    
+    .top-icon-link {
+      margin-right: 20px;
+      color: #333;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    
+    .top-icon-link:hover {
+      color: #1fbf83;
+    }
+    
+    #cname {
+      font-size: 24px;
+      font-weight: bold;
+    }
+    #maincontent {
+      margin-left: 220px;
+      padding: 20px;
+      transition: margin-left 0.3s ease;
+    }
+    .main-container,
+    .additional-container {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+    }
+    .main-container {
+      width: 100%;
+      margin-bottom: 20px;
+    }
+    .additional-container {
+      margin-left: 20px;
+      margin-top: 20px;
+    }
+    .card {
+      border: 1px solid green;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      padding: 10px;
+      text-align: center;
+      font-size: 12px;
+      background-color: white;
+    }
+    .card i {
+      font-size: 24px;
+      color: #1fbf83;
+      margin-bottom: 10px;
+    }
+    .container-title,
+    .container-title1 {
+      color: black;
+      font-weight: bold;
+      font-size: 20px;
+    }
+    .square-card,
+    .rectangle-card {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .map-container {
+      height: 35vh;
+      margin-left: 170px;
+    }
+
+    #map {
+      margin-left: 20px;
+      padding: 20px;
+      height: 87%;
+      width: 90%;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Responsive adjustments for the additional containers */
+    @media (max-width: 768px) {
+      .map-container,
+      .additional-container {
+        width: 100%;
+        margin-left: 0;
+      }
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 1200px) {
+      #maincontent {
+        margin-left: 200px;
+      }
+    }
+
+    @media (max-width: 992px) {
+      .main-container,
+      .additional-container {
+        width: 100%;
+        margin-left: 0;
+      }
+      .sidebar {
+        width: 180px;
+      }
+      #maincontent {
+        margin-left: 180px;
+        margin-right: 30px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 60px;
+      }
+      #maincontent {
+        margin-left: 70px;
+      }
+      .sidebar .nav-link,
+      .logo span {
+        display: none;
+      }
+      .sidebar .nav-link i {
+        margin: 0;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .d-flex {
+        flex-direction: column;
+      }
+      #maincontent {
+        margin: 0;
+        padding: 10px;
+      }
+      .main-container,
+      .additional-container {
+        width: 100%;
+        margin: 10px 0;
+      }
+      .container-title,
+      .container-title1 {
+        font-size: 15px;
+      }
+      .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+        min-height: auto;
+      }
+      .sidebar .logo {
+        text-align: left;
+        padding-left: 10px;
+      }
+    }
+    .passenger-container,
+    .income-container {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      margin: 20px 0;
+      width: 100%;
+    }
+
+    /* Make the graphs responsive within the containers */
+    #passengerChart,
+    #incomeChart {
+      width: 100% !important;
+      height: auto !important;
+      max-height: 300px;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 992px) {
+      .passenger-container,
+      .income-container {
+        margin-top: 10px;
+      }
+      #passengerChart,
+      #incomeChart {
+        max-height: 250px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .passenger-container,
+      .income-container {
+        padding: 15px;
+      }
+      #passengerChart,
+      #incomeChart {
+        max-height: 200px;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .passenger-container,
+      .income-container {
+        padding: 10px;
+      }
+      #passengerChart,
+      #incomeChart {
+        max-height: 180px;
+      }
+    }
+
+    

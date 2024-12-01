@@ -13,6 +13,7 @@ import {
   GeoPoint,
   collection,
   onSnapshot,
+  updateDoc
 } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
 
@@ -96,7 +97,7 @@ async function showBusInfo(
   document.getElementById("currentLocation").innerText = current_loc;
   document.getElementById("destination").innerText = destin;
   document.getElementById("availableSeats").innerText = seats_avail;
-  document.getElementById("reservedSeats").innerText = seats_res;
+  document.getElementById("reservedSeats").innerText = occu_seats;
   document.getElementById("conductorName").innerText = conduct;
   // document.getElementById("driverName").innerText = "Driver";
 
@@ -112,9 +113,31 @@ async function showBusInfo(
 const logoutbtn = document.querySelector("#logout");
 console.log(logoutbtn);
 logoutbtn.addEventListener("click", () => {
-console.log("Clicked logout btn");
-logout();
+  console.log("Clicked logout btn");
+  logout();
 });
+
+async function logout() {
+  const userDocRef = doc(db, "companies", userid);
+  signOut(auth)
+    .then(() => {
+      Swal.fire({
+        title: "Ilugan",
+        text: "Log out successful",
+        icon: "success",
+      }).then(async (result)=>{
+        await updateDoc(userDocRef, {status: 'offline'});
+        location.assign("/login");
+      });
+    })
+    .catch((error) => {
+      Swal.fire({
+        title: "ERROR!!!",
+        text: error.message,
+        icon: "error",
+      });
+    });
+}
 
 // Function to add a bus marker on the map
 async function addBusToMap(
@@ -167,7 +190,7 @@ function checkUser() {
       getBuses(userid);
     } else {
       console.log("No user is signed in.");
-      window.location.assign("/login");
+      // window.location.assign("/login");
     }
   });
 }
@@ -237,19 +260,6 @@ async function getBuses(companyId) {
               icon = "/parkb";
               parked_buses++; // Count parked buses
             }
-
-            // Skip a specific bus to fetch its coordinates from Realtime DB
-            if(busData.bus_number == 'BUS 1231') {
-              getBusLocationFromRealtimeDB(
-                busData.available_seats,
-                busData.reserved_seats,
-                busData.conductor,
-                busData.occupied_seats,
-                busData.destination,
-                busData.bus_number,
-                busData.plate_number
-              );  // Fetch coordinates from Realtime Database
-            } else {
               addBusToMap(
                 position,
                 icon,
@@ -261,7 +271,6 @@ async function getBuses(companyId) {
                 busData.bus_number,
                 busData.plate_number
               );
-            }
 
             console.log(
               `Bus Number: ${busData.bus_number}, Plate: ${busData.plate_number}`

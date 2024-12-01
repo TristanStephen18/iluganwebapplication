@@ -31,6 +31,7 @@ const db = getFirestore(app);
 let terminalLat;
 let terminalLng;
 let companyId;
+let logincounter;
 
 // Set up the filter dropdown event listener for real-time changes
 const filter = document.querySelector("#timeFilter");
@@ -78,10 +79,17 @@ logoutbtn.addEventListener("click", () => {
 });
 
 async function logout() {
+  const userDocRef = doc(db, "companies", companyId);
   signOut(auth)
     .then(() => {
-      alert("Log out successful");
-      location.assign("/login");
+      Swal.fire({
+        title: "Ilugan",
+        text: "Log out successful",
+        icon: "success",
+      }).then(async (result)=>{
+        await updateDoc(userDocRef, {status: 'offline'});
+        location.assign("/login");
+      });
     })
     .catch((error) => {
       Swal.fire({
@@ -93,6 +101,10 @@ async function logout() {
 }
 
 async function getCompanyData(uid) {
+  // const loadingModal = new bootstrap.Modal(
+  //   document.getElementById("loadingModal")
+  // );
+  // loadingModal.show();
   const displaydatap = document.querySelector("#tpassenger");
   const displaydatar = document.querySelector("#treservation");
 
@@ -109,6 +121,7 @@ async function getCompanyData(uid) {
       let totalreservations = 0;
 
       if (snapshot.empty) {
+        // loadingModal.hide();
         console.log("Collection is empty");
       } else {
         snapshot.forEach((doc) => {
@@ -140,6 +153,8 @@ async function getcompanyname(uid) {
     const companyDocSnap = await getDoc(companyDocRef);
 
     console.log(companyDocSnap.data());
+    logincounter = companyDocSnap.data().logincounter;
+    console.log(`Login times: ${logincounter}`);
     compname.innerHTML = `${companyDocSnap.data().company_name}`;
   } catch (error) {
     console.log(error);
@@ -213,16 +228,18 @@ function requestNotificationPermission() {
   }
 }
 
+// requestNotificationPermission();
+
 async function checkuser() {
   requestNotificationPermission();
   onAuthStateChanged(auth, async (user) => {
     if (user) {
       companyId = user.uid;
       console.log("User is logged in:", user.uid);
-      getTerminalCoordinates(user.uid);
+      // getTerminalCoordinates(user.uid);
       getCompanyData(user.uid);
       getnumberofbuses(user.uid);
-      getnumberofconductors(user.uid);
+      // getnumberofconductors(user.uid);
       getcompanyname(user.uid);
       
       // Initial data plot based on the current filter value
@@ -232,7 +249,7 @@ async function checkuser() {
 
     } else {
       console.log("No user is signed in.");
-      location.assign("/login");
+      // location.assign("/login");
     }
   });
 }
@@ -254,21 +271,29 @@ let incomeChart;
 
 async function plotCompanyData(filter) {
   const dataRef = collection(db, `companies/${companyId}/data`);
-  
+
   try {
     const snapshot = await getDocs(dataRef);
 
     // Temporary arrays for storing raw data
-    const dates = [];
-    const totalPassengers = [];
-    const totalIncome = [];
+    const rawData = [];
 
     // Retrieve raw data
     snapshot.forEach((doc) => {
-      dates.push(doc.id); // Use document ID (date) for labels
-      totalPassengers.push(doc.data().total_passengers || 0);
-      totalIncome.push(doc.data().total_income || 0);
+      rawData.push({
+        date: doc.id, // Use document ID (date) for labels
+        passengers: doc.data().total_passengers || 0,
+        income: doc.data().total_income || 0,
+      });
     });
+
+    // Sort the raw data by date in descending order
+    rawData.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    // Extract sorted data
+    const dates = rawData.map((item) => item.date);
+    const totalPassengers = rawData.map((item) => item.passengers);
+    const totalIncome = rawData.map((item) => item.income);
 
     // Filter data based on selected filter
     const { filteredDates, filteredPassengers, filteredIncome } = filterData(
@@ -333,6 +358,7 @@ async function plotCompanyData(filter) {
     console.error("Error fetching company data:", error);
   }
 }
+
 
 // Function to filter data based on time selection
 // Function to filter data based on time selection

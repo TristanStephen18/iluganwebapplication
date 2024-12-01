@@ -1,0 +1,111 @@
+body {
+    font-family: "Open Sans", sans-serif;
+    background-color: #f5f5f5;
+  }
+  .sidebar {
+    background: linear-gradient(to bottom, #29924f, #0c2c18);
+    min-height: 100vh;
+    width: 200px;
+    position: fixed;
+    overflow-x: hidden;
+    color: white;
+  }
+  .sidebar .nav-link {
+    color: white;
+    font-size: small;
+    font-weight: bold;
+  }
+  .sidebar .nav-link:hover {
+    background-color: #217841;
+  }
+  .sidebar .nav-link i {
+    margin-right: 8px;
+  }
+  .logo {
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+    margin-left: -50px;
+  margin-top: 20px;
+  }
+  .logo img {
+    width: 25px;
+    height: 40px;
+  }
+
+  .content{
+    margin-left: 200px;
+    padding: 30px;
+  }
+
+  .busnotif {
+    background-color: white;
+    border-radius: 5px;
+    padding: 5px;
+    margin-bottom: 5px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    font-size: 0.8rem;
+  }
+  .busnotif i {
+    color: #29924f;
+    margin-right: 5px;
+    font-size: 0.9rem;
+  }
+  .busnotif div {
+    flex: 1;
+  }
+  .busnotif p {
+    margin: 0;
+    font-size: 0.75rem;
+  }
+  .busnotif small {
+    font-size: 0.7rem;
+    color: #666;
+  }
+
+  #notifdiv{
+    padding: 20px;
+  }
+
+  .inspectionotif {
+    background-color: white;
+    border-radius: 5px;
+    padding: 5px;
+    margin-bottom: 5px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    font-size: 0.8rem;
+  }
+  .inspectionotif i {
+    color: #29924f;
+    margin-right: 5px;
+    font-size: 0.9rem;
+  }
+  .inspectionotif div {
+    flex: 1;
+  }
+  .inspectionotif p {
+    margin: 0;
+    font-size: 0.95rem;
+  }
+  /* .busnotif small {
+    font-size: 0.7rem;
+    color: #666;
+  } */
+  .top-icons {
+    font-size: 23px;
+  }
+  
+  .top-icon-link {
+    color: #333;
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+  
+  .top-icon-link:hover {
+    color: #1fbf83;
+  }

@@ -7,6 +7,7 @@
       rel="stylesheet"
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
     />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
       body,
@@ -187,7 +188,7 @@
         }
       }
     </style>
-    <title>Log in</title>
+    <title>Account Set Upx</title>
   </head>
   <body>
     <div class="header">
@@ -204,6 +205,10 @@
 
     <div class="destinations">
       <h2 class="login-title">Where will you send your fleet?</h2>
+      <p>
+        NOTE: Each location entered will be converted to their respective GPS
+        Coordinates, so be careful when entering a location
+      </p>
       <form id="companyForm">
         <div id="inputList"></div>
         <h8 id="prompt">Click here to add destinations</h8><br />
@@ -213,7 +218,9 @@
       </form>
     </div>
 
-    <button class="next-button" onclick="showConfirmationModal()">Next →</button>
+    <button class="next-button" onclick="showConfirmationModal()">
+      Next →
+    </button>
 
     <!-- Add Destination Modal -->
     <div
@@ -235,8 +242,7 @@
               class="close"
               data-dismiss="modal"
               aria-label="Close"
-            >
-            </button>
+            ></button>
           </div>
           <div class="modal-body">
             <input
@@ -267,7 +273,9 @@
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="confirmationModalLabel">Confirm Locations</h5>
+            <h5 class="modal-title" id="confirmationModalLabel">
+              Confirm Locations
+            </h5>
             <button
               type="button"
               class="close"
@@ -280,13 +288,40 @@
           <div class="modal-body">
             <p>
               Please confirm that the locations you have entered are legitimate
-              destinations for your fleet. These locations will be associated with
-              your company and may affect your system usage.
+              destinations for your fleet. These locations will be associated
+              with your company and may affect your system usage.
             </p>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-            <button type="button" class="btn btn-danger" id="confirmlocations">Confirm</button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              Cancel
+            </button>
+            <button type="button" class="btn btn-danger" id="confirmlocations">
+              Confirm
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Loading Modal -->
+    <div
+      class="modal fade"
+      id="loadingModal"
+      tabindex="-1"
+      aria-labelledby="loadingModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-body text-center">
+            <div class="spinner-border text-success" role="status">
+              <!-- <span class="visually-hidden">Loading...</span> -->
+            </div>
+            <p class="mt-3">Redirecting...</p>
           </div>
         </div>
       </div>
@@ -309,10 +344,30 @@
           return;
         }
         const inputList = document.getElementById("inputList");
-        const newInput = document.createElement("div");
-        newInput.classList.add("form-group");
-        newInput.innerHTML = `<input type="text" class="form-control" value="${input}" readonly>`;
-        inputList.appendChild(newInput);
+
+        // Create the container for each location
+        const locationContainer = document.createElement("div");
+        locationContainer.classList.add(
+          "location-item",
+          "d-flex",
+          "align-items-center",
+          "justify-content-between",
+          "mb-2",
+          "p-2",
+          "border",
+          "rounded"
+        );
+        locationContainer.style.backgroundColor = "#f8f9fa";
+
+        // Add input and trash button
+        locationContainer.innerHTML = `
+        <span class="location-text">${input}</span>
+        <button type="button" class="btn btn-danger btn-sm delete-location">
+            <i class="fas fa-trash-alt"></i>
+        </button>
+    `;
+
+        inputList.appendChild(locationContainer);
         document.getElementById("modalInput").value = "";
         $("#inputModal").modal("hide");
         document.querySelector(".next-button").style.display = "flex";
@@ -323,13 +378,13 @@
         $("#confirmationModal").modal("show");
       }
 
-    //   function proceedToNextStep() {
-    //     $("#confirmationModal").modal("hide");
-    //     Swal.fire("Confirmed", "You have confirmed your locations!", "success").then(() => {
-    //       // Redirect or proceed to the next step
-    //       window.location.href = "/next-step"; // Replace with the actual next step URL or function
-    //     });
-    //   }
+      //   function proceedToNextStep() {
+      //     $("#confirmationModal").modal("hide");
+      //     Swal.fire("Confirmed", "You have confirmed your locations!", "success").then(() => {
+      //       // Redirect or proceed to the next step
+      //       window.location.href = "/next-step"; // Replace with the actual next step URL or function
+      //     });
+      //   }
     </script>
     <script type="module" src="/addingdestinations"></script>
   </body>

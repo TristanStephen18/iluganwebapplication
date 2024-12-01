@@ -3,16 +3,17 @@ import {
   getAuth,
   onAuthStateChanged,
   signOut,
+  sendEmailVerification,
 } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
 import {
   getFirestore,
-  getDoc,
-  doc,
   collection,
   getDocs,
   query,
   orderBy,
   onSnapshot,
+  updateDoc,
+  doc,
 } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -33,25 +34,75 @@ let userId = null;
 let totalRevenueChart, reservationChart, passengerChart;
 
 // Check if the user is authenticated
-onAuthStateChanged(auth, async (user) => {
+onAuthStateChanged(auth, (user) => {
   if (user) {
     userId = user.uid;
-    await populateBusDropdown();
-    // renderInitialChart();
+    // if(user.emailVerified){
+    //   console.log('email is verified');
+    // }else{
+    //   console.log('email is not verified');
+    //   sendEmailVerification(user)
+    //     .then(() => {
+    //       console.log("Verification email sent!");
+    //       alert("A verification email has been sent to your inbox.");
+    //     })
+    //     .catch((error) => {
+    //       console.error("Error sending verification email:", error.message);
+    //     });
+    // }
+    listenForBuses();
   } else {
     console.log("User is not signed in");
+    // window.location.assign('/login');
   }
 });
 
 // Logout functionality
-document
-  .querySelector("#logout")
-  .addEventListener("click", () => signOut(auth));
+document.querySelector("#logout").addEventListener("click", logout);
 
-// Fetch buses and populate the dropdown
-async function populateBusDropdown() {
-  const buses = await fetchBusData();
-  console.log(buses);
+async function logout() {
+  const userDocRef = doc(db, "companies", userId);
+  signOut(auth)
+    .then(() => {
+      Swal.fire({
+        title: "Ilugan",
+        text: "Log out successful",
+        icon: "success",
+      }).then(async (result) => {
+        await updateDoc(userDocRef, { status: "offline" });
+        location.assign("/login");
+      });
+    })
+    .catch((error) => {
+      Swal.fire({
+        title: "ERROR!!!",
+        text: error.message,
+        icon: "error",
+      });
+    });
+}
+
+// Real-time listener for buses and populate the dropdown
+function listenForBuses() {
+  const busesRef = collection(db, `companies/${userId}/buses`);
+  onSnapshot(busesRef, async (snapshot) => {
+    const buses = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      name: doc.data().name,
+    }));
+    populateBusDropdown(buses);
+
+    if (buses.length > 0) {
+      const firstBusId = buses[0].id;
+      listenForDateChanges(firstBusId); // Initial date listener for the first bus
+      renderTotalRevenueChart(firstBusId); // Initial chart render for the first bus
+      setupReservationChart(firstBusId); // Real-time reservation chart setup
+    }
+  });
+}
+
+// Populate the bus dropdown
+function populateBusDropdown(buses) {
   const busSelect = document.getElementById("busSelect");
   busSelect.innerHTML = "";
   buses.forEach((bus) => {
@@ -60,143 +111,108 @@ async function populateBusDropdown() {
     option.textContent = bus.name || `Bus ${bus.id}`;
     busSelect.appendChild(option);
   });
-  if (busSelect.options.length > 0) {
-    await updateDateFilter(busSelect.value); // Populate date filter initially
-    renderTotalRevenueChart(busSelect.options[0].value); // Render revenue chart for first bus
-    setupReservationChart(busSelect.options[0].value);
-    // setupPassengerChart()
-  }
 }
 
-// Fetch bus data for dropdown population
-async function fetchBusData() {
-  const busesRef = collection(db, `companies/${userId}/buses`);
-  const busDocs = await getDocs(busesRef);
-  return busDocs.docs.map((doc) => ({ id: doc.id, name: doc.data().name }));
-}
-
-// Populate the date filter for a selected bus
-async function updateDateFilter(busId) {
+// Real-time listener for date changes within a bus
+function listenForDateChanges(busId) {
   const dataRef = collection(db, `companies/${userId}/buses/${busId}/data`);
-  const dataDocs = await getDocs(dataRef);
+  onSnapshot(dataRef, (snapshot) => {
+    // Extract and sort the dates in descending order
+    const dates = snapshot.docs
+      .map((doc) => doc.id)
+      .sort((a, b) => new Date(b) - new Date(a));
+    console.log("Sorted Dates:", dates);
+
+    populateDateFilter(dates);
+
+    if (dates.length > 0) {
+      setupPassengerChart(busId, dates[0]); // Initial passenger chart for the most recent date
+    }
+  });
+}
+
+// Populate the date dropdown
+function populateDateFilter(dates) {
   const dateFilter = document.getElementById("datefilter");
   dateFilter.innerHTML = "";
-  dataDocs.forEach((doc) => {
+  dates.forEach((date) => {
     const option = document.createElement("option");
-    option.value = doc.id;
-    option.textContent = doc.id;
+    option.value = date;
+    option.textContent = date;
     dateFilter.appendChild(option);
   });
-
-  if (dateFilter.options.length > 0) {
-    setupPassengerChart(busId, dateFilter.options[0].value);
-  }
 }
 
-// Render Total Revenue Chart
-// async function renderTotalRevenueChart(busId) {
-//   const { revenueData, dateLabels } = await fetchWeeklyRevenueData(busId);
-//   const ctx = document.getElementById("totalRevenueChart").getContext("2d");
-//   if (totalRevenueChart) totalRevenueChart.destroy();
-//   totalRevenueChart = new Chart(ctx, {
-//     type: "line",
-//     data: {
-//       labels: dateLabels,
-//       datasets: [{
-//         label: "Total Revenue",
-//         data: revenueData,
-//         backgroundColor: "rgba(75, 192, 192, 0.2)",
-//         borderColor: "rgba(75, 192, 192, 1)",
-//         borderWidth: 2,
-//       }],
-//     },
-//     options: {
-//         responsive: true,
-//         maintainAspectRatio: false,
-//       scales: {
-//         y: { beginAtZero: true, title: { display: true, text: "Revenue (PHP)" } },
-//         x: { title: { display: true, text: "Date" } },
-//       },
-//     },
-//   });
-// }
-
-// Fetch weekly revenue data
-async function fetchWeeklyRevenueData(busId) {
+// Real-time Revenue Chart
+function renderTotalRevenueChart(busId) {
   const dataRef = collection(db, `companies/${userId}/buses/${busId}/data`);
-  const dataDocs = await getDocs(dataRef);
-  const revenueData = [],
-    dateLabels = [];
-  dataDocs.forEach((doc) => {
-    dateLabels.push(doc.id);
-    revenueData.push(doc.data().total_income || 0);
-  });
-  return { revenueData, dateLabels };
-}
+  onSnapshot(dataRef, (snapshot) => {
+    const data = [];
 
-// Real-time Reservation Chart update
-// Render Total Revenue Chart
-async function renderTotalRevenueChart(busId) {
-  const { revenueData, dateLabels } = await fetchWeeklyRevenueData(busId);
-  const ctx = document.getElementById("totalRevenueChart").getContext("2d");
-
-  if (totalRevenueChart) {
-    await new Promise((resolve) => {
-      totalRevenueChart.destroy();
-      setTimeout(resolve, 10); // Small delay to ensure chart is destroyed
+    // Combine the date and revenue into an array of objects
+    snapshot.forEach((doc) => {
+      data.push({ date: doc.id, revenue: doc.data().total_income || 0 });
     });
-  }
 
-  totalRevenueChart = new Chart(ctx, {
-    type: "line",
-    data: {
-      labels: dateLabels,
-      datasets: [
-        {
-          label: "Total Revenue",
-          data: revenueData,
-          backgroundColor: "rgba(75, 192, 192, 0.2)",
-          borderColor: "rgba(75, 192, 192, 1)",
-          borderWidth: 2,
-        },
-      ],
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      scales: {
-        y: {
-          beginAtZero: true,
-          title: { display: true, text: "Revenue (PHP)" },
-        },
-        x: { title: { display: true, text: "Date" } },
+    // Sort the data by date in descending order
+    data.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    // Extract sorted dates and revenues
+    const dateLabels = data.map((item) => item.date);
+    const revenueData = data.map((item) => item.revenue);
+
+    const ctx = document.getElementById("totalRevenueChart").getContext("2d");
+
+    if (totalRevenueChart) totalRevenueChart.destroy();
+
+    totalRevenueChart = new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: dateLabels,
+        datasets: [
+          {
+            label: "Total Revenue",
+            data: revenueData,
+            backgroundColor: "rgba(75, 192, 192, 0.2)",
+            borderColor: "rgba(75, 192, 192, 1)",
+            borderWidth: 2,
+          },
+        ],
       },
-    },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: { display: true, text: "Revenue (PHP)" },
+          },
+          x: { title: { display: true, text: "Date" } },
+        },
+      },
+    });
   });
 }
 
-// Real-time Reservation Chart update
-async function setupReservationChart(busId) {
+
+// Real-time Reservation Chart
+function setupReservationChart(busId) {
   const reservationRef = doc(db, `companies/${userId}/buses/${busId}`);
   onSnapshot(reservationRef, (snapshot) => {
     const data = snapshot.data();
     if (data) {
-      const { reserved_seats, available_seats } = data;
+      const { occupied_seats, available_seats } = data;
       const ctx = document.getElementById("reservationChart");
 
-      if (reservationChart) {
-        reservationChart.destroy();
-        reservationChart = null;
-        console.log("chart destroyed");
-      }
+      if (reservationChart) reservationChart.destroy();
 
       reservationChart = new Chart(ctx, {
         type: "pie",
         data: {
-          labels: ["Reserved", "Available"],
+          labels: ["Occupied", "Available"],
           datasets: [
             {
-              data: [reserved_seats, available_seats],
+              data: [occupied_seats, available_seats],
               backgroundColor: ["#29924F", "#e0e0e0"],
             },
           ],
@@ -210,56 +226,50 @@ async function setupReservationChart(busId) {
   });
 }
 
-// Passenger Chart Update
-async function setupPassengerChart(busId, date) {
+// Real-time Passenger Chart
+function setupPassengerChart(busId, date) {
   const passengerRef = doc(
     db,
     `companies/${userId}/buses/${busId}/data/${date}`
   );
-  const snapshot = await getDoc(passengerRef);
-  if (snapshot.exists()) {
-    const { total_passengers, total_reservations } = snapshot.data();
-    const walkIn = total_passengers - total_reservations;
-    const ctx = document.getElementById("passengerChart");
+  onSnapshot(passengerRef, (snapshot) => {
+    if (snapshot.exists()) {
+      const { total_passengers, total_reservations } = snapshot.data();
+      const walkIn = total_passengers - total_reservations;
+      const ctx = document.getElementById("passengerChart");
 
-    if (passengerChart) {
-      passengerChart.destroy();
-      passengerChart = null;
+      if (passengerChart) passengerChart.destroy();
+
+      passengerChart = new Chart(ctx, {
+        type: "pie",
+        data: {
+          labels: ["Online", "Walk-in"],
+          datasets: [
+            {
+              data: [total_reservations, walkIn],
+              backgroundColor: ["#29924F", "#f39c12"],
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+        },
+      });
     }
-
-    passengerChart = new Chart(ctx, {
-      type: "pie",
-      data: {
-        labels: ["Online", "Walk-in"],
-        datasets: [
-          {
-            data: [total_reservations, walkIn],
-            backgroundColor: ["#29924F", "#f39c12"],
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-      },
-    });
-  }
+  });
 }
 
 // Event listeners for UI interactions
-document
-  .getElementById("busSelect")
-  .addEventListener("change", async (event) => {
-    const busId = event.target.value;
-    await updateDateFilter(busId);
-    renderTotalRevenueChart(busId);
-    setupReservationChart(busId);
-  });
+document.getElementById("busSelect").addEventListener("change", (event) => {
+  const busId = event.target.value;
+  listenForDateChanges(busId);
+  renderTotalRevenueChart(busId);
+  setupReservationChart(busId);
+});
 
-document
-  .getElementById("datefilter")
-  .addEventListener("change", async (event) => {
-    const busId = document.getElementById("busSelect").value;
-    const date = event.target.value;
-    setupPassengerChart(busId, date);
-  });
+document.getElementById("datefilter").addEventListener("change", (event) => {
+  const busId = document.getElementById("busSelect").value;
+  const date = event.target.value;
+  setupPassengerChart(busId, date);
+});

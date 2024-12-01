@@ -2,7 +2,6 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/fireba
 import {
   getAuth,
   onAuthStateChanged,
-  signOut,
 } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
 import {
   getFirestore,
@@ -10,10 +9,8 @@ import {
   doc,
   collection,
   getDocs,
-  updateDoc,
-  onSnapshot
+  onSnapshot,
 } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
-// import { checkForNewBusAlerts } from "../scripts/alerts";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAL0I2_e4RNhtnwavuNrncD21sZAsmslmY",
@@ -30,110 +27,88 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 async function checkuser() {
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        console.log("User is logged in:", user.uid);
+  getSubscribers();
+  // Show loading moda
 
-        const userdocref = doc(db, 'companies', user.uid);
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      console.log("User is logged in:", user.uid);
+      const loadingModal = new bootstrap.Modal(
+        document.getElementById("loadingModal")
+      );
+      loadingModal.show();
 
-        console.log(userdocref);
-        const documentsnapshot = await getDoc(userdocref);
-        console.log(documentsnapshot);
+      const userdocref = doc(db, "companies", user.uid);
+      const documentsnapshot = await getDoc(userdocref);
 
-        if(documentsnapshot.exists()){
-            console.log(documentsnapshot.data());
+      if (documentsnapshot.exists()) {
+        const data = documentsnapshot.data();
 
-            const data = documentsnapshot.data();
+        let direction = "/dashboard";
 
-            if(data.terminal_location != null && data.busdestinations != null){
-                window.location.assign('/dashboard');
-            }else{
-                window.location.assign('/destinations')
-            }
-        }else{
-            console.log("data doees not existt");
-        }
-
-        // getUserData(user.uid);
-        
-        // try {
-        //   const companyDocRef = doc(db, "companies", user.uid);
-        //   const companyDocSnap = await getDoc(companyDocRef);
-  
-        //   if (companyDocSnap.exists()) {
-        //     const companyData = companyDocSnap.data();
-        //     const notificationsCount = companyData.notifications || 0;
-  
-        //     // Reference to the busalerts subcollection
-        //     const busAlertsRef = collection(db, "companies", user.uid, "busalerts");
-  
-        //     // Set up a real-time listener on the busalerts collection
-        //     onSnapshot(busAlertsRef, async (snapshot) => {
-        //       const busAlertsCount = snapshot.size; // Number of bus alerts
-              
-        //       // Compare with the stored notifications count
-        //       if (busAlertsCount > notificationsCount) {
-        //         console.log("New bus alert detected!");
-                
-        //         // Display a notification if there are new bus alerts
-        //         showNotification("New Bus Alert", {
-        //           body: "You have new bus alerts! Check your alerts.",
-        //           icon: "/path/to/icon.png",
-        //         });
-  
-        //         // Update the notifications count in the company document
-        //         await updateDoc(companyDocRef, { notifications: busAlertsCount });
-        //       }
-        //     });
-        //   } else {
-        //     console.log("No such company document for this user.");
-        //   }
-        // } catch (error) {
-        //   console.error("Error setting up bus alerts listener:", error);
+        // Redirect based on data content
+        // if (data.terminal_location != null && data.endterminals != null) {
+        //   direction = "/dashboard";
+        //   // window.location.assign("/dashboard");
+        // } else if (data.endterminals == null) {
+        //   direction = "/destinations";
+        //   // window.location.assign("/destinations");
+        // } else if (
+        //   data.terminal_location == null &&
+        //   data.endterminals != null
+        // ) {
+        //   direction = "/terminallocation";
         // }
-  
-        // try {
-        //   // Reference to the current user's company document
-        //   const companyDocRef = doc(db, "companies", user.uid);
-        //   const companyDocSnap = await getDoc(companyDocRef);
-  
-        //   if (companyDocSnap.exists()) {
-        //     const companyData = companyDocSnap.data();
-        //     const notificationsCount = companyData.inspectionnotifications || 0;
-  
-        //     // Reference to the busalerts subcollection
-        //     const busAlertsRef = collection(db, "companies", user.uid, "inspectionalerts");
-  
-        //     // Set up a real-time listener on the busalerts collection
-        //     onSnapshot(busAlertsRef, async (snapshot) => {
-        //       const busAlertsCount = snapshot.size; // Number of bus alerts
-              
-        //       // Compare with the stored notifications count
-        //       if (busAlertsCount > notificationsCount) {
-        //         console.log("New bus alert detected!");
-                
-        //         // Display a notification if there are new bus alerts
-        //         showNotification("Inspection Alert", {
-        //           body: "A bus was inspeted",
-        //           icon: "/path/to/icon.png",
-        //         });
-  
-        //         // Update the notifications count in the company document
-        //         await updateDoc(companyDocRef, { inspectionnotifications: busAlertsCount });
-        //       }
-        //     });
-        //   } else {
-        //     console.log("No such company document for this user.");
-        //   }
-        // } catch (error) {
-        //   console.error("Error setting up bus alerts listener:", error);
-        // }
+        console.log(direction);
+        window.location.assign(direction);
       } else {
-        console.log("No user is signed in.");
-        window.location.assign("/login");
+        console.log("Data does not exist.");
       }
-    });
-  }
 
-  checkuser();
-  
+      // Hide loading modal when done
+      loadingModal.hide();
+    } else {
+      console.log("No user is signed in.");
+      loadingModal.hide(); // Hide modal before redirect
+      // window.location.assign("/");
+    }
+  });
+}
+
+let subs = 0;
+
+async function getSubscribers() {
+  const appsubslabel = document.getElementById("subscribers");
+  const webuserslabel = document.getElementById("total-sales");
+  const userslabel = document.getElementById("users");
+  webuserslabel.innerHTML = "";
+  appsubslabel.innerHTML = "";
+  userslabel.innerHTML = "";
+  const passengerCollection = collection(db, "passengers");
+  onSnapshot(passengerCollection, async (snapshot) => {
+    console.log(snapshot.size);
+    // subs = parseInt(snapshot.size);
+    console.log(subs);
+    updatesubs(snapshot.size);
+    appsubslabel.innerHTML = snapshot.size;
+    const companiescollection = collection(db, "companies");
+
+    onSnapshot(companiescollection, async (data) => {
+      webuserslabel.innerHTML = `${data.size}`;
+      updatesubs(data.size);
+      userslabel.innerHTML = `${snapshot.size + data.size}`;
+    });
+  });
+
+  // appsubslabel.innerHTML = subs.toString();
+
+  // const snapshot = await getDocs(passengerCollection);
+  // console.log(snapshot.size);
+}
+
+function updatesubs(size) {
+  subs += size;
+  console.log("Hello");
+}
+// Call checkuser on page load
+checkuser();

@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Terminal Selection</title>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <link rel="icon" href="/newlogo" type="image/x-icon" />
     <style>
       body,
       html {
@@ -15,25 +17,28 @@
       .header {
         background: linear-gradient(to right, #294935, #62af7f);
         color: white;
-        padding: 10px;
+        padding: 5px;
         text-align: left;
         width: 100%;
         position: fixed;
         top: 0;
         left: 0;
-        height: 60px;
-        line-height: 1.5;
+        height: 50px;
+        line-height: 50px;
         z-index: 1000;
         display: flex;
         align-items: center;
       }
-
       .logo {
+        margin-top: 10px;
         height: 45px;
-        margin-right: 15px;
+        margin-right: 10px;
         margin-left: 20px;
       }
-
+      .system-title {
+        font-size: 10px;
+        margin: 0;
+      }
       .system-title {
         font-size: 0.875rem;
         margin: 0;
@@ -49,8 +54,11 @@
       }
 
       #map {
-        width: 70%;
-        height: 80vh;
+        width: 80%;
+        height: 60vh;
+        margin-left: 100px;
+        margin-right: 100px;
+        padding: 50px;
       }
       #location-info {
         position: absolute;
@@ -89,7 +97,36 @@
     <div class="title">
       <h1>Select your terminal location</h1>
     </div>
+    <div style="text-align: center; margin-bottom: 10px">
+      <input
+        id="search-input"
+        type="text"
+        placeholder="Search for a location..."
+        style="
+          width: 70%;
+          padding: 10px;
+          border-radius: 5px;
+          border: 1px solid #ccc;
+        "
+        autocomplete="off"
+      />
+      <ul
+        id="autocomplete-results"
+        style="
+          list-style: none;
+          padding: 0;
+          margin: 0;
+          width: 100%;
+          position: absolute;
+          z-index: 1000;
+          background: white;
+          border: 1px solid #ccc;
+          display: none;
+        "
+      ></ul>
+    </div>
     <div id="map"></div>
+
     <div id="location-info">Click on the map to select a location</div>
     <button id="confirm-button">Confirm Location</button>
 
@@ -117,12 +154,29 @@
         }
       }
 
+      async function fetchAutocomplete(query) {
+        const apiKey = "pk.b0f5e288ece5a120e06b41f5b56d7d12";
+        const apiUrl = `https://api.locationiq.com/v1/autocomplete?key=${apiKey}&q=${encodeURIComponent(
+          query
+        )}&limit=5&dedupe=1`;
+
+        try {
+          const response = await fetch(apiUrl);
+          const data = await response.json();
+          return data; // Return the list of suggestions
+        } catch (error) {
+          console.error("Error fetching autocomplete results:", error);
+          return [];
+        }
+      }
+
       function initMap() {
         map = new google.maps.Map(document.getElementById("map"), {
           center: { lat: 16.056575294903435, lng: 120.32326714096962 },
           zoom: 10,
         });
 
+        // Add map click event
         map.addListener("click", async (e) => {
           const position = {
             lat: e.latLng.lat(),
@@ -131,23 +185,20 @@
 
           selectedLat = position.lat;
           selectedLng = position.lng;
-          console.log("Selected Location:", selectedLat, selectedLng);
 
-          // Reverse geocode the selected location
+          // Reverse geocode the location
           const address = await reverseGeocode(selectedLat, selectedLng);
 
-          // Display the address in the location-info container
+          // Update location info
           document.getElementById("location-info").textContent = address;
 
-          // Show the confirm button
+          // Show confirm button
           document.getElementById("confirm-button").style.display = "block";
 
-          // Remove existing marker if it exists
-          if (currentMarker) {
-            currentMarker.setMap(null);
-          }
+          // Remove existing marker
+          if (currentMarker) currentMarker.setMap(null);
 
-          // Add a new marker at the clicked position
+          // Add a new marker
           currentMarker = new google.maps.Marker({
             position,
             map,
@@ -155,10 +206,61 @@
         });
       }
 
-      // document.getElementById("confirm-button").addEventListener("click", () => {
-      //   alert(`Location confirmed at:\nLatitude: ${document.getElementById("location-info").textContent}`);
-      //   document.getElementById("confirm-button").style.display = "none";
-      // });
+      document
+        .getElementById("search-input")
+        .addEventListener("input", async (e) => {
+          const query = e.target.value;
+
+          if (query.length < 2) {
+            document.getElementById("autocomplete-results").style.display =
+              "none";
+            return;
+          }
+
+          const results = await fetchAutocomplete(query);
+          const resultsContainer = document.getElementById(
+            "autocomplete-results"
+          );
+          resultsContainer.innerHTML = ""; // Clear old results
+          resultsContainer.style.display = "block";
+
+          results.forEach((result) => {
+            const li = document.createElement("li");
+            li.style.padding = "10px";
+            li.style.cursor = "pointer";
+            li.textContent = result.display_name;
+
+            li.addEventListener("click", () => {
+              // Pan to selected location on map
+              const lat = parseFloat(result.lat);
+              const lon = parseFloat(result.lon);
+
+              map.panTo({ lat, lng: lon });
+              map.setZoom(15);
+
+              // Update marker
+              if (currentMarker) currentMarker.setMap(null);
+              currentMarker = new google.maps.Marker({
+                position: { lat, lng: lon },
+                map,
+              });
+
+              // Update location info
+              selectedLat = lat;
+              selectedLng = lon;
+              document.getElementById("location-info").textContent =
+                result.display_name;
+
+              // Show confirm button
+              document.getElementById("confirm-button").style.display = "block";
+
+              // Hide autocomplete suggestions
+              resultsContainer.style.display = "none";
+            });
+
+            resultsContainer.appendChild(li);
+          });
+        });
     </script>
     <script type="module" src="/terminalselectjs"></script>
   </body>

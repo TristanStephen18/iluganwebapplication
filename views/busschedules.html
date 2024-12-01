@@ -3,8 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Bus Reservation</title>
-    <link rel="icon" href="/newlogo" type="image/x-icon">
+    <title>Bus Schedules</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="icon" href="/newlogo" type="image/x-icon" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css"
@@ -21,14 +22,13 @@
       rel="stylesheet"
       href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css"
     />
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link rel="stylesheet" href="/reservationcss" />
+    <link rel="stylesheet" href="/schedscss" />
   </head>
   <body>
     <div class="d-flex">
       <div class="sidebar p-3">
         <div class="logo">
-          <img src="/newlogo" alt="Logo" class="mb-2" />
+          <img src="/newlogo" alt="Logo" />
           <span>iLugan</span>
         </div>
         <ul class="nav flex-column">
@@ -58,20 +58,20 @@
             >
           </li>
           <!-- <li class="nav-item mb-3">
-            <a href="/notifications" class="nav-link"
-              ><i class="fas fa-bell"></i>Notifications</a
-            >
-          </li> -->
+              <a href="/notifications" class="nav-link"
+                ><i class="fas fa-bell"></i>Notifications</a
+              >
+            </li> -->
           <li class="nav-item mb-3">
             <a href="/busalerts" class="nav-link"
               ><i class="fas fa-exclamation-triangle"></i>Bus Alerts</a
             >
           </li>
           <!-- <li class="nav-item mb-3">
-            <a href="/systemlogs" class="nav-link"
-              ><i class="fas fa-clipboard"></i>Logs</a
-            >
-          </li> -->
+              <a href="/systemlogs" class="nav-link"
+                ><i class="fas fa-clipboard"></i>Logs</a
+              >
+            </li> -->
           <li class="nav-item mb-3">
             <a href="/iluganmobile" class="nav-link"
               ><i class="fas fa-mobile-alt"></i> iLugan Mobile</a
@@ -89,53 +89,33 @@
       </div>
       <div class="content">
         <div class="d-flex justify-content-between align-items-center mb-4">
-          <h3>Bus Reservation</h3>
-          <div class="top-icons d-flex align-items-center">
-            <!-- <a href="/profile" class="top-icon-link me-3" title="Profile">
-              <i class="fas fa-user" style="margin-right: 20px;"></i>
-            </a> -->
-            <a href="/notifications" class="top-icon-link me-3" title="Notifications">
-              <i class="fas fa-bell" style="margin-right: 20px;"></i>
-            </a>
-            <a href="/systemlogs" class="top-icon-link" title="System Logs">
-              <i class="fas fa-cogs"></i>
-            </a>
-          </div>
+          <h2>Schedules</h2>
         </div>
-        <div>
-          <label for="busFilter">Bus Number: </label>
-          <select id="busFilter">
-            <option value="">All Buses</option>
-            <!-- Bus numbers will be dynamically populated here -->
-          </select>
+        <h5 id="noschedlabel"></h5>
+        <div
+          class="top-icons d-flex justify-content-between align-items-center"
+        >
+          <div class="" id="no-schedule-buses"></div>
         </div>
-        <table id="busReservation" class="table table-bordered">
-          <thead>
-            <tr>
-              <th>Reservation Number</th>
-              <th>Bus Number</th>
-              <th>Date and Time</th>
-              <th>Pick up Location</th>
-              <th>Destination</th>
-              <th>User ID</th>
-              <th>Seats</th>
-              <th>Type</th>
-              <th>Amount</th>
-              <th>Accomplished</th>
-            </tr>
-          </thead>
-          <tbody id="reservations"></tbody>
-        </table>
+        <div class="table-responsive">
+          <table id="schedules" class="table table-striped table-responsive">
+            <thead>
+              <tr>
+                <th>Bus Number</th>
+                <th>Origin</th>
+                <th>Destination</th>
+                <th>VIA</th>
+                <th>Departure time</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="buses">
+              <!-- Bus data rows will go here -->
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.datatables.net/2.1.8/js/jquery.dataTables.min.js"></script>
-    <script>
-      $(document).ready(function () {
-        $("#busReservation").DataTable();
-      });
-    </script>
-    <script type="module" src="/reservationsjs"></script>
-    <script type="module" src="/monitoring"></script>
+    <script type="module" src="/schedsjs"></script>
   </body>
 </html>

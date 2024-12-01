@@ -1,189 +1,132 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Notifications</title>
     <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap"
-      rel="stylesheet"
-    />
-    <style>
-      body {
-        font-family: "Open Sans", sans-serif;
-        background-color: #f5f5f5;
-      }
-      .sidebar {
-        background: linear-gradient(to bottom, #29924f, #0c2c18);
-        min-height: 100vh;
-        width: 200px;
-        position: fixed;
-        overflow-x: hidden;
-        color: white;
-      }
-      .sidebar .nav-link {
-        color: white;
-        font-size: small;
-        font-weight: bold;
-      }
-      .sidebar .nav-link:hover {
-        background-color: #217841;
-      }
-      .sidebar .nav-link i {
-        margin-right: 8px;
-      }
-      .logo {
-        font-size: 20px;
-        font-weight: bold;
-        text-align: center;
-        margin-bottom: 30px;
-      }
-      .logo img {
-        width: 25px;
-        height: 40px;
-      }
-      .content {
-        padding: 20px;
-        flex-grow: 1;
-        margin-left: 200px;
-      }
-      .notification {
-        background-color: white;
-        border-radius: 5px;
-        padding: 5px;
-        margin-bottom: 5px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        display: flex;
-        align-items: center;
-        font-size: 0.8rem;
-      }
-      .notification i {
-        color: #29924f;
-        margin-right: 5px;
-        font-size: 0.9rem;
-      }
-      .notification div {
-        flex: 1;
-      }
-      .notification p {
-        margin: 0;
-        font-size: 0.75rem;
-      }
-      .notification small {
-        font-size: 0.7rem;
-        color: #666;
-      }
-      #filterDate {
-        width: 180px;
-        border: 2px solid #217841;
-        font-size: 0.85rem;
-      }
-      #filterDate:focus {
-        border-color: #217841;
-        outline: none;
-      }
-      .pagination .page-link {
-        color: #217841;
-      }
-      .pagination .page-link:hover {
-        background-color: #f5f5f5;
-      }
-      .pagination .active .page-link {
-        background-color: #217841;
-        color: white;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="d-flex">
-      <div class="sidebar p-3">
-        <div class="logo">
-          <img src="/logo" alt="Logo" />
-          <span>iLugan</span>
-        </div>
-        <ul class="nav flex-column">
-          <li class="nav-item mb-3">
-            <a href="/dashboard" class="nav-link"
-              ><i class="fas fa-tachometer-alt"></i>Dashboard</a
-            >
-          </li>
-          <li class="nav-item mb-3">
-            <a href="/analytics" class="nav-link"
-              ><i class="fas fa-chart-line"></i>Analytics and Reports</a
-            >
-          </li>
-          <li class="nav-item mb-3">
-            <a href="/tracker" class="nav-link"
-              ><i class="fas fa-map-marker-alt"></i>Bus Location Tracker</a
-            >
-          </li>
-          <li class="nav-item mb-3">
-            <a href="/reservations" class="nav-link"
-              ><i class="fas fa-ticket-alt"></i>Reservation Control</a
-            >
-          </li>
-          <li class="nav-item mb-3">
-            <a href="/busadding" class="nav-link"
-              ><i class="fas fa-calendar-alt"></i>Bus Scheduling</a
-            >
-          </li>
-          <li class="nav-item mb-3">
-            <a href="/notifications" class="nav-link"
-              ><i class="fas fa-bell"></i>Notifications</a
-            >
-          </li>
-          <li class="nav-item mb-3">
-            <a href="/systemlogs" class="nav-link"
-              ><i class="fas fa-cog"></i>Settings</a
-            >
-          </li>
-          <li class="nav-item mb-3" id="logout">
-            <a href="#" class="nav-link"
-              ><i class="fas fa-sign-out-alt"></i>Log Out</a
-            >
-          </li>
-        </ul>
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css"
+  />
+  <link rel="icon" href="/newlogo" type="image/x-icon">
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+  />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap"
+    rel="stylesheet"
+  />
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="/notificationscss">
+</head>
+<body>
+    <div class="sidebar p-3">
+      <div class="logo">
+        <img src="/newlogo" alt="Logo" class="mb-2" />
+        <span>iLugan</span>
+      </div>
+      <ul class="nav flex-column">
+        <li class="nav-item mb-3">
+          <a href="/dashboard" class="nav-link"
+            ><i class="fas fa-tachometer-alt"></i>Dashboard</a
+          >
+        </li>
+        <li class="nav-item mb-3">
+          <a href="/terminals" class="nav-link"
+            ><i class="fas fa-map"></i>Terminal Management</a
+          >
+        </li>
+        <li class="nav-item mb-3">
+          <a href="/tracker" class="nav-link"
+            ><i class="fas fa-map-marker-alt"></i>Bus Location Tracker</a
+          >
+        </li>
+        <li class="nav-item mb-3">
+          <a href="/reservations" class="nav-link"
+            ><i class="fas fa-ticket-alt"></i>Reservation Control</a
+          >
+        </li>
+        <li class="nav-item mb-3">
+          <a href="/busadding" class="nav-link"
+            ><i class="fas fa-bus"></i>Buses</a
+          >
+        </li>
+        <!-- <li class="nav-item mb-3">
+          <a href="/notifications" class="nav-link"
+            ><i class="fas fa-bell"></i>Notifications</a
+          >
+        </li> -->
+        <li class="nav-item mb-3">
+          <a href="/busalerts" class="nav-link"
+            ><i class="fas fa-exclamation-triangle"></i>Bus Alerts</a
+          >
+        </li>
+        <!-- <li class="nav-item mb-3">
+          <a href="/systemlogs" class="nav-link"
+            ><i class="fas fa-clipboard"></i>Logs</a
+          >
+        </li> -->
+        <li class="nav-item mb-3">
+          <a href="/iluganmobile" class="nav-link"
+            ><i class="fas fa-mobile-alt"></i> iLugan Mobile</a
+          >
+        </li>
+        <li class="nav-item mb-3">
+          <a href="/analytics" class="nav-link"
+            ><i class="fas fa-chart-line"></i>Analytics and Reports</a
+          >
+        </li>
+        <li class="nav-item mb-3" id="logout">
+          <a class="nav-link"><i class="fas fa-sign-out-alt"></i>Log Out</a>
+        </li>
+      </ul>
       </div>
       <div class="content">
-        <h2>Bus Emergencies</h2>
-        <input
-          type="text"
-          id="searchInput"
-          placeholder="Search by bus number or description"
-          class="form-control mb-3"
-        />
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h3>Notifications</h3>
+          <div class="top-icons d-flex align-items-center">
+            <!-- <a href="/profile" class="top-icon-link me-3" title="Profile">
+              <i class="fas fa-user" style="margin-right: 20px;"></i>
+            </a> -->
+            <a href="/notifications" class="top-icon-link me-3" title="Notifications">
+              <i class="fas fa-bell" style="margin-right: 20px;"></i>
+            </a>
+            <a href="/systemlogs" class="top-icon-link" title="System Logs">
+              <i class="fas fa-cogs"></i>
+            </a>
+          </div>
+        </div>
+        <!-- <input type="text" id="searchInput" placeholder="Search by bus number or description" class="form-control mb-3" /> -->
 
-        <!-- Date filter field -->
-        <input
-          type="date"
-          id="filterDate"
-          class="form-control mb-3"
-          onchange="filterNotifications()"
-        />
-        <div id="notifications"></div>
+        <div class="container mt-3">
+          <ul class="nav nav-tabs" id="notificationTabs">
+            <li class="nav-item">
+              <a class="nav-link active" id="busupdates-tab" data-bs-toggle="tab" href="#busupdates"><i class="fas fa-bus" style="margin-right: 20px;"></i>Bus Updates</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" id="inspections-tab" data-bs-toggle="tab" href="#inspections"><i class="fas fa-user-tie" style="margin-right: 20px;"></i>Inspections</a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="tab-content">
+          <div class="tab-pane fade show active" id="busupdates">
+            <div id="busnotifications"></div>
+          </div>
+          <div class="tab-pane fade" id="inspections">
+            <div id="inspectionnotifications"></div>
+          </div>
+        </div>
+
         <nav aria-label="Page navigation">
           <ul class="pagination justify-content-center" id="pagination"></ul>
         </nav>
       </div>
     </div>
-    <script>
-      // function filterNotifications() {
-      //   const inputDate = document.getElementById('filterDate').value;
-      //   const notifications = document.querySelectorAll('.notification');
-      //   notifications.forEach(notification => {
-      //     const notificationDate = notification.querySelector('small').textContent;
-      //     notification.style.display = notificationDate === inputDate ? '' : 'none';
-      //   });
-      // }
-    </script>
-    <script type="module" src="/notificationsjs"></script>
-  </body>
+    <script type="module" src="/cnotifsjs"></script>
+    <script type="module" src="/monitoring"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+</body>
 </html>

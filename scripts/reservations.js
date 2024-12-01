@@ -2,11 +2,14 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/fireba
 import {
   getAuth,
   onAuthStateChanged,
+  signOut
 } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
 import {
   getFirestore,
   collection,
   getDocs,
+  updateDoc,
+  doc
 } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -23,14 +26,18 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+
+let userId;
+
 // Authenticate and fetch data
 onAuthStateChanged(auth, (user) => {
   if (user) {
-    const userId = user.uid;
+    userId = user.uid;
     // fetchNotifications(userId);
     displayreservations(user.uid);
   } else {
     console.log("User is not logged in");
+    // window.location.assign('/login');
   }
 });
 
@@ -41,6 +48,28 @@ logoutbtn.addEventListener("click", () => {
   console.log("Clicked logout btn");
   logout();
 });
+
+async function logout() {
+  const userDocRef = doc(db, "companies", userId);
+  signOut(auth)
+    .then(() => {
+      Swal.fire({
+        title: "Ilugan",
+        text: "Log out successful",
+        icon: "success",
+      }).then(async (result)=>{
+        await updateDoc(userDocRef, {status: 'offline'});
+        location.assign("/login");
+      });
+    })
+    .catch((error) => {
+      Swal.fire({
+        title: "ERROR!!!",
+        text: error.message,
+        icon: "error",
+      });
+    });
+}
 
 const busFilter = document.getElementById("busFilter");
 
@@ -57,13 +86,17 @@ async function displayreservations(uid) {
       busFilter.appendChild(option);
     });
 
+    // Get today's date without time
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Reset to the start of the day
+
     querySnapshot.docs.map(async (doc) => {
       const reservationscollection = collection(db, `companies/${uid}/buses/${doc.id}/reservations`);
       const reservationsnapshot = await getDocs(reservationscollection);
 
       reservationsnapshot.docs.map((x) => {
         const data = x.data();
-        
+
         // Format the timestamp
         const datetime = new Date(data.date_time.seconds * 1000);
         const formattedDateTime = datetime.toLocaleString('en-US', {
@@ -72,27 +105,33 @@ async function displayreservations(uid) {
           year: 'numeric',
           hour: 'numeric',
           minute: 'numeric',
-          hour12: true
+          hour12: true,
         });
 
-        // Create a new row for each reservation
-        const reservationRow = `
-          <tr data-bus-number="${doc.id}">
-            <td>${x.id}</td>
-            <td>${doc.id}</td>
-            <td>${formattedDateTime}</td>
-            <td>${data.from}</td>
-            <td>${data.to}</td>
-            <td>${data.passengerId}</td>
-            <td>${data.seats_reserved}</td>
-            <td>${data.type || "N/A"}</td>
-            <td>${data.amount}</td>
-            <td>${data.accomplished}</td>
-          </tr>
-        `;
-        
-        // Append the row to the table body
-        document.getElementById("reservations").insertAdjacentHTML('beforeend', reservationRow);
+        // Check if the reservation date is today
+        const reservationDate = new Date(datetime);
+        reservationDate.setHours(0, 0, 0, 0); // Reset time for comparison
+
+        if (reservationDate.getTime() === today.getTime()) {
+          // Create a new row for today's reservation
+          const reservationRow = `
+            <tr data-bus-number="${doc.id}">
+              <td>${x.id}</td>
+              <td>${doc.id}</td>
+              <td>${formattedDateTime}</td>
+              <td>${data.from}</td>
+              <td>${data.to}</td>
+              <td>${data.passengerId}</td>
+              <td>${data.seats_reserved}</td>
+              <td>${data.type || "N/A"}</td>
+              <td>${data.amount}</td>
+              <td>${data.accomplished}</td>
+            </tr>
+          `;
+
+          // Append the row to the table body
+          document.getElementById("reservations").insertAdjacentHTML('beforeend', reservationRow);
+        }
       });
     });
 
@@ -103,6 +142,7 @@ async function displayreservations(uid) {
     console.log(error);
   }
 }
+
 
 busFilter.addEventListener("change", function () {
     const selectedBus = this.value;

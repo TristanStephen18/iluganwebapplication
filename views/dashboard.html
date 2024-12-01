@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard</title>
+    <link rel="icon" href="/newlogo" type="image/x-icon">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css"
@@ -20,232 +22,7 @@
       href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap"
       rel="stylesheet"
     />
-    <style>
-      body {
-        font-family: "Open Sans", sans-serif;
-        background-color: #f5f5f5;
-        margin: 0;
-      }
-      .sidebar {
-        background: linear-gradient(to bottom, #29924f, #0c2c18);
-        min-height: 100vh;
-        width: 200px;
-        color: white;
-        position: fixed;
-        overflow-x: hidden;
-        transition: width 0.3s ease;
-      }
-      .sidebar .nav-link {
-        color: white;
-        font-size: small;
-        font-weight: bold;
-      }
-      .sidebar .nav-link:hover {
-        background-color: #217841;
-      }
-      .sidebar .nav-link i {
-        margin-right: 8px;
-      }
-      .logo {
-        font-size: 20px;
-        font-weight: bold;
-        text-align: center;
-        margin-bottom: 20px;
-      }
-      .logo img {
-        width: 20px;
-        height: 40px;
-        margin-top: 10px;
-      }
-      #maincontent {
-        margin-left: 220px;
-        padding: 20px;
-        transition: margin-left 0.3s ease;
-      }
-      .main-container,
-      .additional-container {
-        background-color: white;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        padding: 20px;
-      }
-      .main-container {
-        width: 100%;
-        margin-bottom: 20px;
-      }
-      .additional-container {
-        margin-left: 20px;
-        margin-top: 20px;
-      }
-      .card {
-        border: 1px solid green;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        padding: 10px;
-        text-align: center;
-        font-size: 12px;
-        background-color: white;
-      }
-      .card i {
-        font-size: 24px;
-        color: #1fbf83;
-        margin-bottom: 10px;
-      }
-      .container-title,
-      .container-title1 {
-        color: black;
-        font-weight: bold;
-        font-size: 20px;
-      }
-      .square-card,
-      .rectangle-card {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-      }
-
-      .map-container {
-        height: 35vh;
-        margin-left: 170px;
-      }
-
-      #map {
-        margin-left: 20px;
-        padding: 20px;
-        height: 87%;
-        width: 90%;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-      }
-
-      /* Responsive adjustments for the additional containers */
-      @media (max-width: 768px) {
-        .map-container,
-        .additional-container {
-          width: 100%;
-          margin-left: 0;
-        }
-      }
-
-      /* Responsive Adjustments */
-      @media (max-width: 1200px) {
-        #maincontent {
-          margin-left: 200px;
-        }
-      }
-
-      @media (max-width: 992px) {
-        .main-container,
-        .additional-container {
-          width: 100%;
-          margin-left: 0;
-        }
-        .sidebar {
-          width: 180px;
-        }
-        #maincontent {
-          margin-left: 180px;
-          margin-right: 30px;
-        }
-      }
-
-      @media (max-width: 768px) {
-        .sidebar {
-          width: 60px;
-        }
-        #maincontent {
-          margin-left: 70px;
-        }
-        .sidebar .nav-link,
-        .logo span {
-          display: none;
-        }
-        .sidebar .nav-link i {
-          margin: 0;
-        }
-      }
-
-      @media (max-width: 576px) {
-        .d-flex {
-          flex-direction: column;
-        }
-        #maincontent {
-          margin: 0;
-          padding: 10px;
-        }
-        .main-container,
-        .additional-container {
-          width: 100%;
-          margin: 10px 0;
-        }
-        .container-title,
-        .container-title1 {
-          font-size: 15px;
-        }
-        .sidebar {
-          position: relative;
-          width: 100%;
-          height: auto;
-          min-height: auto;
-        }
-        .sidebar .logo {
-          text-align: left;
-          padding-left: 10px;
-        }
-      }
-      .passenger-container,
-      .income-container {
-        background-color: white;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        padding: 20px;
-        margin: 20px 0;
-        width: 100%;
-      }
-
-      /* Make the graphs responsive within the containers */
-      #passengerChart,
-      #incomeChart {
-        width: 100% !important;
-        height: auto !important;
-        max-height: 300px;
-      }
-
-      /* Responsive adjustments */
-      @media (max-width: 992px) {
-        .passenger-container,
-        .income-container {
-          margin-top: 10px;
-        }
-        #passengerChart,
-        #incomeChart {
-          max-height: 250px;
-        }
-      }
-
-      @media (max-width: 768px) {
-        .passenger-container,
-        .income-container {
-          padding: 15px;
-        }
-        #passengerChart,
-        #incomeChart {
-          max-height: 200px;
-        }
-      }
-
-      @media (max-width: 576px) {
-        .passenger-container,
-        .income-container {
-          padding: 10px;
-        }
-        #passengerChart,
-        #incomeChart {
-          max-height: 180px;
-        }
-      }
-    </style>
+    <link rel="stylesheet" href="/dashboardcss">
   </head>
   <body>
     <div class="d-flex">
@@ -256,13 +33,13 @@
         </div>
         <ul class="nav flex-column">
           <li class="nav-item mb-3">
-            <a href="#" class="nav-link"
+            <a href="/dashboard" class="nav-link"
               ><i class="fas fa-tachometer-alt"></i>Dashboard</a
             >
           </li>
           <li class="nav-item mb-3">
-            <a href="/analytics" class="nav-link"
-              ><i class="fas fa-chart-line"></i>Analytics and Reports</a
+            <a href="/terminals" class="nav-link"
+              ><i class="fas fa-map"></i>Terminal Management</a
             >
           </li>
           <li class="nav-item mb-3">
@@ -277,17 +54,32 @@
           </li>
           <li class="nav-item mb-3">
             <a href="/busadding" class="nav-link"
-              ><i class="fas fa-calendar-alt"></i>Bus Scheduling</a
+              ><i class="fas fa-bus"></i>Buses</a
             >
           </li>
-          <li class="nav-item mb-3">
+          <!-- <li class="nav-item mb-3">
             <a href="/notifications" class="nav-link"
               ><i class="fas fa-bell"></i>Notifications</a
             >
+          </li> -->
+          <li class="nav-item mb-3">
+            <a href="/busalerts" class="nav-link"
+              ><i class="fas fa-exclamation-triangle"></i>Bus Alerts</a
+            >
+          </li>
+          <!-- <li class="nav-item mb-3">
+            <a href="/systemlogs" class="nav-link"
+              ><i class="fas fa-clipboard"></i>Logs</a
+            >
+          </li> -->
+          <li class="nav-item mb-3">
+            <a href="/iluganmobile" class="nav-link"
+              ><i class="fas fa-mobile-alt"></i> iLugan Mobile</a
+            >
           </li>
           <li class="nav-item mb-3">
-            <a href="/systemlogs" class="nav-link"
-              ><i class="fas fa-cog"></i>Settings</a
+            <a href="/analytics" class="nav-link"
+              ><i class="fas fa-chart-line"></i>Analytics and Reports</a
             >
           </li>
           <li class="nav-item mb-3" id="logout">
@@ -295,9 +87,24 @@
           </li>
         </ul>
       </div>
+      
 
       <div class="flex-grow-1 p-4 d-flex flex-column" id="maincontent">
-        <h2 id="cname">Loading data...</h2>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h3 id="cname">Loading Data...</h3>
+          <div class="top-icons d-flex align-items-center">
+            <!-- <a href="/profile" class="top-icon-link me-3" title="Profile">
+              <i class="fas fa-user" style="margin-right: 20px;"></i>
+            </a> -->
+            <a href="/notifications" class="top-icon-link me-3" title="Notifications">
+              <i class="fas fa-bell" style="margin-right: 20px;"></i>
+            </a>
+            <a href="/systemlogs" class="top-icon-link" title="System Logs">
+              <i class="fas fa-cogs"></i>
+            </a>
+          </div>
+        </div>
+        
         <div class="row">
           <div class="main-container mb-4 col-md-8">
             <h3 class="container-title">Analytics Overview</h3>
@@ -305,42 +112,25 @@
               <div class="col-md-3">
                 <div class="card square-card text-center">
                   <i class="fa-solid fa-people-group"></i>
-                  <h5>Total Passenger</h5>
-                  <h3 id="tpassenger">Loading data...</h3>
+                  <h6>Total Passenger</h6>
+                  <h4 id="tpassenger">Loading data...</h4>
                 </div>
               </div>
               <div class="col-md-3">
                 <div class="card square-card text-center">
                   <i class="fas fa-ticket-alt"></i>
-                  <h5>Total Reservation</h5>
-                  <h3 id="treservation">Loading data...</h3>
+                  <h6>Total Reservation</h6>
+                  <h4 id="treservation">Loading data...</h4>
                 </div>
               </div>
               <div class="col-md-3">
                 <div class="card square-card text-center">
                   <i class="fas fa-bus"></i>
-                  <h5>Buses</h5>
-                  <h3 id="nbuses">Loading data...</h3>
+                  <h6>Buses</h6>
+                  <h4 id="nbuses">Loading data...</h4>
                 </div>
               </div>
             </div>
-          </div>
-          <div class="additional-container mb-4 col-md-4">
-            <h4 class="container-title1" style="margin-bottom: 30px">
-              Bus Employees
-            </h4>
-            <div class="card rectangle-card text-center">
-              <h6 id="connum">Conductors:</h6>
-              <!-- <h5 id="connum">...</h5> -->
-            </div>
-            <div class="card rectangle-card text-justify">
-              <h6 id="insnum">Inspectors:</h6>
-              <!-- <h5 id="insnum">...</h5> -->
-            </div>
-          </div>
-          <div class="additional-container mb-4 col-md-4 map-container">
-            <h4 class="container-title1">Terminal Location</h4>
-            <div id="map"></div>
           </div>
         </div>
         <div>
@@ -375,7 +165,7 @@
       defer
     ></script>
 
-    <script>
+    <!-- <script>
       let currentMarker = null;
       let map;
       let selectedLat = null;
@@ -387,8 +177,10 @@
           zoom: 8,
         });
       }
-    </script>
+    </script> -->
 
     <script type="module" src="/dashboardjs"></script>
+    <script type="module" src="/monitoring"></script>
   </body>
 </html>
+

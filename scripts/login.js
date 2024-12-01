@@ -2,6 +2,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/fireba
 import {
   getAuth,
   signInWithEmailAndPassword,
+  sendPasswordResetEmail,
 } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
 import {
   getFirestore,
@@ -9,7 +10,8 @@ import {
   doc,
   updateDoc
 } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
-// import Swal from "sweetalert2/dist/sweetalert2.js";
+
+// import {bootstrap} from "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAL0I2_e4RNhtnwavuNrncD21sZAsmslmY",
@@ -25,57 +27,76 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-const lgin = document.querySelector("#login-form");
+// Reference to login form and modal
+const loginForm = document.querySelector("#login-form");
+const loadingModal = new bootstrap.Modal(document.getElementById("loadingModal"), {
+  backdrop: 'static',
+  keyboard: false,
+});
 
-lgin.addEventListener("submit", (e) => {
+
+loginForm.addEventListener("submit", (e) => {
   e.preventDefault();
 
-  const email = lgin["email"].value;
-  const password = lgin["password"].value;
+  // Show the loading modal
+  loadingModal.show();
+
+  const email = loginForm["email"].value;
+  const password = loginForm["password"].value;
+  let counter;
 
   signInWithEmailAndPassword(auth, email, password)
     .then(async (userCredential) => {
       const user = userCredential.user;
       const userDocRef = doc(db, "companies", user.uid);
+      counter =  await getlogincounter(user.uid);
       
       try {
         const userDoc = await getDoc(userDocRef);
         
-        if (userDoc.exists()) {
-          const terminalLocation = userDoc.data().terminal_location;
-          
-          if (terminalLocation !== null) {
-            await updateDoc(userDocRef, {status: 'online'});
-            window.location.assign("/dashboard");
-          } else {
-            window.location.assign("/destinations");
-          }
-        } else {
-          console.log('Company data was not found on this user');
-          Swal.fire({
-            title: "Error",
-            text: "Company data not found for this user.",
-            icon: "error",
-            confirmButtonText: "OK",
-          });
-        }
+        loadingModal.hide();  // Hide modal on successful login
+        window.location.assign("/dashboard");
       } catch (error) {
+        loadingModal.hide();  // Hide modal on error
         Swal.fire({
           title: "Error",
           text: error.message,
           icon: "error",
           confirmButtonText: "OK",
         });
-        console.log('Error'+ error.message);
+        console.log('Error: ' + error.message);
       }
     })
     .catch((error) => {
+      loadingModal.hide();  // Hide modal if authentication fails
       Swal.fire({
         title: "Error",
         text: error.message,
         icon: "error",
-        confirmButtonText: "Cool",
+        confirmButtonText: "OK",
       });
-      console.log('Error'+ error.message);
+      console.log('Error: ' + error.message);
     });
+});
+
+async function getlogincounter(uid) {
+  const userDocRef = doc(db, "companies", uid);
+  const userDoc = await getDoc(userDocRef);
+
+  console.log(userDoc);
+
+  return userDoc.data().logincounter;
+}
+
+const forgotpassbtn = document.getElementById('forgotpassbtn');
+forgotpassbtn.addEventListener('click', ()=>{
+  const email = document.getElementById('email').value;
+  console.log(email);
+  if(email){
+    sendPasswordResetEmail(auth, email).then(()=>{
+      console.log(`Password reset email has been sent to ${email}`);
+    });
+  }else{
+    alert('Enter your email first');
+  }
 });

@@ -2,11 +2,15 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/fireba
 import {
   getAuth,
   onAuthStateChanged,
+  signOut
 } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
 import {
   getFirestore,
   collection,
-  getDocs,
+  onSnapshot,
+  doc,
+  updateDoc,
+  setDoc
 } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -23,123 +27,215 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Authenticate and fetch data
+let userId;
+let notificationsData = [];
+let selectedNotification = null;
+const itemsPerPage = 10;
+
 onAuthStateChanged(auth, (user) => {
   if (user) {
-    const userId = user.uid;
-    fetchNotifications(userId);
+    userId = user.uid;
+    listenForNotifications(userId);
   } else {
     console.log("User is not logged in");
   }
 });
 
-function displayNotification(busnumber, description, emergency, date) {
-    const notificationsContainer = document.getElementById("notifications");
-    const notificationElement = document.createElement("div");
-    notificationElement.className = "notification";
+document.querySelector("#logout").addEventListener("click", logout);
 
-    notificationElement.innerHTML = `
-      <i class="fas fa-bell"></i>
-      <div>
-        <strong>${busnumber} - ${emergency ? "Emergency" : "Normal"}</strong>
-        <p>${description}</p>
-        <small>${date}</small>
-      </div>
-    `;
-    notificationsContainer.appendChild(notificationElement);
+async function logout() {
+  const userDocRef = doc(db, "companies", userId);
+  await updateDoc(userDocRef, { status: "offline" });
+  await signOut(auth);
+  Swal.fire("Ilugan", "Log out successful", "success").then(() => location.assign("/login"));
+}
+
+// Listen for click on "Respond" button and open modal
+function displayNotification(busnumber, description, emergency, date, responded, notificationId) {
+  const container = responded ? document.getElementById("respondedNotifications") : document.getElementById("pendingNotifications");
+  const notificationElement = document.createElement("div");
+  notificationElement.className = "notification";
+  // console.log(emergency);
+
+  notificationElement.innerHTML = `
+    <i class="fas fa-exclamation-triangle" style="margin-left: 10px;"></i>
+    <div id="alertdiv">
+      <strong style="text-transform: uppercase;">${busnumber} - ${emergency}</strong>
+      <p>${description}</p>
+      <small>${date}</small>
+      ${!responded ? `<button class="btn btn-sm btn-success mt-2 respond-btn" id="rbtn" data-id="${notificationId}" busnum = "${busnumber}">Respond</button>` : ""}
+    </div>
+  `;
+  
+  container.appendChild(notificationElement);
+}
+
+// Add a single event listener to handle all "Respond" buttons using event delegation
+document.getElementById("pendingNotifications").addEventListener("click", (event) => {
+  const respondBtn = event.target.closest(".respond-btn");
+  if (respondBtn) {
+    const notificationId = respondBtn.getAttribute("data-id");
+    const busnum = respondBtn.getAttribute("busnum");
+    console.log(busnum);
+    selectedNotification = notificationsData.find(notification => notification.id === notificationId);
+    document.getElementById('responseModalLabel').innerHTML = `Respond to ${busnum}'s emergency`;
+
+    // Show the modal explicitly using Bootstrap’s Modal API
+    const responseModal = new bootstrap.Modal(document.getElementById("responseModal"), {
+      keyboard: false
+    });
+    responseModal.show();
   }
-
-const logoutbtn = document.querySelector("#logout");
-console.log(logoutbtn);
-logoutbtn.addEventListener("click", () => {
-  console.log("Clicked logout btn");
-  logout();
 });
 
-let notificationsData = []; // Store fetched notifications
-let currentPage = 1; // Track current page
-const itemsPerPage = 10; // Number of notifications per page
 
-// Update display function with filters and pagination
+document.getElementById("sendResponseBtn").addEventListener("click", async () => {
+  const responseText = document.getElementById("responseText").value;
+
+  // Check if the selected notification is defined and has required properties
+  if (!selectedNotification) {
+    console.error("No selected notification found.");
+    return;
+  }
+
+  const { busnumber, id: notificationId } = selectedNotification;
+  const userDocRef = doc(db, "companies", userId); // Assuming `userId` is already set
+
+  // Debugging output to check variable values
+  console.log("Selected Notification:", selectedNotification);
+  console.log("userId:", userId);
+  console.log("busnumber:", busnumber);
+  console.log("notificationId:", notificationId);
+
+  if (!userId || !busnumber || !notificationId) {
+    console.error("One or more required parameters are missing.");
+    Swal.fire({
+      title: "Error",
+      text: "Could not send response due to missing information.",
+      icon: "error",
+    });
+    return;
+  }
+
+  // Reference to the responses collection
+  const responseRef = doc(db, `companies/${userId}/buses/${busnumber}/responses`, notificationId);
+  const busref = doc(db, `companies/${userId}/buses`, busnumber);
+  console.log(busref);
+
+  try {
+    // Send response to Firebase
+    await setDoc(responseRef, { response: responseText, respondedAt: new Date() });
+    await updateDoc(busref, {
+      latest_response: responseText
+    });
+
+    // Update the notification as responded
+    await updateDoc(doc(db, `companies/${userId}/busalerts`, notificationId), { responded: true });
+
+    // Clear response text and close modal
+    document.getElementById("responseText").value = "";
+    bootstrap.Modal.getInstance(document.getElementById("responseModal")).hide();
+
+    Swal.fire({
+      title: "Response Sent",
+      text: "Your response has been sent successfully.",
+      icon: "success",
+    });
+    addtosystemlogs(userId, busnumber);
+  } catch (error) {
+    console.error("Error sending response:", error);
+    Swal.fire({
+      title: "Error",
+      text: "There was an error sending the response.",
+      icon: "error",
+    });
+  }
+});
+
+
 function displayNotifications() {
-  const searchInput = document
-    .getElementById("searchInput")
-    .value.toLowerCase();
-  const filterDate = document.getElementById("filterDate").value;
+  document.getElementById("pendingNotifications").innerHTML = "";
+  document.getElementById("respondedNotifications").innerHTML = "";
+  const searchInput = document.getElementById("searchInput").value.toLowerCase();
 
-  const filteredData = notificationsData.filter((notification) => {
-    const matchesSearch =
-      notification.busnumber.toLowerCase().includes(searchInput) ||
-      notification.description.toLowerCase().includes(searchInput);
-
-    const matchesDate = filterDate ? notification.date === filterDate : true; // No date filter applied
-
-    return matchesSearch && matchesDate;
+  notificationsData.filter(notification => 
+    notification.busnumber.toLowerCase().includes(searchInput) ||
+    notification.description.toLowerCase().includes(searchInput)
+  ).forEach(notification => {
+    console.log(notification.emergency);
+    displayNotification(notification.busnumber, notification.description, notification.emergency, notification.date, notification.responded || false, notification.id);
   });
-
-  paginateNotifications(filteredData);
 }
 
-// Function to create pagination controls
-function paginateNotifications(data) {
-  const notificationsContainer = document.getElementById("notifications");
-  const paginationContainer = document.getElementById("pagination");
-  notificationsContainer.innerHTML = ""; // Clear current notifications
-  paginationContainer.innerHTML = ""; // Clear pagination buttons
+const options = {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+  hour: 'numeric',
+  minute: 'numeric',
+  hour12: true // 12-hour format
+};
 
-  const totalPages = Math.ceil(data.length / itemsPerPage);
-  const start = (currentPage - 1) * itemsPerPage;
-  const paginatedData = data.slice(start, start + itemsPerPage);
-
-  paginatedData.forEach((notification) => {
-    displayNotification(
-      notification.busnumber,
-      notification.description,
-      notification.emergency,
-      notification.date
-    );
-  });
-
-  // Create pagination buttons
-  for (let i = 1; i <= totalPages; i++) {
-    const pageItem = document.createElement("li");
-    pageItem.className = `page-item ${i === currentPage ? "active" : ""}`;
-    const pageLink = document.createElement("a");
-    pageLink.className = "page-link";
-    pageLink.textContent = i;
-    pageLink.addEventListener("click", () => {
-      currentPage = i;
-      paginateNotifications(data);
+function listenForNotifications(uid) {
+  const alertsRef = collection(db, `companies/${uid}/busalerts`);
+  onSnapshot(alertsRef, (snapshot) => {
+    notificationsData = snapshot.docs.map(doc => {
+      const data = doc.data();
+      const notifdate = new Date(`${data.date.toDate()}`);
+      const formatteddate = notifdate.toLocaleString('en-US', options);
+      return {
+        busnumber: data.busnumber,
+        description: data.description,
+        emergency: data.emergency,
+        responded: data.responded || false,
+        date: formatteddate,
+        rawDate: notifdate, // Keep raw date for sorting
+        id: doc.id
+      };
     });
-    pageItem.appendChild(pageLink);
-    paginationContainer.appendChild(pageItem);
+
+    // Sort notifications by rawDate (most recent first)
+    notificationsData.sort((a, b) => b.rawDate - a.rawDate);
+
+    displayNotifications();
+  });
+}
+
+
+document.getElementById("pendingNotifications").addEventListener("click", (event) => {
+  const respondBtn = event.target.closest("button");
+  if (respondBtn && respondBtn.dataset.id) {
+    selectedNotification = notificationsData.find(notification => notification.id === respondBtn.dataset.id);
+  }
+});
+
+document.getElementById("searchInput").addEventListener("input", displayNotifications);
+
+async function addtosystemlogs(uid, busnum) {
+  console.log('System logs function');
+  try {
+    // Create a reference to a new document in the 'systemlogs' collection
+    const logRef = doc(collection(db, `companies/${uid}/systemlogs`));
+    
+    await setDoc(logRef, {
+      log: `You responded to (${busnum})'s emergency`,
+      date: Date()
+    });
+    console.log("A new system log was added");
+
+    showNotification('System Log', {
+      body: `You responded to (${busnum})'s emergency`,
+      icon: '/logo'
+    });
+  } catch (error) {
+    console.log(error);
   }
 }
 
-// Fetch notifications from Firestore and initialize data
-async function fetchNotifications(uid) {
-  const alertsRef = collection(db, `companies/${uid}/busalerts`);
-  const querySnapshot = await getDocs(alertsRef);
-
-  notificationsData = querySnapshot.docs.map((doc) => {
-    const { busnumber, description, emergency } = doc.data();
-    return {
-      busnumber,
-      description,
-      emergency,
-      date: doc.id, // Assuming document ID represents the date
-    };
-  });
-
-  displayNotifications(); // Display with initial data
+function showNotification(title, options) {
+  if (Notification.permission === "granted") {
+    new Notification(title, options).addEventListener('click', ()=>{
+      window.location.assign('/systemlogs');
+    });
+  }
 }
-
-// Add event listeners to search input and filter date
-document
-  .getElementById("searchInput")
-  .addEventListener("input", displayNotifications);
-document
-  .getElementById("filterDate")
-  .addEventListener("change", displayNotifications);
-
-// fetchNotifications()
