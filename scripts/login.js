@@ -39,7 +39,7 @@ loginForm.addEventListener("submit", (e) => {
   e.preventDefault();
 
   // Show the loading modal
-  loadingModal.show();
+  // loadingModal.show();
 
   const email = loginForm["email"].value;
   const password = loginForm["password"].value;
@@ -53,9 +53,18 @@ loginForm.addEventListener("submit", (e) => {
       
       try {
         const userDoc = await getDoc(userDocRef);
+        console.log(userDoc);
+        console.log(userDoc.data().company_name);
         
         loadingModal.hide();  // Hide modal on successful login
-        window.location.assign("/dashboard");
+        Swal.fire({
+          title: "Log in successful",
+          text: `Welcome ${userDoc.data().company_name}`,
+          icon: "success",
+          confirmButtonText: "Continue",
+        }).then(()=>{
+          window.location.assign('/dashboard');
+        });
       } catch (error) {
         loadingModal.hide();  // Hide modal on error
         Swal.fire({

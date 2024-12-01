@@ -74,6 +74,9 @@ app.get('/scheds', (req, res)=>{
     res.sendFile(path.join(viewrdr, 'busschedules.html'));
 })
 
+app.get('/allreservations', (req, res)=>{
+    res.sendFile(path.join(viewrdr, 'allreservations.html'));
+})
 //Scripts
 
 app.get('/loginchecker', (req, res)=>{
@@ -146,6 +149,9 @@ app.get('/terminaljs', (req, res)=>{
 app.get('/schedsjs', (req, res)=>{
     res.sendFile(path.join(scriptdir, 'scheds.js'));
 })
+app.get('/allreserjs', (req, res)=>{
+    res.sendFile(path.join(scriptdir, 'allreservations.js'));
+})
 //css
 app.get('/indexcss', (req, res)=>{
     res.sendFile(path.join(cssdr, 'index.css'));
@@ -192,6 +198,9 @@ app.get('/notificationscss', (req, res)=>{
 
 app.get('/schedscss', (req, res)=>{
     res.sendFile(path.join(cssdr, 'busscheds.css'));
+})
+app.get('/allresercss', (req, res)=>{
+    res.sendFile(path.join(cssdr, 'allreser.css'));
 })
 //images
 app.get('/bg', (req, res)=>{

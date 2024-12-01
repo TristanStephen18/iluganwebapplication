@@ -2,14 +2,14 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/fireba
 import {
   getAuth,
   onAuthStateChanged,
-  signOut,
+  signOut
 } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
 import {
   getFirestore,
   collection,
   getDocs,
   updateDoc,
-  doc,
+  doc
 } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -26,6 +26,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+
 let userId;
 
 // Authenticate and fetch data
@@ -39,6 +40,7 @@ onAuthStateChanged(auth, (user) => {
     // window.location.assign('/login');
   }
 });
+
 
 const logoutbtn = document.querySelector("#logout");
 console.log(logoutbtn);
@@ -55,8 +57,8 @@ async function logout() {
         title: "Ilugan",
         text: "Log out successful",
         icon: "success",
-      }).then(async (result) => {
-        await updateDoc(userDocRef, { status: "offline" });
+      }).then(async (result)=>{
+        await updateDoc(userDocRef, {status: 'offline'});
         location.assign("/login");
       });
     })
@@ -89,10 +91,7 @@ async function displayreservations(uid) {
     today.setHours(0, 0, 0, 0); // Reset to the start of the day
 
     querySnapshot.docs.map(async (doc) => {
-      const reservationscollection = collection(
-        db,
-        `companies/${uid}/buses/${doc.id}/reservations`
-      );
+      const reservationscollection = collection(db, `companies/${uid}/buses/${doc.id}/reservations`);
       const reservationsnapshot = await getDocs(reservationscollection);
 
       reservationsnapshot.docs.map((x) => {
@@ -100,24 +99,21 @@ async function displayreservations(uid) {
 
         // Format the timestamp
         const datetime = new Date(data.date_time.seconds * 1000);
-        const formattedDateTime = datetime.toLocaleString("en-US", {
-          month: "long",
-          day: "numeric",
-          year: "numeric",
-          hour: "numeric",
-          minute: "numeric",
+        const formattedDateTime = datetime.toLocaleString('en-US', {
+          month: 'long',
+          day: 'numeric',
+          year: 'numeric',
+          hour: 'numeric',
+          minute: 'numeric',
           hour12: true,
         });
-
+        let status = "Pending";
+        if(data.accomplished == true){
+            status = "Scanned";
+        }
         // Check if the reservation date is today
         const reservationDate = new Date(datetime);
         reservationDate.setHours(0, 0, 0, 0); // Reset time for comparison
-
-        if (reservationDate.getTime() === today.getTime()) {
-          let status = "Pending";
-          if (data.accomplished == true) {
-            status = "Scanned";
-          }
           // Create a new row for today's reservation
           const reservationRow = `
             <tr data-bus-number="${doc.id}">
@@ -134,34 +130,33 @@ async function displayreservations(uid) {
           `;
 
           // Append the row to the table body
-          document
-            .getElementById("reservations")
-            .insertAdjacentHTML("beforeend", reservationRow);
-        }
+          document.getElementById("reservations").insertAdjacentHTML('beforeend', reservationRow);
       });
     });
 
     // Initialize DataTable
     // $('#busReservation').DataTable();
+
   } catch (error) {
     console.log(error);
   }
 }
 
+
 busFilter.addEventListener("change", function () {
-  const selectedBus = this.value;
-  const rows = document.querySelectorAll("#reservations tr");
-
-  rows.forEach((row) => {
-    const busNumber = row.getAttribute("data-bus-number");
-    if (selectedBus === "" || busNumber === selectedBus) {
-      row.style.display = "";
-    } else {
-      row.style.display = "none";
-    }
+    const selectedBus = this.value;
+    const rows = document.querySelectorAll("#reservations tr");
+  
+    rows.forEach((row) => {
+      const busNumber = row.getAttribute("data-bus-number");
+      if (selectedBus === "" || busNumber === selectedBus) {
+        row.style.display = "";
+      } else {
+        row.style.display = "none";
+      }
+    });
   });
-});
-
-document.getElementById("reservationhistory").addEventListener("click", () => {
-  window.location.assign("/allreservations");
-});
+  
+  document.getElementById('backbutton').addEventListener('click', ()=>{
+    window.location.assign('/reservations');
+  });

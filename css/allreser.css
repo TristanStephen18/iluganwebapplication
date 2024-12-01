@@ -86,17 +86,10 @@ body {
     background-color: green;
   }
 
-  #reservationhistory{
-    width: 160px;
-    height: 40px;
-    font-size: 15px;
-    border: none;
-    border-radius: 10px;
-    background-color: green;
-    color: white;
+  #backbutton{
+    cursor: pointer;
+    margin-right: 30px;
   }
-
-  #reservationhistory:hover{
-    background-color: white;
+  #backbutton:hover{
     color: green;
   }

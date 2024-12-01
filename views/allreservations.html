@@ -3,8 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Analytic Reports</title>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <title>Reservations history</title>
     <link rel="icon" href="/newlogo" type="image/x-icon">
     <link
       rel="stylesheet"
@@ -18,8 +17,12 @@
       href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap"
       rel="stylesheet"
     />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
-    <link rel="stylesheet" href="/analyticscss">
+    <link
+      rel="stylesheet"
+      href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="/allresercss" />
   </head>
   <body>
     <div class="d-flex">
@@ -84,65 +87,55 @@
           </li>
         </ul>
       </div>
-      <div class="main-content">
-        <!-- <div class="flex-grow-1 p-4 d-flex flex-column" id="maincontent"> -->
-          <div class="d-flex justify-content-between align-items-center mb-4">
-            <h3>Total Revenue</h3>
-            <div class="top-icons d-flex align-items-center">
-              <!-- <a href="/profile" class="top-icon-link me-3" title="Profile">
-                <i class="fas fa-user" style="margin-right: 20px;"></i>
-              </a> -->
-              <a href="/notifications" class="top-icon-link me-3" title="Notifications">
-                <i class="fas fa-bell" style="margin-right: 20px;"></i>
-              </a>
-              <a href="/systemlogs" class="top-icon-link" title="System Logs">
-                <i class="fas fa-cogs"></i>
-              </a>
-            </div>
-          </div>
-          <h5>Select a bus</h5>
-        <div class="filters">
-          <!-- <label for="busSelect">BUS:</label> -->
-          <select id="busSelect" class="form-select form-select-sm"></select>
-        </div>
-        <div class="card shadow-sm mb-4">
-          <div class="card-body">
-            <div class="chart-container">
-              <canvas id="totalRevenueChart"></c  anvas>
-            </div>
+      <div class="content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h4><i class="fa-solid fa-arrow-left" title="back" id="backbutton"></i> All reservations</h4>
+          <div class="top-icons d-flex align-items-center">
+            <!-- <a href="/profile" class="top-icon-link me-3" title="Profile">
+              <i class="fas fa-user" style="margin-right: 20px;"></i>
+            </a> -->
+            <!-- <a href="/notifications" class="top-icon-link me-3" title="Notifications">
+              <i class="fas fa-bell" style="margin-right: 20px;"></i>
+            </a>
+            <a href="/systemlogs" class="top-icon-link" title="System Logs">
+              <i class="fas fa-cogs"></i>
+            </a> -->
           </div>
         </div>
-        <h2 style="margin-bottom: 30px;">Passengers Overview</h2>
-        <div class="row mb-4">
-          <div class="col-md-6">
-            <div class="card shadow-sm">
-              <div class="card-body">
-                <h5>Current Passengers</h5>
-                <div class="chart-container">
-                  <canvas id="reservationChart"></canvas>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="card shadow-sm">
-              <div class="card-body">
-                <div class="filter-container">
-                  <select name="datefilter" id="datefilter">
-
-                  </select>
-                </div>
-                <h5>Total Passengers</h5>
-                <div class="chart-container">
-                  <canvas id="passengerChart"></canvas>
-                </div>
-              </div>
-            </div>
-          </div>
+        <div id="optionholder" style="margin-bottom: 20px;">
+          <label for="busFilter">Bus Number: </label>
+          <select id="busFilter">
+            <option value="">All Buses</option>
+            <!-- Bus numbers will be dynamically populated here -->
+          </select>
         </div>
+        <table id="busReservation" class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Res #</th>
+              <th>Bus #</th>
+              <th>Date and Time</th>
+              <th>From</th>
+              <th>To</th>
+              <!-- <th>User ID</th> -->
+              <th>Seats</th>
+              <th>Type</th>
+              <th>Amount</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="reservations"></tbody>
+        </table>
       </div>
     </div>
-    <script type="module" src="/analyticsjs"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script>
+      // $(document).ready(function () {
+      //   $("#busReservation").DataTable();
+      // });
+    </script>
+    <script type="module" src="/allreserjs"></script>
     <script type="module" src="/monitoring"></script>
   </body>
 </html>

@@ -45,6 +45,7 @@ const db = getFirestore();
 
 const snpform = document.querySelector("#signup-form");
 
+
 // console.log(snpform['email']);
 
 // alert($('#email').value);
@@ -257,27 +258,65 @@ snpform.addEventListener("submit", (e) => {
 
   // Function to show loader and processing message
   function showProcessingModal() {
-    const subscriptionModal = document.querySelector(".modal-content");
-    subscriptionModal.innerHTML = `
-    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
-      <div class="loader"></div>
-      <h2 style="margin-top: 20px; color: #25b09b;">Processing Subscription...</h2>
-    </div>
-  `;
-  }
+    const subscriptionModal = document.getElementById("subscriptionModal");
+    subscriptionModal.innerHTML = ""; // Clear modal content
+
+    const modalContent = document.createElement("div");
+    modalContent.classList = "modal-content";
+
+    const modalHeader = document.createElement("div");
+    modalHeader.classList = "modal-header";
+    const modalTitle = document.createElement("h5");
+    modalTitle.classList = "modal-title";
+    modalTitle.innerText = "Payment Status";
+
+    const modalBody = document.createElement("div");
+    modalBody.classList = "modal-body";
+    modalBody.innerHTML = `
+        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
+             <div class="spinner-border text-success" role="status" style = "width: 70px; height: 70px;">
+          </div>
+            <h2 style="margin-top: 20px; color: #25b09b;">Processing Subscription...</h2>
+        </div>
+    `;
+
+    modalHeader.appendChild(modalTitle);
+    modalContent.appendChild(modalHeader);
+    modalContent.appendChild(modalBody);
+
+    subscriptionModal.appendChild(modalContent);
+
+    // Show modal if using Bootstrap
+    // $('#subscriptionModal').modal('show');
+}
+
 
   // Function to show success message after payment
   function showPaymentSuccessModal() {
-    const subscriptionModal = document.querySelector(".modal-content");
-    subscriptionModal.innerHTML = `
-    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
-      <h2 style="color: #25b09b;">Payment Successfully Received!</h2>
-    </div>
-  `;
-  }
+    const subscriptionModal = document.getElementById("subscriptionModal");
+    subscriptionModal.innerHTML = ""; // Clear modal content
+
+    const modalContent = document.createElement("div");
+    modalContent.classList = "modal-content";
+
+    const modalBody = document.createElement("div");
+    modalBody.classList = "modal-body";
+    modalBody.innerHTML = `
+        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
+            <h2 style="color: #25b09b;">Payment Successfully Received!</h2>
+        </div>
+    `;
+
+    modalContent.appendChild(modalBody);
+    subscriptionModal.appendChild(modalContent);
+
+    // Show modal if using Bootstrap
+    // $('#subscriptionModal').modal('show');
+}
+
 
   // Payment logic with loader and success message
-  
+
   const payNowBtn = document.getElementById("payNow");
   payNowBtn.addEventListener("click", function () {
     if (selectedPlan && selectedPrice) {

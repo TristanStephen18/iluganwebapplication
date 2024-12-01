@@ -89,20 +89,21 @@
       </div>
       <div class="content">
         <div class="d-flex justify-content-between align-items-center mb-4">
-          <h3>Bus Reservation</h3>
+          <h4> Today's Bus Reservations </h4>
           <div class="top-icons d-flex align-items-center">
             <!-- <a href="/profile" class="top-icon-link me-3" title="Profile">
               <i class="fas fa-user" style="margin-right: 20px;"></i>
             </a> -->
-            <a href="/notifications" class="top-icon-link me-3" title="Notifications">
+            <!-- <a href="/notifications" class="top-icon-link me-3" title="Notifications">
               <i class="fas fa-bell" style="margin-right: 20px;"></i>
             </a>
             <a href="/systemlogs" class="top-icon-link" title="System Logs">
               <i class="fas fa-cogs"></i>
-            </a>
+            </a> -->
+            <button id="reservationhistory" title="View all reservations"><i class="fa-solid fa-clock-rotate-left" style="margin-right: 10px;"></i>All reservations</button>
           </div>
         </div>
-        <div>
+        <div id="optionholder" style="margin-bottom: 20px;">
           <label for="busFilter">Bus Number: </label>
           <select id="busFilter">
             <option value="">All Buses</option>
@@ -112,16 +113,16 @@
         <table id="busReservation" class="table table-bordered">
           <thead>
             <tr>
-              <th>Reservation Number</th>
-              <th>Bus Number</th>
+              <th>Res #</th>
+              <th>Bus #</th>
               <th>Date and Time</th>
-              <th>Pick up Location</th>
-              <th>Destination</th>
-              <th>User ID</th>
+              <th>From</th>
+              <th>To</th>
+              <!-- <th>User ID</th> -->
               <th>Seats</th>
               <th>Type</th>
               <th>Amount</th>
-              <th>Accomplished</th>
+              <th>Status</th>
             </tr>
           </thead>
           <tbody id="reservations"></tbody>
@@ -129,11 +130,11 @@
       </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.datatables.net/2.1.8/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script>
-      $(document).ready(function () {
-        $("#busReservation").DataTable();
-      });
+      // $(document).ready(function () {
+      //   $("#busReservation").DataTable();
+      // });
     </script>
     <script type="module" src="/reservationsjs"></script>
     <script type="module" src="/monitoring"></script>
