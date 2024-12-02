@@ -37,19 +37,6 @@ let totalRevenueChart, reservationChart, passengerChart;
 onAuthStateChanged(auth, (user) => {
   if (user) {
     userId = user.uid;
-    // if(user.emailVerified){
-    //   console.log('email is verified');
-    // }else{
-    //   console.log('email is not verified');
-    //   sendEmailVerification(user)
-    //     .then(() => {
-    //       console.log("Verification email sent!");
-    //       alert("A verification email has been sent to your inbox.");
-    //     })
-    //     .catch((error) => {
-    //       console.error("Error sending verification email:", error.message);
-    //     });
-    // }
     listenForBuses();
   } else {
     console.log("User is not signed in");
@@ -117,13 +104,9 @@ function populateBusDropdown(buses) {
 function listenForDateChanges(busId) {
   const dataRef = collection(db, `companies/${userId}/buses/${busId}/data`);
   onSnapshot(dataRef, (snapshot) => {
-    // Extract and sort the dates in descending order
     const dates = snapshot.docs
       .map((doc) => doc.id)
       .sort((a, b) => new Date(b) - new Date(a));
-    console.log("Sorted Dates:", dates);
-
-    populateDateFilter(dates);
 
     if (dates.length > 0) {
       setupPassengerChart(busId, dates[0]); // Initial passenger chart for the most recent date
@@ -131,33 +114,39 @@ function listenForDateChanges(busId) {
   });
 }
 
-// Populate the date dropdown
-function populateDateFilter(dates) {
-  const dateFilter = document.getElementById("datefilter");
-  dateFilter.innerHTML = "";
-  dates.forEach((date) => {
-    const option = document.createElement("option");
-    option.value = date;
-    option.textContent = date;
-    dateFilter.appendChild(option);
-  });
+// Real-time Revenue Chart
+document
+  .getElementById("fromDate")
+  .addEventListener("change", filterRevenueByDate);
+document
+  .getElementById("toDate")
+  .addEventListener("change", filterRevenueByDate);
+
+function filterRevenueByDate() {
+  const busId = document.getElementById("busSelect").value;
+  const fromDate = new Date(document.getElementById("fromDate").value);
+  const toDate = new Date(document.getElementById("toDate").value);
+
+  if (fromDate && toDate && fromDate <= toDate) {
+    renderTotalRevenueChart(busId, fromDate, toDate);
+  }
 }
 
-// Real-time Revenue Chart
-function renderTotalRevenueChart(busId) {
+function renderTotalRevenueChart(busId, fromDate, toDate) {
   const dataRef = collection(db, `companies/${userId}/buses/${busId}/data`);
   onSnapshot(dataRef, (snapshot) => {
-    const data = [];
+    const data = snapshot.docs
+      .map((doc) => ({ date: doc.id, revenue: doc.data().total_income || 0 }))
+      .filter((entry) => {
+        const entryDate = new Date(entry.date);
+        return (
+          (!fromDate || entryDate >= fromDate) &&
+          (!toDate || entryDate <= toDate)
+        );
+      });
 
-    // Combine the date and revenue into an array of objects
-    snapshot.forEach((doc) => {
-      data.push({ date: doc.id, revenue: doc.data().total_income || 0 });
-    });
-
-    // Sort the data by date in descending order
     data.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-    // Extract sorted dates and revenues
     const dateLabels = data.map((item) => item.date);
     const revenueData = data.map((item) => item.revenue);
 
@@ -194,7 +183,6 @@ function renderTotalRevenueChart(busId) {
   });
 }
 
-
 // Real-time Reservation Chart
 function setupReservationChart(busId) {
   const reservationRef = doc(db, `companies/${userId}/buses/${busId}`);
@@ -228,6 +216,22 @@ function setupReservationChart(busId) {
 
 // Real-time Passenger Chart
 function setupPassengerChart(busId, date) {
+  // const inputDate = date; // MM/DD/YY format
+  // const [month, day, year] = inputDate.split("/");
+
+  // // Convert to a Date object
+  // const fullYear = `20${year}`; // Assuming the year is in 2000s
+  // const dateObject = new Date(`${fullYear}-${month}-${day}`); // YYYY-MM-DD format
+
+  // // Format the date
+  // const formattedDate = new Intl.DateTimeFormat("en-US", {
+  //   year: "numeric",
+  //   month: "long",
+  //   day: "numeric",
+  // }).format(dateObject);
+
+  // console.log(formattedDate); // Outputs: November 10, 2024
+
   const passengerRef = doc(
     db,
     `companies/${userId}/buses/${busId}/data/${date}`
@@ -268,8 +272,10 @@ document.getElementById("busSelect").addEventListener("change", (event) => {
   setupReservationChart(busId);
 });
 
-document.getElementById("datefilter").addEventListener("change", (event) => {
-  const busId = document.getElementById("busSelect").value;
-  const date = event.target.value;
-  setupPassengerChart(busId, date);
-});
+document
+  .getElementById("passengerDatePicker")
+  .addEventListener("change", (event) => {
+    const busId = document.getElementById("busSelect").value;
+    const selectedDate = event.target.value;
+    setupPassengerChart(busId, selectedDate);
+  });

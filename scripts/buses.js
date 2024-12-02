@@ -33,7 +33,7 @@ const db = getFirestore(app);
 
 let apiKey = "pk.e6e28e751bd0e401a2a07cb0cbe2e6e4";
 const apiKeyDistance =
-  "Sh9cR5GWvUmowkE0DqpDlAUVkKXMrikyDU5twM1rbfu61tZZEuuQyiSqvkUaS1bX";
+  "vsOf7wMnMpurcjSIjpMAQBjMcVsFm1vzriNkoR88GseE0mn4pjBKo9K5fMZ8w4C9";
 
 // let terminalLat;
 // let terminalLng;
@@ -396,7 +396,7 @@ async function displaybuses(uid) {
             <td style = "font-weight: bold;"><img src ="/greenbusicon" style = "width: 75px; height: 50px; margin-bottom: 4px;"></img><br>${
               doc.id
             }</td>
-            <td>${data.bus_number}</td>
+            <td>${data.plate_number}</td>
             <td>${data.terminalloc}</td>
             <td>${data.destination}</td>
             <td>${data.via || "Missing"} </td>
@@ -575,7 +575,7 @@ destinations.addEventListener("change", async () => {
 });
 
 terminaldiv.addEventListener("change", () => {
-  const selectedValue = destinations.value;
+  const selectedValue = terminaldiv.value;
 
   if (selectedValue) {
     const coordinates = JSON.parse(selectedValue);

@@ -104,6 +104,10 @@
         <div class="filters">
           <!-- <label for="busSelect">BUS:</label> -->
           <select id="busSelect" class="form-select form-select-sm"></select>
+          <label for="fromDate">From:</label>
+            <input type="date" id="fromDate" class="form-control d-inline-block me-2" style="width: auto;">
+            <label for="toDate">To:</label>
+            <input type="date" id="toDate" class="form-control d-inline-block" style="width: auto;">
         </div>
         <div class="card shadow-sm mb-4">
           <div class="card-body">
@@ -128,9 +132,9 @@
             <div class="card shadow-sm">
               <div class="card-body">
                 <div class="filter-container">
-                  <select name="datefilter" id="datefilter">
-
-                  </select>
+                  <!-- For the passenger chart -->
+                  <label for="passengerDatePicker">Select Date:</label>
+                  <input type="date" id="passengerDatePicker" class="form-control mb-3">
                 </div>
                 <h5>Total Passengers</h5>
                 <div class="chart-container">

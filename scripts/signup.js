@@ -173,16 +173,23 @@ function getSubscriptionExpiry(subscriptionType) {
 
   return expiryDate;
 }
+const loginCard = document.querySelector(".login-card");
+let emailcopy;
+let passcopy;
+let companyname;
+
+let userid;
 
 snpform.addEventListener("submit", (e) => {
   e.preventDefault();
 
-  let userid;
   const email = snpform["email"].value;
   const password = snpform["password"].value;
   const confirmpassword = snpform["confirmpassword"].value;
   const company = snpform["companyname"].value;
-  const loginCard = document.querySelector(".login-card");
+  emailcopy =email;
+  passcopy = password;
+  companyname = company;
 
   if (password !== confirmpassword) {
     Swal.fire({
@@ -204,44 +211,45 @@ snpform.addEventListener("submit", (e) => {
     return;
   }
 
-  createUserWithEmailAndPassword(auth, email, password)
-    .then((cred) => {
-      userid = cred.user.uid;
-      // Send email verification
-      sendEmailVerification(cred.user)
-        .then(() => {
-          // Replace login-card content with a verification message
-          loginCard.innerHTML = `
-            <h2>Verify Your Email</h2>
-            <p style="color: black;">
-              A verification email has been sent to <strong>${email}</strong>. 
-              Please check your inbox and verify your email before proceeding.
-            </p>
-            <p>
-              After verification, this page will update automatically.
-            </p>
-          `;
+  $('#termsModal').show();
+  // createUserWithEmailAndPassword(auth, email, password)
+  //   .then((cred) => {
+  //     userid = cred.user.uid;
+  //     // Send email verification
+  //     sendEmailVerification(cred.user)
+  //       .then(() => {
+  //         // Replace login-card content with a verification message
+  //         loginCard.innerHTML = `
+  //           <h2>Verify Your Email</h2>
+  //           <p style="color: black;">
+  //             A verification email has been sent to <strong>${email}</strong>. 
+  //             Please check your inbox and verify your email before proceeding.
+  //           </p>
+  //           <p>
+  //             After verification, this page will update automatically.
+  //           </p>
+  //         `;
 
-          // Start polling for email verification
-          startEmailVerificationPolling(cred.user);
-        })
-        .catch((error) => {
-          Swal.fire({
-            title: "Error",
-            text: error.message,
-            icon: "error",
-            confirmButtonText: "OK",
-          });
-        });
-    })
-    .catch((error) => {
-      Swal.fire({
-        title: "Error creating your account",
-        text: error.message,
-        icon: "error",
-        confirmButtonText: "OK",
-      });
-    });
+  //         // Start polling for email verification
+  //         startEmailVerificationPolling(cred.user);
+  //       })
+  //       .catch((error) => {
+  //         Swal.fire({
+  //           title: "Error",
+  //           text: error.message,
+  //           icon: "error",
+  //           confirmButtonText: "OK",
+  //         });
+  //       });
+  //   })
+  //   .catch((error) => {
+  //     Swal.fire({
+  //       title: "Error creating your account",
+  //       text: error.message,
+  //       icon: "error",
+  //       confirmButtonText: "OK",
+  //     });
+  //   });
 
   let selectedPrice;
   let selectedPlan;
@@ -429,3 +437,61 @@ function showPaymentModal() {
     confirmButtonText: "OK",
   });
 }
+
+const agreedbtn = document.getElementById('acceptTerms');
+const agreedcheckbox = document.getElementById('agreedcheckbox');
+const agreedlabel = document.getElementById('agreelabel');
+agreedcheckbox.addEventListener('change', ()=>{
+  if(agreedcheckbox.checked == true){
+    agreedlabel.style.color = "black";
+    // agreedlabel.style.fontsize = "30px";
+  }
+});
+agreedbtn.addEventListener('click', ()=>{
+  if(agreedcheckbox.checked == false){
+    agreedlabel.style.color = "red";
+    // agreedlabel.style.fontsize = "30px";
+  }else{
+    console.log(emailcopy + companyname + passcopy);
+    $("#termsModal").hide();
+    createUserWithEmailAndPassword(auth, emailcopy, passcopy)
+    .then((cred) => {
+      userid = cred.user.uid;
+      // Send email verification
+      sendEmailVerification(cred.user)
+        .then(() => {
+          // Replace login-card content with a verification message
+          loginCard.innerHTML = `
+            <h2>Verify Your Email</h2>
+            <p style="color: black;">
+              A verification email has been sent to <strong>${emailcopy}</strong>. 
+              Please check your inbox and verify your email before proceeding.
+            </p>
+            <p>
+              After verification, this page will update automatically.
+            </p>
+          `;
+
+          // Start polling for email verification
+          startEmailVerificationPolling(cred.user);
+        })
+        .catch((error) => {
+          Swal.fire({
+            title: "Error",
+            text: error.message,
+            icon: "error",
+            confirmButtonText: "OK",
+          });
+        });
+    })
+    .catch((error) => {
+      Swal.fire({
+        title: "Error creating your account",
+        text: error.message,
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+    });
+
+  }
+});

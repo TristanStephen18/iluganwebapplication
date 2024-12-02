@@ -96,6 +96,7 @@
             <!-- <a href="/profile" class="top-icon-link me-3" title="Profile">
               <i class="fas fa-user" style="margin-right: 20px;"></i>
             </a> -->
+            <p id="datenow">...</p>
             <a href="/notifications" class="top-icon-link me-3" title="Notifications">
               <i class="fas fa-bell" style="margin-right: 20px;"></i>
             </a>
@@ -124,7 +125,7 @@
                 </div>
               </div>
               <div class="col-md-3">
-                <div class="card square-card text-center">
+                <div class="card square-card text-center" id="totracker">
                   <i class="fas fa-bus"></i>
                   <h6>Buses</h6>
                   <h4 id="nbuses">Loading data...</h4>
@@ -134,14 +135,11 @@
           </div>
         </div>
         <div>
-          <label for="timeFilter">Filter By:</label>
-          <select id="timeFilter">
-            <option value="daily">Daily</option>
-            <option value="weekly">Weekly</option>
-            <option value="monthly">Monthly</option>
-            <option value="yearly">Yearly</option>
-          </select>
-        </div>
+          <label for="fromDate">From:</label>
+          <input type="date" id="fromDate">
+          <label for="toDate">To:</label>
+          <input type="date" id="toDate">
+        </div>  
         <div class="row">
           <div>
             <div class="passenger-container">
@@ -160,10 +158,10 @@
       </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.8.0/chart.min.js"></script>
-    <script
+    <!-- <script
       src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAIMuBkc8a_ciIOnIBA5n-3z5A85agZfQ0&callback=initMap&libraries=places&v=weekly"
       defer
-    ></script>
+    ></script> -->
 
     <!-- <script>
       let currentMarker = null;

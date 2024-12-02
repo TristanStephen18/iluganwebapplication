@@ -12,6 +12,7 @@ import {
   doc
 } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
 
+// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyAL0I2_e4RNhtnwavuNrncD21sZAsmslmY",
   authDomain: "ilugan-database.firebaseapp.com",
@@ -26,26 +27,42 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-
 let userId;
+
+// DOM elements
+const busFilter = document.getElementById("busFilter");
+// const fromDateInput = document.createElement("input");
+// fromDateInput.type = "date";
+// fromDateInput.id = "fromDate";
+// fromDateInput.style.marginRight = "10px";
+const fromDateInput = document.getElementById('fromDate');
+const toDateInput = document.getElementById('toDate');
+
+// const toDateInput = document.createElement("input");
+// toDateInput.type = "date";
+// toDateInput.id = "toDate";
+
+// const filterContainer = document.getElementById("optionholder");
+// filterContainer.appendChild(fromDateInput);
+// filterContainer.appendChild(toDateInput);
+
+const tableBody = document.getElementById("reservations");
+let reservationsData = []; // To hold fetched data for pagination and filtering
 
 // Authenticate and fetch data
 onAuthStateChanged(auth, (user) => {
   if (user) {
     userId = user.uid;
-    // fetchNotifications(userId);
-    displayreservations(user.uid);
+    displayReservations(userId);
   } else {
     console.log("User is not logged in");
     // window.location.assign('/login');
   }
 });
 
-
+// Logout functionality
 const logoutbtn = document.querySelector("#logout");
-console.log(logoutbtn);
 logoutbtn.addEventListener("click", () => {
-  console.log("Clicked logout btn");
   logout();
 });
 
@@ -57,8 +74,8 @@ async function logout() {
         title: "Ilugan",
         text: "Log out successful",
         icon: "success",
-      }).then(async (result)=>{
-        await updateDoc(userDocRef, {status: 'offline'});
+      }).then(async () => {
+        await updateDoc(userDocRef, { status: 'offline' });
         location.assign("/login");
       });
     })
@@ -71,12 +88,11 @@ async function logout() {
     });
 }
 
-const busFilter = document.getElementById("busFilter");
-
-async function displayreservations(uid) {
+// Fetch and display reservations
+async function displayReservations(uid) {
   try {
-    const busescollection = collection(db, `companies/${uid}/buses`);
-    const querySnapshot = await getDocs(busescollection);
+    const busesCollection = collection(db, `companies/${uid}/buses`);
+    const querySnapshot = await getDocs(busesCollection);
 
     // Populate the dropdown with bus numbers
     querySnapshot.docs.forEach((doc) => {
@@ -86,18 +102,13 @@ async function displayreservations(uid) {
       busFilter.appendChild(option);
     });
 
-    // Get today's date without time
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // Reset to the start of the day
+    // Fetch reservations for all buses
+    for (const busDoc of querySnapshot.docs) {
+      const reservationsCollection = collection(db, `companies/${uid}/buses/${busDoc.id}/reservations`);
+      const reservationSnapshot = await getDocs(reservationsCollection);
 
-    querySnapshot.docs.map(async (doc) => {
-      const reservationscollection = collection(db, `companies/${uid}/buses/${doc.id}/reservations`);
-      const reservationsnapshot = await getDocs(reservationscollection);
-
-      reservationsnapshot.docs.map((x) => {
-        const data = x.data();
-
-        // Format the timestamp
+      reservationSnapshot.docs.forEach((reservationDoc) => {
+        const data = reservationDoc.data();
         const datetime = new Date(data.date_time.seconds * 1000);
         const formattedDateTime = datetime.toLocaleString('en-US', {
           month: 'long',
@@ -107,56 +118,124 @@ async function displayreservations(uid) {
           minute: 'numeric',
           hour12: true,
         });
-        let status = "Pending";
-        if(data.accomplished == true){
-            status = "Scanned";
-        }
-        // Check if the reservation date is today
-        const reservationDate = new Date(datetime);
-        reservationDate.setHours(0, 0, 0, 0); // Reset time for comparison
-          // Create a new row for today's reservation
-          const reservationRow = `
-            <tr data-bus-number="${doc.id}">
-              <td>${x.id}</td>
-              <td>${doc.id}</td>
-              <td>${formattedDateTime}</td>
-              <td>${data.from}</td>
-              <td>${data.to}</td>
-              <td>${data.seats_reserved}</td>
-              <td>${data.type || "Regular"}</td>
-              <td>${data.amount}</td>
-              <td>${status}</td>
-            </tr>
-          `;
 
-          // Append the row to the table body
-          document.getElementById("reservations").insertAdjacentHTML('beforeend', reservationRow);
+        reservationsData.push({
+          id: reservationDoc.id,
+          busNumber: busDoc.id,
+          datetime,
+          formattedDateTime,
+          from: data.from,
+          to: data.to,
+          seats: data.seats_reserved,
+          type: data.type || "Regular",
+          amount: data.amount,
+          status: data.accomplished ? "Scanned" : "Pending",
+        });
       });
-    });
+    }
 
-    // Initialize DataTable
-    // $('#busReservation').DataTable();
-
+    renderTable(reservationsData);
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 }
 
+// Render table with pagination
+let currentPage = 1;
+const rowsPerPage = 15;
 
-busFilter.addEventListener("change", function () {
-    const selectedBus = this.value;
-    const rows = document.querySelectorAll("#reservations tr");
-  
-    rows.forEach((row) => {
-      const busNumber = row.getAttribute("data-bus-number");
-      if (selectedBus === "" || busNumber === selectedBus) {
-        row.style.display = "";
-      } else {
-        row.style.display = "none";
-      }
+// Render table with pagination
+function renderTable(data) {
+  tableBody.innerHTML = "";
+
+  // Pagination
+  const start = (currentPage - 1) * rowsPerPage;
+  const end = start + rowsPerPage;
+  const paginatedData = data.slice(start, end);
+
+  paginatedData.forEach((reservation) => {
+    const limitedFrom = reservation.from.length > 20 
+      ? reservation.from.substring(0, 20) + "..." 
+      : reservation.from;
+
+    const limitedTo = reservation.to.length > 20 
+      ? reservation.to.substring(0, 20) + "..." 
+      : reservation.to;
+
+    const row = `
+      <tr data-bus-number="${reservation.busNumber}">
+        <td>${reservation.id}</td>
+        <td>${reservation.busNumber}</td>
+        <td>${reservation.formattedDateTime}</td>
+        <td title="${reservation.from}">${limitedFrom}</td>
+        <td title="${reservation.to}">${limitedTo}</td>
+        <td>${reservation.seats}</td>
+        <td>${reservation.type}</td>
+        <td>${reservation.amount}</td>
+        <td>${reservation.status}</td>
+      </tr>
+    `;
+    tableBody.insertAdjacentHTML('beforeend', row);
+  });
+
+  renderPagination(data.length);
+}
+
+
+// Render pagination controls
+function renderPagination(totalRows) {
+  const totalPages = Math.ceil(totalRows / rowsPerPage);
+  const paginationContainer = document.getElementById("pagination") || document.createElement("div");
+  paginationContainer.id = "pagination";
+  paginationContainer.innerHTML = "";
+
+  for (let i = 1; i <= totalPages; i++) {
+    const button = document.createElement("button");
+    button.textContent = i;
+    button.className = "btn btn-secondary btn-sm m-1";
+    button.disabled = i === currentPage;
+    button.addEventListener("click", () => {
+      currentPage = i;
+      renderTable(filteredReservations());
     });
+    paginationContainer.appendChild(button);
+  }
+
+  tableBody.parentElement.appendChild(paginationContainer);
+}
+
+// Filter reservations based on bus number and date range
+function filteredReservations() {
+  const selectedBus = busFilter.value;
+  const fromDate = fromDateInput.value ? new Date(fromDateInput.value) : null;
+  const toDate = toDateInput.value ? new Date(toDateInput.value) : null;
+
+  return reservationsData.filter((reservation) => {
+    const matchesBus = !selectedBus || reservation.busNumber === selectedBus;
+    const matchesDate = (!fromDate || reservation.datetime >= fromDate) &&
+      (!toDate || reservation.datetime <= toDate);
+
+    return matchesBus && matchesDate;
   });
-  
-  document.getElementById('backbutton').addEventListener('click', ()=>{
-    window.location.assign('/reservations');
-  });
+}
+
+// Event listeners for filters
+busFilter.addEventListener("change", () => {
+  currentPage = 1;
+  renderTable(filteredReservations());
+});
+
+fromDateInput.addEventListener("change", () => {
+  currentPage = 1;
+  renderTable(filteredReservations());
+});
+
+toDateInput.addEventListener("change", () => {
+  currentPage = 1;
+  renderTable(filteredReservations());
+});
+
+// Back button
+document.getElementById('backbutton').addEventListener('click', () => {
+  window.location.assign('/reservations');
+});

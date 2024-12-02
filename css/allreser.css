@@ -1,95 +1,105 @@
 body {
-    font-family: 'Open Sans', sans-serif;
-    background-color: #f5f5f5;
-  }
-  .sidebar {
-    background: linear-gradient(to bottom, #29924F, #0C2C18);
-    min-height: 100vh;
-    width: 200px;
-    color: white;
-    position: fixed;
-    overflow-x: hidden;
-  }
-  .sidebar .nav-link {
-    color: white;
-    font-size: small;
-    font-weight: bold;
-  }
-  .sidebar .nav-link:hover {
-    background-color: #217841;
-  }
-  .sidebar .nav-link i {
-    margin-right: 8px;
-  }
-  .logo {
-    font-size: 20px;
-    font-weight: bold;
-    text-align: center;
-    margin-top: 20px;
-    margin-bottom: 20px;
-    margin-left: -50px;
-  }
-  .logo img {
-    width: 25px; 
-    height: 40px;
-  }
-  .content {
-    padding: 20px;
-    flex-grow: 1;
-    margin-left: 200px;
-  }
-  .table th, .table td {
-    text-align: center;
-    font-size: 13px;
-  }
-  .table thead th {
-    background-color: #29924F; 
-    color: white; 
-  }
-  .table td {
-    background-color: #f0f0f0; 
-  }
-  .table tr {
-    border-bottom: 1px solid #ccc; 
-  }
-  .dataTables_wrapper {
-    margin-top: 20px;
-  }
-  .dataTables_wrapper .dataTables_paginate,
-  .dataTables_wrapper .dataTables_length,
-  .dataTables_wrapper .dataTables_filter {
-    margin: 20px 0; 
-  }
-  .top-icons {
-    font-size: 23px;
-  }
-  
-  .top-icon-link {
-    color: #333;
-    text-decoration: none;
-    transition: color 0.3s;
-  }
-  
-  .top-icon-link:hover {
-    color: #1fbf83;
-  }
-  
-  #busFilter{
-    width: 200px;
-    border-radius: 3px;
-    height: 23px;
-    /* background-color: gray; */
-    /* font-size: 20px; */
-    text-align: center;
-  }
-  #busFilter option:hover{
-    background-color: green;
-  }
+  font-family: "Open Sans", sans-serif;
+  background-color: #f5f5f5;
+}
+.sidebar {
+  background: linear-gradient(to bottom, #29924f, #0c2c18);
+  min-height: 100vh;
+  width: 200px;
+  color: white;
+  position: fixed;
+  overflow-x: hidden;
+}
+.sidebar .nav-link {
+  color: white;
+  font-size: small;
+  font-weight: bold;
+}
+.sidebar .nav-link:hover {
+  background-color: #217841;
+}
+.sidebar .nav-link i {
+  margin-right: 8px;
+}
+.logo {
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  margin-left: -50px;
+}
+.logo img {
+  width: 25px;
+  height: 40px;
+}
+.content {
+  padding: 20px;
+  flex-grow: 1;
+  margin-left: 200px;
+}
+.table th,
+.table td {
+  text-align: center;
+  font-size: 13px;
+}
+.table thead th {
+  background-color: #29924f;
+  color: white;
+}
+.table td {
+  background-color: #f0f0f0;
+  padding: 10px;
+}
+.table tr {
+  border-bottom: 1px solid #ccc;
+}
+.dataTables_wrapper {
+  margin-top: 20px;
+}
+.dataTables_wrapper .dataTables_paginate,
+.dataTables_wrapper .dataTables_length,
+.dataTables_wrapper .dataTables_filter {
+  margin: 20px 0;
+}
+.top-icons {
+  font-size: 23px;
+}
 
-  #backbutton{
-    cursor: pointer;
-    margin-right: 30px;
-  }
-  #backbutton:hover{
-    color: green;
-  }
+.top-icon-link {
+  color: #333;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.top-icon-link:hover {
+  color: #1fbf83;
+}
+
+#busFilter {
+  width: 200px;
+  margin-right: 70px;
+  border-radius: 5px;
+  border: 0.1px solid gray;
+  text-align: center;
+}
+#busFilter option:hover {
+  background-color: green;
+}
+
+#backbutton {
+  cursor: pointer;
+  margin-right: 30px;
+}
+#backbutton:hover {
+  color: green;
+}
+
+#fromDate,
+#toDate {
+  margin-right: 70px;
+  border-radius: 5px;
+  border: 0.1px solid gray;
+  text-align: center;
+  /* background-color: ; */
+}

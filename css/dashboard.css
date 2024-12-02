@@ -243,4 +243,31 @@
       }
     }
 
+    #totracker{
+      cursor: pointer;
+    }
+
+    #totracker:hover{
+      background-color: rgb(245, 239, 239);
+    }
+
+    #fromDate,
+    #toDate
+    {
+      margin-right: 70px;
+      border-radius: 7px;
+      border: 0.1px solid gray  ;
+      text-align: center;
+      /* background-color: ; */
+    }
+
+    #filtertitle{
+      font-size: 20px;
+    }
+
+    #datenow{
+      font-size: 17px;
+      margin-right: 20px;
+    }
+
     

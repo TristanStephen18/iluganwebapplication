@@ -33,7 +33,7 @@ const auth = getAuth(app);
 let userid;
 
 const apiKeyDistance =
-  "JCnLEtCENajn77GqvD29tYZVLGW5Pcd3DeSjYuGYxEUjFjhfF98gC5RcEgtokDli";
+  "vsOf7wMnMpurcjSIjpMAQBjMcVsFm1vzriNkoR88GseE0mn4pjBKo9K5fMZ8w4C9";
 
 async function requestNotificationPermission() {
   console.log("sample");
@@ -75,7 +75,7 @@ async function checkuser() {
     if (user) {
       console.log("User is logged in:", user.uid);
       userid = user.uid;
-      // listentobusupdates(user.uid);
+      listentobusupdates(user.uid);
       // getUserData(user.uid);
       // console.log("hello");
 
@@ -222,70 +222,73 @@ async function checkuser() {
   });
 }
 
-// async function listentobusupdates(uid) {
-//   const busesRef = collection(db, `companies/${uid}/buses`);
+async function listentobusupdates(uid) {
+  const busesRef = collection(db, `companies/${uid}/buses`);
 
-//   // Listen for real-time updates on each bus in the 'buses' collection
-//   onSnapshot(busesRef, (snapshot) => {
-//     snapshot.docs.forEach(async (docSnapshot) => {
-//       const busData = docSnapshot.data();
-//       const busDocRef = doc(db, `companies/${uid}/buses`, docSnapshot.id);
+  // Listen for real-time updates on each bus in the 'buses' collection
+  onSnapshot(busesRef, (snapshot) => {
+    snapshot.docs.forEach(async (docSnapshot) => {
+      const busData = docSnapshot.data();
+      const busDocRef = doc(db, `companies/${uid}/buses`, docSnapshot.id);
 
-//       const currentLocation = busData.current_location;
-//       const destinationCoordinates = busData.destination_coordinates;
+      const currentLocation = busData.current_location;
+      const destinationCoordinates = busData.destination_coordinates;
 
-//       // Calculate the distance between the current location and the destination
-//       let distance = await getDistance(currentLocation, destinationCoordinates);
-//       console.log(distance);
-//       if (distance) {
-//         const label = distance.split(" ")[1];
-//         distance = distance.split(" ")[0];
-//         console.log(`${docSnapshot.id} distance from destination: ${distance}`);
-//         console.log(label);
+      // Calculate the distance between the current location and the destination
+      let distance = await getDistance(currentLocation, destinationCoordinates);
+      console.log(distance);
+      if (distance) {
+        const label = distance.split(" ")[1];
+        distance = distance.split(" ")[0];
+        console.log(`${docSnapshot.id} distance from destination: ${distance}`);
+        console.log(label);
 
-//         const busNotifsRef = collection(
-//           db,
-//           `companies/${uid}/busnotifications`
-//         );
+        const busNotifsRef = collection(db, `companies/${uid}/busnotifications`);
 
-//         if (distance && parseFloat(distance) <= 10 && label == "m") {
-//           await addDoc(busNotifsRef, {
-//             notification: `Bus ${docSnapshot.id} has reached its destination.`,
-//             dateNtime: Date(),
-//           });
+        // Check if the notification has already been sent for this trip
+        if (
+          distance &&
+          parseFloat(distance) <= 10 &&
+          label === "m"
+        ) {
+          if(!busData.arrivalNotified){
+            await addDoc(busNotifsRef, {
+              notification: `Bus ${docSnapshot.id} has reached its destination.`,
+              dateNtime: new Date(),
+            });
+          }
 
-//           // Notify that the bus has reached its destination
-//           // showNotification("Bus Arrival Alert", {
-//           //   body: `Bus ${docSnapshot.id} has reached its destination.`,
-//           //   icon: "/bicon",
-//           // });
+          // Notify that the bus has reached its destination
+          console.log(`Bus ${docSnapshot.id} has reached its destination.`);
 
-//           // Increment the trip count
-//           const tripCount = (busData.tripcount || 0) + 1;
+          // Increment the trip count
+          const tripCount = (busData.tripcount || 0) + 1;
 
-//           // Swap the terminal and destination locations
-//           const updatedData = {
-//             tripcount: tripCount,
-//             terminal_location: busData.destination_coordinates,
-//             destination_coordinates: busData.terminal_location,
-//             destination: busData.terminalloc,
-//             terminalloc: busData.destination,
-//           };
+          // Swap the terminal and destination locations
+          const updatedData = {
+            tripcount: tripCount,
+            terminal_location: busData.destination_coordinates,
+            destination_coordinates: busData.terminal_location,
+            destination: busData.terminalloc,
+            terminalloc: busData.destination,
+            arrivalNotified: true, // Set 'arrivalNotified' to true
+          };
 
-//           // Update Firestore with new data
-//           try {
-//             await updateDoc(busDocRef, updatedData);
-//             console.log(
-//               `Updated bus ${docSnapshot.id}: trip count incremented and locations swapped.`
-//             );
-//           } catch (error) {
-//             console.error("Error updating bus document:", error);
-//           }
-//         }
-//       }
-//     });
-//   });
-// }
+          // Update Firestore with new data
+          try {
+            await updateDoc(busDocRef, updatedData);
+            console.log(
+              `Updated bus ${docSnapshot.id}: trip count incremented, locations swapped, and arrivalNotified set to true.`
+            );
+          } catch (error) {
+            console.error("Error updating bus document:", error);
+          }
+        }
+      }
+    });
+  });
+}
+
 
 async function getDistance(origin, end) {
   try {

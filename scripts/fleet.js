@@ -151,6 +151,7 @@ async function addBusToMap(
   busNum,
   plateNum
 ) {
+  console.log(`adding ${busNum} to map`);
   const marker = new google.maps.Marker({
     position,
     map: map,
@@ -186,7 +187,7 @@ function checkUser() {
     if (user) {
       console.log("User is logged in:", user.uid);
       userid = user.uid;
-      getTerminalLocation(userid);
+      // getTerminalLocation(userid);
       getBuses(userid);
     } else {
       console.log("No user is signed in.");
@@ -196,27 +197,27 @@ function checkUser() {
 }
 
 // Function to get terminal location from Firestore
-async function getTerminalLocation(uid) {
-    try {
-      const docRef = doc(db, "companies", uid);
-      const docSnap = await getDoc(docRef);
+// async function getTerminalLocation(uid) {
+//     try {
+//       const docRef = doc(db, "companies", uid);
+//       const docSnap = await getDoc(docRef);
 
-      if (docSnap.exists()) {
-        const location = docSnap.data().terminal_location;
-        if (location) {
-          terminalLat = location.latitude;
-          terminalLng = location.longitude;
-          console.log("Terminal Location:", terminalLat, terminalLng);
-        } else {
-          console.log("No terminal location found");
-        }
-      } else {
-        console.log("No such document!");
-      }
-    } catch (error) {
-      console.error("Error fetching terminal location: ", error);
-    }
-}
+//       if (docSnap.exists()) {
+//         const location = docSnap.data().terminal_location;
+//         if (location) {
+//           terminalLat = location.latitude;
+//           terminalLng = location.longitude;
+//           console.log("Terminal Location:", terminalLat, terminalLng);
+//         } else {
+//           console.log("No terminal location found");
+//         }
+//       } else {
+//         console.log("No such document!");
+//       }
+//     } catch (error) {
+//       console.error("Error fetching terminal location: ", error);
+//     }
+// }
 
 // Function to get buses from Firestore
 async function getBuses(companyId) {
@@ -242,11 +243,19 @@ async function getBuses(companyId) {
           const busData = doc.data();
           const busLocation = busData.current_location;
 
+          // console.log(busData.terminal_location._lat);
+          terminalLat = busData.terminal_location.latitude;
+          terminalLng = busData.terminal_location.latitude;
+
           if (busLocation?.latitude && busLocation?.longitude) {
             const position = {
               lat: busLocation.latitude,
               lng: busLocation.longitude,
             };
+
+            if(busData.bus_number == '1729'){
+              console.log('bus 1789 found', );
+            }
 
             bus_counter++; // Increment total bus counter
 

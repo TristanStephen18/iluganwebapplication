@@ -32,7 +32,7 @@
         <div class="modal-body">
           <p>Please read and accept the terms and conditions to continue.</p>
           <p><strong>Terms and Conditions:</strong></p>
-          <p style="max-height: 200px; overflow-y: auto; padding: 10px; border: 1px solid #ccc;">
+          <p style="max-height: 200px; overflow-y: auto; padding: 10px; border: 1px solid #ccc; margin-bottom: 5px;">
             1. Account Information <br> By creating an account, you agree to provide
             accurate and truthful information. This information will be stored
             securely in our system. <br>2. Data Access by Admin<br> You acknowledge and
@@ -46,7 +46,9 @@
             unless required by law.<br> 4. User Responsibility <br>You are responsible for
             maintaining the confidentiality of your account credentials. Any
             unauthorized use of your account must be reported to us immediately.
-          </p>
+          </p><br>  
+          <input type="checkbox" name="agreedcheckbox" id="agreedcheckbox">
+          <label for="agreedcheckbox" id="agreelabel">I agree to iLugan's Terms and Conditions</label>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-primary" id="acceptTerms">
@@ -168,21 +170,21 @@
 
     <script>
       $(document).ready(function () {
-        $("#termsModal").show();
+        // $("#termsModal").show();
 
-        $("#acceptTerms").click(function () {
-          $("#termsModal").hide();
+        // $("#acceptTerms").click(function () {
+        //   // $("#termsModal").hide();
           $("#registration").show();
           $("#signupbtn").show();
-        });
+        // });
 
         // $("#signupbtn").click(function() {
         //     $("#subscriptionModal").show();
         // });
 
-        $(".close-modal").click(function () {
-          $("#subscriptionModal").hide();
-        });
+        // $(".close-modal").click(function () {
+        //   $("#subscriptionModal").hide();
+        // });
 
         // const cards = document.querySelectorAll('.subscription-card');
         // let selectedPlan = "";

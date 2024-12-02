@@ -33,43 +33,63 @@ let terminalLng;
 let companyId;
 let logincounter;
 
+const optionsDate = {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric'
+};
+
+const optionsTime = {
+  hour: 'numeric',
+  minute: 'numeric',
+  hour12: true // 12-hour format
+};
+
+const datenow = new Date();
+const formattedDate = datenow.toLocaleDateString('en-US', optionsDate);
+const formattedTime = datenow.toLocaleTimeString('en-US', optionsTime);
+
+const finalFormattedDate = `${formattedDate}, ${formattedTime}`;
+console.log(finalFormattedDate);
+
+
 // Set up the filter dropdown event listener for real-time changes
-const filter = document.querySelector("#timeFilter");
-filter.addEventListener("change", () => {
-  updateGraph();
-});
+// const filter = document.querySelector("#timeFilter");
+// filter.addEventListener("change", () => {
+//   updateGraph();
+// });
 
-async function getTerminalCoordinates(uid) {
-  try {
-    const docRef = doc(db, "companies", uid);
-    const docSnap = await getDoc(docRef);
+// async function getTerminalCoordinates(uid) {
+//   try {
+//     const docRef = doc(db, "companies", uid);
+//     const docSnap = await getDoc(docRef);
 
-    if (docSnap.exists()) {
-      const location = docSnap.data().terminal_location;
-      if (location) {
-        terminalLat = location.latitude;
-        terminalLng = location.longitude;
-        console.log("Terminal Location:", terminalLat, terminalLng);
-        const position = {
-          lat: terminalLat,
-          lng: terminalLng
-        };
+//     if (docSnap.exists()) {
+//       const location = docSnap.data().terminal_location;
+//       if (location) {
+//         terminalLat = location.latitude;
+//         terminalLng = location.longitude;
+//         console.log("Terminal Location:", terminalLat, terminalLng);
+//         const position = {
+//           lat: terminalLat,
+//           lng: terminalLng
+//         };
 
-        const marker = new google.maps.Marker({
-          position, 
-          map: map,
+//         const marker = new google.maps.Marker({
+//           position, 
+//           map: map,
           
-        });
-      } else {
-        console.log("No terminal location found");
-      }
-    } else {
-      console.log("No such document!");
-    }
-  } catch (error) {
-    console.error("Error fetching terminal location: ", error);
-  }
-}
+//         });
+//       } else {
+//         console.log("No terminal location found");
+//       }
+//     } else {
+//       console.log("No such document!");
+//     }
+//   } catch (error) {
+//     console.error("Error fetching terminal location: ", error);
+//   }
+// }
 
 const logoutbtn = document.querySelector("#logout");
 console.log(logoutbtn);
@@ -228,6 +248,7 @@ function requestNotificationPermission() {
   }
 }
 
+
 // requestNotificationPermission();
 
 async function checkuser() {
@@ -241,9 +262,10 @@ async function checkuser() {
       getnumberofbuses(user.uid);
       // getnumberofconductors(user.uid);
       getcompanyname(user.uid);
+      document.getElementById('datenow').innerHTML = `${finalFormattedDate}`;
       
       // Initial data plot based on the current filter value
-      plotCompanyData(filter.value);
+      initializeDefaultGraph();
       
       // Rest of your code here...
 
@@ -252,6 +274,12 @@ async function checkuser() {
       // location.assign("/login");
     }
   });
+}
+
+function initializeDefaultGraph() {
+  const defaultFromDate = "2024-10-01";
+  const defaultToDate = "2024-12-25";
+  plotCompanyData(defaultFromDate, defaultToDate);
 }
 
 // async function getterminalLocation(uid) {
@@ -266,42 +294,52 @@ async function checkuser() {
 
 // The showNotification, logout, and other utility functions go here...
 
+const fromDateInput = document.getElementById("fromDate");
+const toDateInput = document.getElementById("toDate");
+
+// Update the graph when either date picker value changes
+fromDateInput.addEventListener("change", updateGraph);
+toDateInput.addEventListener("change", updateGraph);
+
 let passengerChart;
 let incomeChart;
 
-async function plotCompanyData(filter) {
+fromDateInput.value = "2023-10-01";
+toDateInput.value = "2023-12-25";
+
+// Function to fetch and plot data based on the selected date range
+async function plotCompanyData(fromDate, toDate) {
   const dataRef = collection(db, `companies/${companyId}/data`);
 
   try {
     const snapshot = await getDocs(dataRef);
 
-    // Temporary arrays for storing raw data
     const rawData = [];
-
-    // Retrieve raw data
     snapshot.forEach((doc) => {
       rawData.push({
-        date: doc.id, // Use document ID (date) for labels
+        date: doc.id,
         passengers: doc.data().total_passengers || 0,
         income: doc.data().total_income || 0,
       });
     });
 
-    // Sort the raw data by date in descending order
-    rawData.sort((a, b) => new Date(b.date) - new Date(a.date));
+    // Convert raw data to JavaScript Date objects for filtering
+    rawData.forEach((item) => {
+      item.dateObj = new Date(item.date); // Assuming the date is in ISO format
+    });
 
-    // Extract sorted data
-    const dates = rawData.map((item) => item.date);
-    const totalPassengers = rawData.map((item) => item.passengers);
-    const totalIncome = rawData.map((item) => item.income);
+    // Filter data based on the selected date range
+    const filteredData = rawData.filter((item) => {
+      const date = item.dateObj;
+      return (
+        (!fromDate || date >= new Date(fromDate)) &&
+        (!toDate || date <= new Date(toDate))
+      );
+    });
 
-    // Filter data based on selected filter
-    const { filteredDates, filteredPassengers, filteredIncome } = filterData(
-      dates,
-      totalPassengers,
-      totalIncome,
-      filter
-    );
+    const filteredDates = filteredData.map((item) => item.date);
+    const filteredPassengers = filteredData.map((item) => item.passengers);
+    const filteredIncome = filteredData.map((item) => item.income);
 
     // Clear previous charts if they exist
     if (passengerChart) passengerChart.destroy();
@@ -359,52 +397,17 @@ async function plotCompanyData(filter) {
   }
 }
 
-
-// Function to filter data based on time selection
-// Function to filter data based on time selection
-function filterData(dates, passengers, income, filter) {
-  const filteredDates = [];
-  const filteredPassengers = [];
-  const filteredIncome = [];
-
-  if (filter === "daily") {
-    // Daily filtering: take data as-is, no aggregation needed
-    filteredDates.push(...dates);
-    filteredPassengers.push(...passengers);
-    filteredIncome.push(...income);
-  } else if (filter === "weekly") {
-    for (let i = 0; i < dates.length; i += 7) {
-      filteredDates.push(dates[i]);
-      filteredPassengers.push(
-        passengers.slice(i, i + 7).reduce((a, b) => a + b, 0)
-      );
-      filteredIncome.push(income.slice(i, i + 7).reduce((a, b) => a + b, 0));
-    }
-  } else if (filter === "monthly") {
-    for (let i = 0; i < dates.length; i += 30) {
-      filteredDates.push(dates[i]);
-      filteredPassengers.push(
-        passengers.slice(i, i + 30).reduce((a, b) => a + b, 0)
-      );
-      filteredIncome.push(income.slice(i, i + 30).reduce((a, b) => a + b, 0));
-    }
-  } else if (filter === "yearly") {
-    for (let i = 0; i < dates.length; i += 365) {
-      filteredDates.push(dates[i]);
-      filteredPassengers.push(
-        passengers.slice(i, i + 365).reduce((a, b) => a + b, 0)
-      );
-      filteredIncome.push(income.slice(i, i + 365).reduce((a, b) => a + b, 0));
-    }
-  }
-
-  return { filteredDates, filteredPassengers, filteredIncome };
-}
-
-
-// Function to update graph based on filter selection
+// Function to update the graph based on the selected date range
 function updateGraph() {
-  plotCompanyData(filter.value);
+  const fromDate = fromDateInput.value;
+  const toDate = toDateInput.value;
+  plotCompanyData(fromDate, toDate);
 }
 
+// Initialize the app
 checkuser();
+
+
+document.getElementById('totracker').addEventListener('click', ()=>{
+  window.location.assign('/tracker');
+});

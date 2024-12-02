@@ -29,6 +29,7 @@ html {
   z-index: 1000;
   display: flex;
   align-items: center;
+  /* font-size: 45px; */
 }
 .logo {
   margin-top: 10px;
@@ -37,7 +38,7 @@ html {
   margin-left: 20px;
 }
 .system-title {
-  font-size: 10px;
+  font-size: 16px;
   margin: 0;
 }
 .login-card {
@@ -139,6 +140,17 @@ html {
   right: 10px;
   top: 10px;
   cursor: pointer;
+}
+
+#busFilter {
+  width: 200px;
+  margin-right: 70px;
+  border-radius: 5px;
+  border: 0.1px solid gray;
+  text-align: center;
+}
+#busFilter option:hover {
+  background-color: green;
 }
 
 /* HTML: <div class="loader"></div> */
