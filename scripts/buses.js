@@ -1016,7 +1016,7 @@ async function getAvailableConductors(uid) {
         const data = doc.data();
 
         // Check if the employee is an available conductor
-        if (data.type === "conductor" && data.inbus == null) {
+        if (data.type === "conductor" && data.inbus == "") {
           // Create a container for the conductor
           const conductorContainer = document.createElement("div");
           conductorContainer.classList.add("conductor-container");

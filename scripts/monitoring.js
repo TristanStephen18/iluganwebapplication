@@ -243,15 +243,14 @@ async function listentobusupdates(uid) {
         console.log(`${docSnapshot.id} distance from destination: ${distance}`);
         console.log(label);
 
-        const busNotifsRef = collection(db, `companies/${uid}/busnotifications`);
+        const busNotifsRef = collection(
+          db,
+          `companies/${uid}/busnotifications`
+        );
 
         // Check if the notification has already been sent for this trip
-        if (
-          distance &&
-          parseFloat(distance) <= 10 &&
-          label === "m"
-        ) {
-          if(!busData.arrivalNotified){
+        if (distance && parseFloat(distance) <= 10 && label === "m") {
+          if (!busData.arrivalNotified) {
             await addDoc(busNotifsRef, {
               notification: `Bus ${docSnapshot.id} has reached its destination.`,
               dateNtime: new Date(),
@@ -288,7 +287,6 @@ async function listentobusupdates(uid) {
     });
   });
 }
-
 
 async function getDistance(origin, end) {
   try {
@@ -336,7 +334,7 @@ async function sensorlistener() {
       db,
       "companies/1CzPhECXc8PFJQP4rfGzwW77gKp1/buses/BUS 6318"
     );
-    const busdataref =  doc(
+    const busdataref = doc(
       db,
       `companies/1CzPhECXc8PFJQP4rfGzwW77gKp1/buses/BUS 6318/data/${formattedDate}`
     );
@@ -348,42 +346,61 @@ async function sensorlistener() {
       const snapshot2 = await getDoc(toupdate);
       const snapshot3 = await getDoc(busdataref);
       const snapshot4 = await getDoc(companydataref);
-      console.log("BUs data: "+ snapshot3.data().total_passengers);
-      const passengerstotalindata = snapshot3.data().total_passengers;
-      const companypassengertotal = snapshot4.data().total_passengers;
-      console.log("COmpany total passengers: ", companypassengertotal);
-      console.log(snapshot2);
-      const data2 = snapshot2.data();
-      console.log("To update avail:", data2.available_seats);
-      const data = snapshot.data();
-      console.log(data);
-      console.log("Available: ", data.available);
-      console.log("Occupied:", data.occupied);
-
-      if (data.available < data.original_available) {
-        await updateDoc(toupdate, {
-          available_seats: data2.available_seats - 1,
-          occupied_seats: data2.occupied_seats + 1,
-        });
-        await updateDoc(busdataref, {
-          total_passengers: passengerstotalindata + 1
-        });
-        await updateDoc(companydataref, {
-          total_passengers: companypassengertotal + 1
-        });
-      } else if (data.available > data.original_available) {
-        await updateDoc(toupdate, {
-          available_seats: data2.available_seats + 1,
-          occupied_seats: data2.occupied_seats - 1,
-        });
+      if (!snapshot3.exists() && !snapshot4.exists()) {
+        await setDoc(
+          doc(
+            db,
+            `companies/1CzPhECXc8PFJQP4rfGzwW77gKp1/buses/BUS 6318/data`,
+            formattedDate
+          ), {
+            total_passengers: 0,
+            total_reservations: 0,
+          }
+        );
+        await setDoc(
+          doc(db, `companies/1CzPhECXc8PFJQP4rfGzwW77gKp1/data`, formattedDate), {
+            total_passengers: 0,
+            total_reservation: 0,
+          }
+        );
       } else {
-        console.log("The data are equals");
-      }
+        console.log("BUs data: " + snapshot3.data().total_passengers);
+        const passengerstotalindata = snapshot3.data().total_passengers;
+        const companypassengertotal = snapshot4.data().total_passengers;
+        console.log("COmpany total passengers: ", companypassengertotal);
+        console.log(snapshot2);
+        const data2 = snapshot2.data();
+        console.log("To update avail:", data2.available_seats);
+        const data = snapshot.data();
+        console.log(data);
+        console.log("Available: ", data.available);
+        console.log("Occupied:", data.occupied);
 
-      await updateDoc(sensordoc, {
-        original_available: data.available,
-        original_occupied: data.occupied,
-      });
+        if (data.available < data.original_available) {
+          await updateDoc(toupdate, {
+            available_seats: data2.available_seats - 1,
+            occupied_seats: data2.occupied_seats + 1,
+          });
+          await updateDoc(busdataref, {
+            total_passengers: passengerstotalindata + 1,
+          });
+          await updateDoc(companydataref, {
+            total_passengers: companypassengertotal + 1,
+          });
+        } else if (data.available > data.original_available) {
+          await updateDoc(toupdate, {
+            available_seats: data2.available_seats + 1,
+            occupied_seats: data2.occupied_seats - 1,
+          });
+        } else {
+          console.log("The data are equals");
+        }
+
+        await updateDoc(sensordoc, {
+          original_available: data.available,
+          original_occupied: data.occupied,
+        });
+      }
     });
   } catch (error) {
     console.log(error);

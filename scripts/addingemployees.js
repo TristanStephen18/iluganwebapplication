@@ -90,14 +90,6 @@ function showPasswordModal() {
 async function addDataToFirestore(id, empId, emp_name, email, password, type) {
   try {
     console.log(userid);
-    await setDoc(doc(db, `companies/${userid}/employees`, id), {
-      employee_name: emp_name,
-      id: empId,
-      email: email,
-      password: password,
-      type: type,
-      status: "inactive"
-    });
     if(type == "conductor"){
       await setDoc(doc(db, `ilugan_mobile_users`, id), {
         companyId: userid,
@@ -108,6 +100,15 @@ async function addDataToFirestore(id, empId, emp_name, email, password, type) {
         type: type,
         inbus: "",
       });
+      await setDoc(doc(db, `companies/${userid}/employees`, id), {
+        employee_name: emp_name,
+        id: empId,
+        email: email,
+        password: password,
+        type: type,
+        status: "inactive",
+        inbus: ""
+      });
     }else{
       await setDoc(doc(db, `ilugan_mobile_users`, id), {
         companyId: userid,
@@ -116,6 +117,14 @@ async function addDataToFirestore(id, empId, emp_name, email, password, type) {
         email: email,
         password: password,
         type: type,
+      });
+      await setDoc(doc(db, `companies/${userid}/employees`, id), {
+        employee_name: emp_name,
+        id: empId,
+        email: email,
+        password: password,
+        type: type,
+        status: "inactive",
       });
     }
     // alert("Employee Added");
