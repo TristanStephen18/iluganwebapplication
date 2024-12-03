@@ -344,6 +344,7 @@ async function addtofleet(
 ) {
   try {
     await setDoc(doc(db, `companies/${uid}/buses`, busnum), {
+      total_seats: available,
       destination: destination,
       destination_coordinates: destincoordinates,
       distance_from_destination: distance,
@@ -878,7 +879,7 @@ async function updatebusdata(
       terminal_location: terminalpoint,
       destination: destinationadd,
       destination_coordinates: destinationpoint,
-      available_seats: seatsupdate,
+      total_seats: seatsupdate,
       estimated_time_of_arrival: editedeta,
       distance_from_destination: editeddistance,
       via: viaroute,
@@ -1089,8 +1090,4 @@ document
     }
   });
 
-// function updateBusWithConductor(busId, conductorId) {
-//   console.log(`Assigning conductor ${conductorId} to bus ${busId}`);
-//   // Firestore update logic goes here
-// }
 
