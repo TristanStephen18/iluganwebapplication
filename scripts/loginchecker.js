@@ -45,20 +45,6 @@ async function checkuser() {
         const data = documentsnapshot.data();
 
         let direction = "/dashboard";
-
-        // Redirect based on data content
-        // if (data.terminal_location != null && data.endterminals != null) {
-        //   direction = "/dashboard";
-        //   // window.location.assign("/dashboard");
-        // } else if (data.endterminals == null) {
-        //   direction = "/destinations";
-        //   // window.location.assign("/destinations");
-        // } else if (
-        //   data.terminal_location == null &&
-        //   data.endterminals != null
-        // ) {
-        //   direction = "/terminallocation";
-        // }
         console.log(direction);
         window.location.assign(direction);
       } else {

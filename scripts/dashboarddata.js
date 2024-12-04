@@ -44,52 +44,21 @@ const optionsTime = {
   minute: 'numeric',
   hour12: true // 12-hour format
 };
+function updateDateTime() {
+  const optionsDate = { year: 'numeric', month: 'long', day: 'numeric' };
+  const optionsTime = { hour: '2-digit', minute: '2-digit', second: '2-digit' };
 
-const datenow = new Date();
-const formattedDate = datenow.toLocaleDateString('en-US', optionsDate);
-const formattedTime = datenow.toLocaleTimeString('en-US', optionsTime);
+  const datenow = new Date();
+  const formattedDate = datenow.toLocaleDateString('en-US', optionsDate);
+  const formattedTime = datenow.toLocaleTimeString('en-US', optionsTime);
 
-const finalFormattedDate = `${formattedDate}, ${formattedTime}`;
-console.log(finalFormattedDate);
+  const finalFormattedDate = `${formattedDate}, ${formattedTime}`;
+  
+  // Update the element where you want to display the date and time
+  document.getElementById('datenow').textContent = finalFormattedDate;
+}
 
-
-// Set up the filter dropdown event listener for real-time changes
-// const filter = document.querySelector("#timeFilter");
-// filter.addEventListener("change", () => {
-//   updateGraph();
-// });
-
-// async function getTerminalCoordinates(uid) {
-//   try {
-//     const docRef = doc(db, "companies", uid);
-//     const docSnap = await getDoc(docRef);
-
-//     if (docSnap.exists()) {
-//       const location = docSnap.data().terminal_location;
-//       if (location) {
-//         terminalLat = location.latitude;
-//         terminalLng = location.longitude;
-//         console.log("Terminal Location:", terminalLat, terminalLng);
-//         const position = {
-//           lat: terminalLat,
-//           lng: terminalLng
-//         };
-
-//         const marker = new google.maps.Marker({
-//           position, 
-//           map: map,
-          
-//         });
-//       } else {
-//         console.log("No terminal location found");
-//       }
-//     } else {
-//       console.log("No such document!");
-//     }
-//   } catch (error) {
-//     console.error("Error fetching terminal location: ", error);
-//   }
-// }
+setInterval(updateDateTime, 1000);
 
 const logoutbtn = document.querySelector("#logout");
 console.log(logoutbtn);
@@ -262,7 +231,7 @@ async function checkuser() {
       getnumberofbuses(user.uid);
       // getnumberofconductors(user.uid);
       getcompanyname(user.uid);
-      document.getElementById('datenow').innerHTML = `${finalFormattedDate}`;
+      // document.getElementById('datenow').innerHTML = `${finalFormattedDate}`;
       
       // Initial data plot based on the current filter value
       initializeDefaultGraph();

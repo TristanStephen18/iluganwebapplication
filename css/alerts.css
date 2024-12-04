@@ -1,104 +1,104 @@
 body {
-    font-family: "Open Sans", sans-serif;
-    background-color: #f5f5f5;
-  }
-  .sidebar {
-    background: linear-gradient(to bottom, #29924f, #0c2c18);
-    min-height: 100vh;
-    width: 200px;
-    position: fixed;
-    overflow-x: hidden;
-    color: white;
-  }
-  .sidebar .nav-link {
-    color: white;
-    font-size: small;
-    font-weight: bold;
-  }
-  .sidebar .nav-link:hover {
-    background-color: #217841;
-  }
-  .sidebar .nav-link i {
-    margin-right: 8px;
-  }
-  .logo {
-    font-size: 20px;
-    font-weight: bold;
-    text-align: center;
-    margin-bottom: 20px;
-    margin-left: -50px;
+  font-family: "Open Sans", sans-serif;
+  background-color: #f5f5f5;
+}
+.sidebar {
+  background: linear-gradient(to bottom, #29924f, #0c2c18);
+  min-height: 100vh;
+  width: 200px;
+  position: fixed;
+  overflow-x: hidden;
+  color: white;
+}
+.sidebar .nav-link {
+  color: white;
+  font-size: small;
+  font-weight: bold;
+}
+.sidebar .nav-link:hover {
+  background-color: #217841;
+}
+.sidebar .nav-link i {
+  margin-right: 8px;
+}
+.logo {
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 20px;
+  margin-left: -50px;
   margin-top: 20px;
-  }
-  .logo img {
-    width: 25px;
-    height: 40px;
-  }
-  .content {
-    padding: 20px;
-    flex-grow: 1;
-    margin-left: 200px;
-  }
-  .notification {
-    background-color: white;
-    border-radius: 5px;
-    padding: 5px;
-    margin-bottom: 5px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    display: flex;
-    align-items: center;
-    font-size: 0.8rem;
-  }
-  .notification i {
-    color: #29924f;
-    margin-right: 5px;
-    font-size: 0.9rem;
-  }
-  .notification div {
-    flex: 1;
-  }
-  .notification p {
-    margin: 0;
-    font-size: 0.75rem;
-  }
-  .notification small {
-    font-size: 0.7rem;
-    color: #666;
-  }
-  #filterDate {
-    width: 180px;
-    border: 2px solid #217841;
-    font-size: 0.85rem;
-  }
-  #filterDate:focus {
-    border-color: #217841;
-    outline: none;
-  }
-  .pagination .page-link {
-    color: #217841;
-  }
-  .pagination .page-link:hover {
-    background-color: #f5f5f5;
-  }
-  .pagination .active .page-link {
-    background-color: #217841;
-    color: white;
-  }
-  #rbtn{
-    margin-left: 93%;
-  }
-  #alertdiv{
-    padding: 10px;
-  }
-  .top-icons {
-    font-size: 23px;
-  }
-  
-  .top-icon-link {
-    color: #333;
-    text-decoration: none;
-    transition: color 0.3s;
-  }
-  
-  .top-icon-link:hover {
-    color: #1fbf83;
-  }
+}
+.logo img {
+  width: 25px;
+  height: 40px;
+}
+.content {
+  padding: 20px;
+  flex-grow: 1;
+  margin-left: 200px;
+}
+.notification {
+  background-color: white;
+  border-radius: 5px;
+  padding: 5px;
+  margin-bottom: 5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  font-size: 0.8rem;
+}
+.notification i {
+  color: #29924f;
+  margin-right: 5px;
+  font-size: 0.9rem;
+}
+.notification div {
+  flex: 1;
+}
+.notification p {
+  margin: 0;
+  font-size: 0.75rem;
+}
+.notification small {
+  font-size: 0.7rem;
+  color: #666;
+}
+#filterDate {
+  width: 180px;
+  border: 2px solid #217841;
+  font-size: 0.85rem;
+}
+#filterDate:focus {
+  border-color: #217841;
+  outline: none;
+}
+.pagination .page-link {
+  color: #217841;
+}
+.pagination .page-link:hover {
+  background-color: #f5f5f5;
+}
+.pagination .active .page-link {
+  background-color: #217841;
+  color: white;
+}
+#rbtn {
+  margin-left: 93%;
+}
+#alertdiv {
+  padding: 10px;
+}
+.top-icons {
+  font-size: 23px;
+}
+
+.top-icon-link {
+  color: #333;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.top-icon-link:hover {
+  color: #1fbf83;
+}

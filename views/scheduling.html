@@ -394,7 +394,8 @@
             ></button>
           </div>
           <div class="modal-body">
-            <h6>Below are your available conductors</h6><br>
+            <h6>Below are your available conductors</h6>
+            <br />
             <div id="conductorList" class="d-flex flex-wrap gap-3">
               <!-- Dummy conductor containers -->
             </div>
@@ -407,6 +408,41 @@
               disabled
             >
               Assign
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Conductor Info Modal -->
+    <div
+      class="modal fade"
+      id="conductorInfoModal"
+      tabindex="-1"
+      aria-labelledby="conductorInfoModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="conductorInfoModalLabel">
+              Conductor Details
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <p><strong>ID:</strong> <span id="conductorId"></span></p>
+            <p><strong>Name:</strong> <span id="conductorName"></span></p>
+            <p><strong>Email:</strong> <span id="conductorEmail"></span></p>
+            <p><strong>Status:</strong> <span id="conductorStatus"></span></p>
+          </div>
+          <div class="modal-footer">
+            <button id="removeConductorButton" class="btn btn-danger">
+              Remove Conductor
             </button>
           </div>
         </div>

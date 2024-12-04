@@ -11,7 +11,8 @@ import {
   setDoc,
   collection,
   doc,
-  updateDoc
+  updateDoc,
+  getDocs,
 } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -32,6 +33,50 @@ let userid = null;
 let originalToken = null;
 let comp_email = null;
 let counter = 0;
+let employees = [];
+let empnames = [];
+let empemails = [];
+
+async function getemployeeIds(uid) {
+  try {
+    console.log("getting employees");
+    const employeescollection = collection(db, `companies/${uid}/employees`);
+    const querysnapshot = await getDocs(employeescollection);
+
+    querysnapshot.docs.forEach((doc) => {
+      console.log(doc.id);
+      console.log(doc.data().id);
+      employees.push(doc.data().id);
+      empemails.push(doc.data().email);
+      empnames.push(doc.data().employee_name);
+    });
+
+    console.log(employees, empemails, empnames);
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+function checkforduplicates(email, name, id) {
+  const emplength = employees.length;
+  let doesexists = false;
+  for (let index = 0; index < employees.length; index++) {
+    if (employees[index] == id) {
+      doesexists = true;
+      break;
+    }
+    if (empemails[index] == email) {
+      doesexists = true;
+      break;
+    }
+    if (empnames[index] == name) {
+      doesexists = true;
+      break;
+    }
+  }
+
+  return doesexists;
+}
 
 const add_employee_form = document.querySelector("#add-employees-form");
 // console.log(prompt("enter a value"));
@@ -42,41 +87,70 @@ const add_employee_form = document.querySelector("#add-employees-form");
 
 // Show the modal for password re-entry
 function showPasswordModal() {
-    const passwordModal = new bootstrap.Modal(document.getElementById("passwordModal"));
-    passwordModal.show();
-    
-    return new Promise((resolve) => {
-      const submitButton = document.getElementById("submit-password");
-  
-      submitButton.onclick = () => {
-        const reenteredPassword = document.getElementById("reenter-password").value;
-        passwordModal.hide();
-        resolve(reenteredPassword);
-      };
+  const passwordModal = new bootstrap.Modal(
+    document.getElementById("passwordModal")
+  );
+  passwordModal.show();
+
+  return new Promise((resolve) => {
+    const submitButton = document.getElementById("submit-password");
+
+    submitButton.onclick = () => {
+      const reenteredPassword =
+        document.getElementById("reenter-password").value;
+      passwordModal.hide();
+      resolve(reenteredPassword);
+    };
+  });
+}
+
+add_employee_form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const employee_id = add_employee_form["emp-id"].value;
+  const emp_email = add_employee_form["email"].value;
+  const emp_password = add_employee_form["password"].value;
+  const emp_type = add_employee_form["employee_type"].value;
+  const employee_name = add_employee_form["name"].value;
+  let emp_userId = null;
+
+  const checker = checkforduplicates(emp_email, employee_name, employee_id);
+
+  if (checker == true) {
+    Swal.fire({
+      title: "Employee account creation error",
+      text: "There already exists an employee with the credentials provided",
+      icon: "error",
     });
-  }
-  
-  add_employee_form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-  
-    const employee_id = add_employee_form["emp-id"].value;
-    const emp_email = add_employee_form["email"].value;
-    const emp_password = add_employee_form["password"].value;
-    const emp_type = add_employee_form["employee_type"].value;
-    const employee_name = add_employee_form["name"].value;
-    let emp_userId = null;
-  
+    return;
+  } else {
     try {
-      console.log(employee_id, emp_email, emp_password, emp_type, employee_name, emp_userId);
-      await createUserWithEmailAndPassword(auth, emp_email, emp_password).then((cred) => {
-        console.log("New employee account created.");
-        emp_userId = cred.user.uid;
-      });
-  
-      await addDataToFirestore(emp_userId, employee_id, employee_name, emp_email, emp_password, emp_type);
+      console.log(
+        employee_id,
+        emp_email,
+        emp_password,
+        emp_type,
+        employee_name,
+        emp_userId
+      );
+      await createUserWithEmailAndPassword(auth, emp_email, emp_password).then(
+        (cred) => {
+          console.log("New employee account created.");
+          emp_userId = cred.user.uid;
+        }
+      );
+
+      await addDataToFirestore(
+        emp_userId,
+        employee_id,
+        employee_name,
+        emp_email,
+        emp_password,
+        emp_type
+      );
       await auth.signOut();
       add_employee_form.reset();
-  
+
       // Trigger modal to re-enter password
       const reenteredPassword = await showPasswordModal();
       await signInWithEmailAndPassword(auth, comp_email, reenteredPassword);
@@ -85,12 +159,13 @@ function showPasswordModal() {
     } catch (error) {
       console.log(error);
     }
-  });
-  
+  }
+});
+
 async function addDataToFirestore(id, empId, emp_name, email, password, type) {
   try {
     console.log(userid);
-    if(type == "conductor"){
+    if (type == "conductor") {
       await setDoc(doc(db, `ilugan_mobile_users`, id), {
         companyId: userid,
         employee_name: emp_name,
@@ -107,9 +182,9 @@ async function addDataToFirestore(id, empId, emp_name, email, password, type) {
         password: password,
         type: type,
         status: "inactive",
-        inbus: ""
+        inbus: "",
       });
-    }else{
+    } else {
       await setDoc(doc(db, `ilugan_mobile_users`, id), {
         companyId: userid,
         employee_name: emp_name,
@@ -135,18 +210,19 @@ async function addDataToFirestore(id, empId, emp_name, email, password, type) {
 
 function checkUser() {
   onAuthStateChanged(auth, async (user) => {
-    if(counter == 0){
-        if (user) {
-            console.log("User is logged in:", user.uid);
-            userid = user.uid;
-            comp_email = user.email;
-            console.log(user.email);
-            counter = 2;
-            originalToken = await user.getIdToken(true);
-            console.log(originalToken);
-        }else{
-            // window.location.assign('/login');
-        }
+    if (counter == 0) {
+      if (user) {
+        console.log("User is logged in:", user.uid);
+        userid = user.uid;
+        comp_email = user.email;
+        console.log(user.email);
+        counter = 2;
+        originalToken = await user.getIdToken(true);
+        console.log(originalToken);
+        getemployeeIds(user.uid);
+      } else {
+        // window.location.assign('/login');
+      }
     }
   });
 }
@@ -166,8 +242,8 @@ async function logout() {
         title: "Ilugan",
         text: "Log out successful",
         icon: "success",
-      }).then(async (result)=>{
-        await updateDoc(userDocRef, {status: 'offline'});
+      }).then(async (result) => {
+        await updateDoc(userDocRef, { status: "offline" });
         location.assign("/login");
       });
     })
@@ -181,36 +257,36 @@ async function logout() {
 }
 
 async function addtosystemlogs(uid, empID) {
-    console.log('System logs function');
-    try {
-      // Create a reference to a new document in the 'systemlogs' collection
-      const logRef = doc(collection(db, `companies/${uid}/systemlogs`));
-    
-      await setDoc(logRef, {
-        log: `You created an iLugan Mobile Account for ${empID}`,
-        date: Date()
-      });
-      console.log("A new system log was added");
-  
-      showNotification('System Log', {
-        body: `You created an iLugan Mobile Account for ${empID}`,
-        icon: '/logo'
-      });
-    } catch (error) {
-      console.log(error);
-    }
+  console.log("System logs function");
+  try {
+    // Create a reference to a new document in the 'systemlogs' collection
+    const logRef = doc(collection(db, `companies/${uid}/systemlogs`));
+
+    await setDoc(logRef, {
+      log: `You created an iLugan Mobile Account for ${empID}`,
+      date: Date(),
+    });
+    console.log("A new system log was added");
+
+    showNotification("System Log", {
+      body: `You created an iLugan Mobile Account for ${empID}`,
+      icon: "/logo",
+    });
+  } catch (error) {
+    console.log(error);
   }
+}
 
 function showNotification(title, options) {
-    if (Notification.permission === "granted") {
-      new Notification(title, options);
-    }
+  if (Notification.permission === "granted") {
+    new Notification(title, options);
   }
+}
 
-  const seeemps = document.getElementById('see_employees');
+const seeemps = document.getElementById("see_employees");
 
-  seeemps.addEventListener('click', ()=>{
-    window.location.assign('/employees');
-  })
+seeemps.addEventListener("click", () => {
+  window.location.assign("/employees");
+});
 
 window.onload = checkUser;

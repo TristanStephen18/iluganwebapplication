@@ -4,8 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Analytic Reports</title>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link rel="icon" href="/newlogo" type="image/x-icon">
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css"
@@ -19,7 +17,69 @@
       rel="stylesheet"
     />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
-    <link rel="stylesheet" href="/analyticscss">
+    <link rel="icon" href="/newlogo" type="image/x-icon">
+    <style>
+      body {
+        font-family: "Open Sans", sans-serif;
+        background-color: #f5f5f5;
+      }
+      .main-content {
+        margin-left: 200px;
+      }
+      .sidebar {
+        background: linear-gradient(to bottom, #29924f, #0c2c18);
+        min-height: 100vh;
+        width: 200px;
+        color: white;
+        position: fixed;
+        overflow-x: hidden;
+      }
+      .sidebar .nav-link {
+        color: white;
+        font-size: small;
+        font-weight: bold;
+      }
+      .sidebar .nav-link:hover {
+        background-color: #217841;
+      }
+      .sidebar .nav-link i {
+        margin-right: 8px;
+      }
+      .logo {
+        font-size: 20px;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 30px;
+        margin-right: 40px;
+      }
+      .logo img {
+        width: 20px;
+        height: 40px;
+      }
+      .main-content {
+        flex-grow: 1;
+        padding: 20px;
+      }
+      .chart-container {
+        position: relative;
+        height: 300px; /* Adjust this as needed */
+        max-height: 300px; /* Ensure it doesn’t exceed card body */
+        width: 100%;
+        overflow: hidden; /* Prevent overflow */
+      }
+
+      .filters {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 15px;
+      }
+      .filter-container {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        margin-bottom: 15px;
+      }
+    </style>
   </head>
   <body>
     <div class="d-flex">
@@ -85,38 +145,27 @@
         </ul>
       </div>
       <div class="main-content">
-        <!-- <div class="flex-grow-1 p-4 d-flex flex-column" id="maincontent"> -->
-          <div class="d-flex justify-content-between align-items-center mb-4">
-            <h3>Total Revenue</h3>
-            <div class="top-icons d-flex align-items-center">
-              <!-- <a href="/profile" class="top-icon-link me-3" title="Profile">
-                <i class="fas fa-user" style="margin-right: 20px;"></i>
-              </a> -->
-              <a href="/notifications" class="top-icon-link me-3" title="Notifications">
-                <i class="fas fa-bell" style="margin-right: 20px;"></i>
-              </a>
-              <a href="/systemlogs" class="top-icon-link" title="System Logs">
-                <i class="fas fa-cogs"></i>
-              </a>
-            </div>
-          </div>
-          <h5>Select a bus</h5>
+        <h2 style="margin-bottom: 30px;">Analytics and Overview</h2>
         <div class="filters">
-          <!-- <label for="busSelect">BUS:</label> -->
-          <select id="busSelect" class="form-select form-select-sm"></select>
-          <label for="fromDate">From:</label>
-            <input type="date" id="fromDate" class="form-control d-inline-block me-2" style="width: auto;">
-            <label for="toDate">To:</label>
-            <input type="date" id="toDate" class="form-control d-inline-block" style="width: auto;">
+          <label for="busSelect"><i class="fas fa-bus" style="margin-right: 10px;"></i>BUS NUMBER: </label>
+          <select
+            id="busSelect"
+            class="form-select form-select-sm"
+            style="width: 30%; text-align: center; margin-right: 30px;"
+          ></select>
+          <label for="fromdate">From: </label>
+          <input type="date" name="fromdate" id="fromdate">
+          <label for="todate">To: </label>
+          <input type="date" name="todate" id="todate">
         </div>
         <div class="card shadow-sm mb-4">
           <div class="card-body">
             <div class="chart-container">
-              <canvas id="totalRevenueChart"></c  anvas>
+              <canvas id="totalRevenueChart"></canvas>
             </div>
           </div>
         </div>
-        <h2 style="margin-bottom: 30px;">Passengers Overview</h2>
+        <h2>Reservation Overview</h2>
         <div class="row mb-4">
           <div class="col-md-6">
             <div class="card shadow-sm">
@@ -132,9 +181,7 @@
             <div class="card shadow-sm">
               <div class="card-body">
                 <div class="filter-container">
-                  <!-- For the passenger chart -->
-                  <label for="passengerDatePicker">Select Date:</label>
-                  <input type="date" id="passengerDatePicker" class="form-control mb-3">
+                  <select name="datefilter" id="datefilter"></select>
                 </div>
                 <h5>Total Passengers</h5>
                 <div class="chart-container">
@@ -146,7 +193,89 @@
         </div>
       </div>
     </div>
+
+    <script>
+      // const ctxRevenue = document.getElementById('revenueChart').getContext('2d');
+      // const revenueChart = new Chart(ctxRevenue, {
+      //   type: 'line',
+      //   data: {
+      //     labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7'],
+      //     datasets: [{
+      //       label: 'Total Revenue',
+      //       data: [1200, 1900, 3000, 2500, 4000, 3500, 5000],
+      //       borderColor: '#29924F',
+      //       backgroundColor: 'rgba(41, 146, 79, 0.2)',
+      //       borderWidth: 2,
+      //       fill: true,
+      //     }]
+      //   },
+      //   options: {
+      //     responsive: true,
+      //     maintainAspectRatio: false,
+      //     scales: {
+      //       y: {
+      //         beginAtZero: true
+      //       }
+      //     }
+      //   }
+      // });
+
+      // const ctxReservation = document.getElementById('reservationChart').getContext('2d');
+      // const reservationChart = new Chart(ctxReservation, {
+      //   type: 'pie',
+      //   data: {
+      //     labels: ['Reserved', 'Available'],
+      //     datasets: [{
+      //       label: 'Reservation Status',
+      //       data: [65, 35],
+      //       backgroundColor: ['#29924F', '#e0e0e0'],
+      //       borderColor: '#fff',
+      //       borderWidth: 1
+      //     }]
+      //   },
+      //   options: {
+      //     responsive: true,
+      //     maintainAspectRatio: false,
+      //   }
+      // });
+
+      // const ctxPassenger = document.getElementById('passengerChart').getContext('2d');
+      // const passengerChart = new Chart(ctxPassenger, {
+      //   type: 'pie',
+      //   data: {
+      //     labels: ['Online', 'Walk-in'],
+      //     datasets: [{
+      //       label: 'Total Passengers',
+      //       data: [45, 55],
+      //       backgroundColor: ['#29924F', '#f39c12'],
+      //       borderColor: '#fff',
+      //       borderWidth: 1
+      //     }]
+      //   },
+      //   options: {
+      //     responsive: true,
+      //     maintainAspectRatio: false,
+      //   }
+      // });
+
+      // const updateReservationChart = () => {
+      //   const bus = document.getElementById('reservationBusSelect').value;
+      //   const reservationData = bus === 'bus1' ? [70, 30] : [50, 50];
+      //   reservationChart.data.datasets[0].data = reservationData;
+      //   reservationChart.update();
+      // };
+
+      // const updatePassengerChart = () => {
+      //   const date = document.getElementById('passengerDateSelect').value;
+      //   const passengerData = date ? [60, 40] : [45, 55];
+      //   passengerChart.data.datasets[0].data = passengerData;
+      //   passengerChart.update();
+      // };
+
+      // document.getElementById('reservationBusSelect').addEventListener('change', updateReservationChart);
+      // document.getElementById('passengerDateSelect').addEventListener('change', updatePassengerChart);
+    </script>
+
     <script type="module" src="/analyticsjs"></script>
-    <script type="module" src="/monitoring"></script>
   </body>
 </html>

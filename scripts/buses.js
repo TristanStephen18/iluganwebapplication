@@ -33,7 +33,7 @@ const db = getFirestore(app);
 
 let apiKey = "pk.e6e28e751bd0e401a2a07cb0cbe2e6e4";
 const apiKeyDistance =
-  "vsOf7wMnMpurcjSIjpMAQBjMcVsFm1vzriNkoR88GseE0mn4pjBKo9K5fMZ8w4C9";
+  "n9cKVO3pE67yn6lUHKU2HecUcEootl5XVqJClAEYeYepCGKFDagC0LwCGPa2WKRo";
 
 // let terminalLat;
 // let terminalLng;
@@ -307,6 +307,7 @@ async function initializaData() {
 }
 
 async function setupbusseats(seats, busid) {
+  console.log("Setting up bus seats");
   for (let index = 1; index <= seats; index++) {
     // const element = array[index];
     try {
@@ -343,8 +344,8 @@ async function addtofleet(
   route
 ) {
   try {
-    await setDoc(doc(db, `companies/${uid}/buses`, busnum), {
-      total_seats: available,
+    await setDoc(doc(db, `companies/${uid}/buses`, platenum), {
+      total_seats: parseInt(available),
       destination: destination,
       destination_coordinates: destincoordinates,
       distance_from_destination: distance,
@@ -361,10 +362,11 @@ async function addtofleet(
       current_location: terminalloc,
       bustype: type,
       via: route,
+    }).then(() => {
+      addtosystemlogs(uid, busnum, "add");
+      console.log("bus added to the fleet");
+      setupbusseats(parseInt(available), platenum);
     });
-    addtosystemlogs(uid, busnum, "add");
-    console.log("bus added to the fleet");
-    setupbusseats(parseInt(available), busnum);
 
     // const modal = document.getElementById("addFleetModal");
     // if (modal) {
@@ -391,21 +393,23 @@ async function displaybuses(uid) {
       querysnapshot.docs.forEach((doc) => {
         const data = doc.data();
         // setupbusseats(data.available_seats, doc.id);
+        
 
         const busesrow = `
           <tr data-bus-number="${doc.id}">
             <td style = "font-weight: bold;"><img src ="/greenbusicon" style = "width: 75px; height: 50px; margin-bottom: 4px;"></img><br>${
               doc.id
             }</td>
-            <td>${data.plate_number}</td>
+            <td>${data.bus_number}</td>
             <td>${data.terminalloc}</td>
             <td>${data.destination}</td>
             <td>${data.via || "Missing"} </td>
             <td>${data.distance_from_destination}</td>
             <td>${data.estimated_time_of_arrival}</td>
             <td>${
-              data.conductor ||
-              `<button class="assign-btn" data-id="${doc.id}"><i class="fas fa-user-plus" style="margin-right: 10px;"></i>Assign</button>`
+              data.conductor
+                ? `<button class="view-conductor-btn" data-con-id="${data.conductor}" data-bus-id="${doc.id}">${data.conductor}</button>`
+                : `<button class="assign-btn" data-id="${doc.id}"><i class="fas fa-user-plus" style="margin-right: 10px;"></i>Assign</button>`
             }</td>
             <td>${data.tripcount || "0"}</td>
             <td><span><button class="delete-btn" data-id="${
@@ -429,6 +433,16 @@ async function displaybuses(uid) {
         });
       });
 
+      // Attach event listeners to view conductor buttons
+      document.querySelectorAll(".view-conductor-btn").forEach((button) => {
+        button.addEventListener("click", async (e) => {
+          const conductorId = button.getAttribute("data-con-id");
+          const empid = await getconID(conductorId);
+          const busId = button.getAttribute("data-bus-id");
+          await showConductorDetails(empid, busId);
+        });
+      });
+
       document.querySelectorAll(".update-btn").forEach((button) => {
         button.addEventListener("click", async (e) => {
           const busId = e.target.getAttribute("data-id");
@@ -446,19 +460,110 @@ async function displaybuses(uid) {
             document.getElementById("assignConductorModal")
           );
           assignConductorModal.show();
-      
+
           // Save the busId for use when assigning
           document
             .getElementById("assignConductorButton")
             .setAttribute("data-bus-id", busId);
         });
       });
-      
     });
   } catch (error) {
     console.log(error);
   }
 }
+
+async function getconID(conname) {
+  let id;
+  try{
+    const employeescollectio = collection(db, `companies/${userId}/employees`);
+    const querysnapshot = await getDocs(employeescollectio);
+
+    querysnapshot.docs.forEach((doc)=>{
+      const data = doc.data();
+      if(data.employee_name == conname){
+        id = doc.id;
+      }
+    });
+  }catch(error){
+    console.log(error);
+  }
+  return id;
+}
+
+async function showConductorDetails(conductorId, busId) {
+  try {
+    const conductorDoc = await getDoc(
+      doc(db, `companies/${userId}/employees`, conductorId)
+    );
+    if (conductorDoc.exists()) {
+      const data = conductorDoc.data();
+      // Populate modal with conductor data
+      document.getElementById("conductorId").textContent = conductorId;
+      document.getElementById("conductorName").textContent = data.employee_name;
+      document.getElementById("conductorEmail").textContent = data.email;
+      document.getElementById("conductorStatus").textContent = data.status;
+
+      // Attach the busId and conductorId to the remove button
+      const removeButton = document.getElementById("removeConductorButton");
+      removeButton.setAttribute("data-con-id", conductorId);
+      removeButton.setAttribute("data-bus-id", busId);
+
+      // Show the modal
+      const modal = new bootstrap.Modal(
+        document.getElementById("conductorInfoModal")
+      );
+      modal.show();
+    } else {
+      console.error("Conductor data not found.");
+    }
+  } catch (error) {
+    console.error("Error fetching conductor details:", error);
+  }
+}
+
+document
+  .getElementById("removeConductorButton")
+  .addEventListener("click", async (e) => {
+    const conductorId = e.target.getAttribute("data-con-id");
+    const empid = await getconID(conductorId);
+    const busId = e.target.getAttribute("data-bus-id");
+
+    try {
+      // Reset the bus document
+      await updateDoc(doc(db, `companies/${userId}/buses`, busId), {
+        conductor: "",
+      });
+
+      // Reset the employee document
+      await updateDoc(doc(db, `companies/${userId}/employees`, empid), {
+        inbus: "",
+      });
+
+      // Reset the mobile user document
+      await updateDoc(doc(db, `ilugan_mobile_users`, empid), {
+        inbus: "",
+      });
+
+      // Close the modal and show success message
+      const modal = bootstrap.Modal.getInstance(
+        document.getElementById("conductorInfoModal")
+      );
+      modal.hide();
+      Swal.fire({
+        title: "Conductor Removed",
+        text: `Conductor ${conductorId} has been removed from bus ${busId}.`,
+        icon: "success",
+      });
+    } catch (error) {
+      console.error("Error removing conductor:", error);
+      Swal.fire({
+        title: "Error",
+        text: error.message,
+        icon: "error",
+      });
+    }
+  });
 
 function confirmDelete(busId, uid) {
   Swal.fire({
@@ -697,9 +802,9 @@ async function populateEditModal(busId, uid) {
       const data = busSnap.data();
 
       // Set form fields with bus data
-      document.getElementById("editBusNumber").value = busId; // Bus Number is readonly
-      document.getElementById("editPlateNumber").value = data.bus_number;
-      document.getElementById("editSeats").value = data.available_seats;
+      document.getElementById("editBusNumber").value = data.bus_number; // Bus Number is readonly
+      document.getElementById("editPlateNumber").value = data.plate_number;
+      document.getElementById("editSeats").value = data.total_seats || 0;
       // document.getElementById("editDepartureTime").value = data.departure_time;
       document.getElementById("editBusType").value = data.bustype;
       document.getElementById("editedroute").value =
@@ -729,6 +834,7 @@ async function populateEditModal(busId, uid) {
           option.selected = true;
         }
       });
+      initializaData();
     } else {
       console.error("No bus data found for the selected ID.");
     }
@@ -740,8 +846,8 @@ async function populateEditModal(busId, uid) {
 document
   .getElementById("updateBusButton")
   .addEventListener("click", async () => {
-    const busId = document.getElementById("editBusNumber").value;
-    const plateNumber = document.getElementById("editPlateNumber").value;
+    const busnum = document.getElementById("editBusNumber").value;
+    const busId = document.getElementById("editPlateNumber").value;
     const terminallocationupdate =
       editterminaldiv.options[editterminaldiv.selectedIndex].text;
     const destinationlocationupdate =
@@ -763,7 +869,7 @@ document
         busId,
         userId,
         busType,
-        plateNumber,
+        busnum,
         terminallocationupdate,
         editedterminalcoordinates,
         route,
@@ -873,7 +979,6 @@ async function updatebusdata(
   // const busdocref = doc(db, `companies/${companyID}/buses/${}`)
   try {
     await updateDoc(doc(db, `companies/${companyID}/buses`, busID), {
-      bus_number: platenum,
       terminalloc: terminaladd,
       bustype: btype,
       terminal_location: terminalpoint,
@@ -888,6 +993,8 @@ async function updatebusdata(
         document.getElementById("editBusModal")
       );
       editBusModal.hide();
+      // $('#editBusModal').hide();
+      setupbusseats(parseInt(seatsupdate), busID);
       Swal.fire({
         title: "Bus Update",
         text: `Bus ${busID}'s info was updated successfully`,
@@ -986,7 +1093,7 @@ async function fetchAutocomplete(query) {
 async function updateConductorandBusdata(conid, busnum, conname) {
   try {
     await updateDoc(doc(db, `companies/${userId}/buses`, busnum), {
-      conductor: conname
+      conductor: conname,
     });
     await updateDoc(doc(db, `companies/${userId}/employees`, conid), {
       inbus: busnum,
@@ -1008,16 +1115,25 @@ async function updateConductorandBusdata(conid, busnum, conname) {
 
 async function getAvailableConductors(uid) {
   try {
+    console.log('getting available conductors');
+    let counter = 0;
     const employeecollection = collection(db, `companies/${uid}/employees`);
     const conductorList = document.getElementById("conductorList");
     conductorList.innerHTML = "";
 
     onSnapshot(employeecollection, (snapshot) => {
       snapshot.docs.forEach((doc) => {
+        
         const data = doc.data();
+        console.log(data.inbus);
+        if(data.inbus == '' && data.type == "conductor"){
+          console.log('Conductor here');
+          counter++;
+        }
 
         // Check if the employee is an available conductor
-        if (data.type === "conductor" && data.inbus == "") {
+        if (data.inbus == '' && data.type == "conductor") {
+          counter++;
           // Create a container for the conductor
           const conductorContainer = document.createElement("div");
           conductorContainer.classList.add("conductor-container");
@@ -1056,6 +1172,7 @@ async function getAvailableConductors(uid) {
         conductorList.innerHTML = "<p>No available conductors found.</p>";
       }
     });
+    console.log('Available conductors are : ' + counter);
   } catch (error) {
     console.log(error);
   }
@@ -1089,5 +1206,3 @@ document
       assignConductorModal.hide();
     }
   });
-
-

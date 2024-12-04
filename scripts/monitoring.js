@@ -33,7 +33,7 @@ const auth = getAuth(app);
 let userid;
 
 const apiKeyDistance =
-  "vsOf7wMnMpurcjSIjpMAQBjMcVsFm1vzriNkoR88GseE0mn4pjBKo9K5fMZ8w4C9";
+  "nyzqD57jQHRFOngNQDn5F16EBQ4wCX4lbIw3TUj55UcJmCQHjls4ZMlVo0Ac1yUL";
 
 async function requestNotificationPermission() {
   console.log("sample");
@@ -282,6 +282,10 @@ async function listentobusupdates(uid) {
           } catch (error) {
             console.error("Error updating bus document:", error);
           }
+        }else{
+          await updateDoc(busDocRef, {
+            arrivalNotified: false
+          });
         }
       }
     });

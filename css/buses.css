@@ -225,3 +225,18 @@ body {
   border: none;
 }
 
+.view-conductor-btn{
+  background-color: white;
+  color: green;
+  /* border-radius: 5px; */
+  border: none;
+}
+.view-conductor-btn:hover{
+  /* background-color: white; */
+  color: black;
+  text-decoration: underline;
+  /* border-radius: 5px; */
+  /* border: none; */
+}
+
+

@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Employees</title>
-    <link rel="icon" href="/newlogo" type="image/x-icon">
+    <link rel="icon" href="/newlogo" type="image/x-icon" />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link
       rel="stylesheet"
@@ -22,7 +22,7 @@
       rel="stylesheet"
       href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css"
     />
-    <link rel="stylesheet" href="/employeescss">
+    <link rel="stylesheet" href="/employeescss" />
   </head>
   <body>
     <div class="d-flex">
@@ -88,9 +88,18 @@
         </ul>
       </div>
       <div class="content">
-        <h2>iLugan Mobile Users</h2><br>
+        <h3>
+          iLugan Mobile Users<i
+            class="fas fa-mobile-alt"
+            style="margin-left: 20px"
+          ></i>
+        </h3>
+        <br />
         <div class="table-responsive">
-          <table id="employeestable" class="table table-striped table-responsive">
+          <table
+            id="employeestable"
+            class="table table-striped table-responsive"
+          >
             <thead>
               <tr>
                 <th>Employee Id</th>
@@ -98,7 +107,7 @@
                 <th>Name</th>
                 <th>Position</th>
                 <th>Account Status</th>
-                  <th>User ID</th>
+                <th>User ID</th>
                 <th>Actions</th>
                 <!-- <th>Operation Time</th>
                 <th>Trips Made</th>
