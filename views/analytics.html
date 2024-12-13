@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Analytic Reports</title>
+    <link rel="icon" href="/newlogo" type="image/x-icon" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css"
@@ -12,74 +14,17 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
     />
+    <script
+      src="https://kit.fontawesome.com/2a3bd9e9ce.js"
+      crossorigin="anonymous"
+    ></script>
     <link
       href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap"
       rel="stylesheet"
     />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
-    <link rel="icon" href="/newlogo" type="image/x-icon">
-    <style>
-      body {
-        font-family: "Open Sans", sans-serif;
-        background-color: #f5f5f5;
-      }
-      .main-content {
-        margin-left: 200px;
-      }
-      .sidebar {
-        background: linear-gradient(to bottom, #29924f, #0c2c18);
-        min-height: 100vh;
-        width: 200px;
-        color: white;
-        position: fixed;
-        overflow-x: hidden;
-      }
-      .sidebar .nav-link {
-        color: white;
-        font-size: small;
-        font-weight: bold;
-      }
-      .sidebar .nav-link:hover {
-        background-color: #217841;
-      }
-      .sidebar .nav-link i {
-        margin-right: 8px;
-      }
-      .logo {
-        font-size: 20px;
-        font-weight: bold;
-        text-align: center;
-        margin-bottom: 30px;
-        margin-right: 40px;
-      }
-      .logo img {
-        width: 20px;
-        height: 40px;
-      }
-      .main-content {
-        flex-grow: 1;
-        padding: 20px;
-      }
-      .chart-container {
-        position: relative;
-        height: 300px; /* Adjust this as needed */
-        max-height: 300px; /* Ensure it doesn’t exceed card body */
-        width: 100%;
-        overflow: hidden; /* Prevent overflow */
-      }
-
-      .filters {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 15px;
-      }
-      .filter-container {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        margin-bottom: 15px;
-      }
-    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.8.0/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.8.0/chart.min.js"></script>
+    <link rel="stylesheet" href="/analyticscss" />
   </head>
   <body>
     <div class="d-flex">
@@ -145,18 +90,20 @@
         </ul>
       </div>
       <div class="main-content">
-        <h2 style="margin-bottom: 30px;">Analytics and Overview</h2>
+        <h2 style="margin-bottom: 30px">Analytics and Overview</h2>
         <div class="filters">
-          <label for="busSelect"><i class="fas fa-bus" style="margin-right: 10px;"></i>BUS NUMBER: </label>
+          <label for="busSelect"
+            ><i class="fas fa-bus" style="margin-right: 10px"></i>BUS NUMBER:
+          </label>
           <select
             id="busSelect"
             class="form-select form-select-sm"
-            style="width: 30%; text-align: center; margin-right: 30px;"
+            style="width: 30%; text-align: center; margin-right: 30px"
           ></select>
           <label for="fromdate">From: </label>
-          <input type="date" name="fromdate" id="fromdate">
+          <input type="date" name="fromdate" id="fromdate" />
           <label for="todate">To: </label>
-          <input type="date" name="todate" id="todate">
+          <input type="date" name="todate" id="todate" />
         </div>
         <div class="card shadow-sm mb-4">
           <div class="card-body">

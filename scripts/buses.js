@@ -219,8 +219,8 @@ async function busdatagetter(uid) {
       snapshot.docs.forEach((doc) => {
         console.log(doc.data());
         const data = doc.data();
-        busnumbers.push(doc.id);
-        platenumbers.push(data.bus_number);
+        busnumbers.push(data.bus_number);
+        platenumbers.push(data.plate_number);
       });
     });
     // const querysnapshot = await getDocs(busescollection);

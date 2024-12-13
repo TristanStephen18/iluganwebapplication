@@ -77,6 +77,9 @@ app.get('/scheds', (req, res)=>{
 app.get('/allreservations', (req, res)=>{
     res.sendFile(path.join(viewrdr, 'allreservations.html'));
 })
+app.get('/subscriptionpayment', (req, res)=>{
+    res.sendFile(path.join(viewrdr, 'subscriptionrenewal.html'));
+})
 //Scripts
 
 app.get('/loginchecker', (req, res)=>{

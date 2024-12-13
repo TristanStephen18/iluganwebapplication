@@ -126,7 +126,7 @@ async function displayreservations(uid) {
               <td>${formattedDateTime}</td>
               <td>${data.from}</td>
               <td>${data.to}</td>
-              <td>${data.seats_reserved}</td>
+              <td>${data.seats}</td>
               <td>${data.type || "Regular"}</td>
               <td>${data.amount}</td>
               <td>${status}</td>

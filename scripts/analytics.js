@@ -13,6 +13,7 @@ import {
   query,
   orderBy,
   onSnapshot,
+  updateDoc
 } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -50,12 +51,34 @@ onAuthStateChanged(auth, async (user) => {
   }
 });
 
+const logoutbtn = document.querySelector("#logout");
+console.log(logoutbtn);
+logoutbtn.addEventListener("click", () => {
+  console.log("Clicked logout btn");
+  logout();
+});
 
-
-// Logout functionality
-document
-  .querySelector("#logout")
-  .addEventListener("click", () => signOut(auth));
+async function logout() {
+  const userDocRef = doc(db, "companies", userId);
+  signOut(auth)
+    .then(() => {
+      Swal.fire({
+        title: "Ilugan",
+        text: "Log out successful",
+        icon: "success",
+      }).then(async (result)=>{
+        await updateDoc(userDocRef, {status: 'offline'});
+        location.assign("/login");
+      });
+    })
+    .catch((error) => {
+      Swal.fire({
+        title: "ERROR!!!",
+        text: error.message,
+        icon: "error",
+      });
+    });
+}
 
 // Fetch buses and populate the dropdown
 async function populateBusDropdown() {

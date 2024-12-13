@@ -39,7 +39,6 @@ loginForm.addEventListener("submit", (e) => {
   e.preventDefault();
 
   // Show the loading modal
-  // loadingModal.show();
 
   const email = loginForm["email"].value;
   const password = loginForm["password"].value;
@@ -55,16 +54,23 @@ loginForm.addEventListener("submit", (e) => {
         const userDoc = await getDoc(userDocRef);
         console.log(userDoc);
         console.log(userDoc.data().company_name);
+        const subssxpirydate = new Date(`${userDoc.data().expiryDate.toDate()}`);
         
-        loadingModal.hide();  // Hide modal on successful login
-        Swal.fire({
-          title: "Log in successful",
-          text: `Welcome ${userDoc.data().company_name}`,
-          icon: "success",
-          confirmButtonText: "Continue",
-        }).then(()=>{
-          window.location.assign('/dashboard');
-        });
+        // loadingModal.hide();  // Hide modal on successful login
+        // loadingModal.show();
+        if(isExpired(subssxpirydate)){
+          // loadingModal.hide();
+          window.location.assign('/subscriptionpayment');
+        }else{
+          Swal.fire({
+            title: "Log in successful",
+            text: `Welcome ${userDoc.data().company_name}`,
+            icon: "success",
+            confirmButtonText: "Continue",
+          }).then(()=>{
+            window.location.assign('/dashboard');
+          });
+        }
       } catch (error) {
         loadingModal.hide();  // Hide modal on error
         Swal.fire({
@@ -95,6 +101,13 @@ async function getlogincounter(uid) {
   console.log(userDoc);
 
   return userDoc.data().logincounter;
+}
+
+
+function isExpired(dateString) {
+  const expiryDate = new Date(dateString); // Parse the date string into a Date object
+  const now = new Date(); // Get the current date and time
+  return now > expiryDate; // Check if current date is after expiry date
 }
 
 const forgotpassbtn = document.getElementById('forgotpassbtn');

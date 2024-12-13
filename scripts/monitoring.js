@@ -13,6 +13,7 @@ import {
 import {
   onAuthStateChanged,
   getAuth,
+  signOut
 } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
 
 const firebaseConfig = {
@@ -51,6 +52,70 @@ async function requestNotificationPermission() {
   }
 }
 
+// function monitorexpiry() {
+//   setInterval(() => {
+//     if (isExpired(firebaseTimestamp)) {
+//       console.log("The product has expired!");
+//       clearInterval(timer); // Stop polling after expiry
+//     } else {
+//       console.log("The product is still valid. Checking again in 5 seconds...");
+//     }
+//   }, 5000); // Poll every 5 seconds
+// }
+
+async function getExpiry(uid) {
+  try {
+    const companyref = doc(db, `companies/${uid}`);
+    const companysnapshot = await getDoc(companyref);
+
+    if (companysnapshot.exists()) {
+      const expiredDate = new Date(
+        `${companysnapshot.data().expiryDate.toDate()}`
+      );
+      setInterval(() => {
+        if (isExpired(expiredDate)) {
+          console.log("The product has expired!");
+          // clearInterval(timer);
+          signOut(auth)
+            .then(() => {
+              Swal.fire({
+                title: "Ilugan",
+                text: "Your subscription has expired",
+                icon: "info",
+              }).then(async (result) => {
+                // await updateDoc(userDocRef, { status: "offline" });
+                location.assign("/login");
+              });
+            })
+            .catch((error) => {
+              Swal.fire({
+                title: "ERROR!!!",
+                text: error.message,
+                icon: "error",
+              });
+            });
+        } else {
+          console.log(
+            "The product is still valid. Checking again in 5 seconds..."
+          );
+        }
+      }, 3000);
+      console.log(
+        "Company data" +
+          new Date(`${companysnapshot.data().subscribedAt.toDate()}`)
+      );
+    } else {
+      console.log("Company data does not exists");
+    }
+  } catch (error) {}
+}
+
+function isExpired(dateString) {
+  const expiryDate = new Date(dateString); // Parse the date string into a Date object
+  const now = new Date(); // Get the current date and time
+  return now > expiryDate; // Check if current date is after expiry date
+}
+
 // Function to show a notification
 function showNotification(title, options) {
   if (Notification.permission === "granted") {
@@ -76,6 +141,7 @@ async function checkuser() {
       console.log("User is logged in:", user.uid);
       userid = user.uid;
       listentobusupdates(user.uid);
+      getExpiry(user.uid);
       // getUserData(user.uid);
       // console.log("hello");
 
@@ -282,9 +348,9 @@ async function listentobusupdates(uid) {
           } catch (error) {
             console.error("Error updating bus document:", error);
           }
-        }else{
+        } else {
           await updateDoc(busDocRef, {
-            arrivalNotified: false
+            arrivalNotified: false,
           });
         }
       }
@@ -356,13 +422,15 @@ async function sensorlistener() {
             db,
             `companies/1CzPhECXc8PFJQP4rfGzwW77gKp1/buses/BUS 6318/data`,
             formattedDate
-          ), {
+          ),
+          {
             total_passengers: 0,
             total_reservations: 0,
           }
         );
         await setDoc(
-          doc(db, `companies/1CzPhECXc8PFJQP4rfGzwW77gKp1/data`, formattedDate), {
+          doc(db, `companies/1CzPhECXc8PFJQP4rfGzwW77gKp1/data`, formattedDate),
+          {
             total_passengers: 0,
             total_reservation: 0,
           }
