@@ -54,7 +54,7 @@ loginForm.addEventListener("submit", (e) => {
         const userDoc = await getDoc(userDocRef);
         console.log(userDoc);
         console.log(userDoc.data().company_name);
-        const subssxpirydate = new Date(`${userDoc.data().expiryDate.toDate()}`);
+        const subssxpirydate = new Date(`${userDoc.data().subscribedAt.toDate()}`);
         
         // loadingModal.hide();  // Hide modal on successful login
         // loadingModal.show();

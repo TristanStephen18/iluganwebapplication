@@ -155,6 +155,10 @@ app.get('/schedsjs', (req, res)=>{
 app.get('/allreserjs', (req, res)=>{
     res.sendFile(path.join(scriptdir, 'allreservations.js'));
 })
+
+app.get('/subsrenewaljs', (req, res)=>{
+    res.sendFile(path.join(scriptdir, 'subsrenewal.js'));
+})
 //css
 app.get('/indexcss', (req, res)=>{
     res.sendFile(path.join(cssdr, 'index.css'));
@@ -170,6 +174,9 @@ app.get('/signupcss', (req, res)=>{
 })
 app.get('/dashboardcss', (req, res)=>{
     res.sendFile(path.join(cssdr, 'dashboard.css'));
+})
+app.get('/subscss', (req, res)=>{
+    res.sendFile(path.join(cssdr, 'subscriptionrenewal.css'));
 })
 app.get('/analyticscss', (req, res)=>{
     res.sendFile(path.join(cssdr, 'analytics.css'));
