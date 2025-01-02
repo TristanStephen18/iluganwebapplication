@@ -26,14 +26,51 @@ const db = getFirestore(app);
 const typedisplayer = document.getElementById("subst");
 const paybutton = document.getElementById("paybtn");
 let subsprice;
+let substype;
+let totalrevpresent;
+let userid;
 
 onAuthStateChanged(auth, async (user) => {
   if (user) {
     console.log("User is logged in:", user.uid);
     getSubstype(user.uid)
+    userid = user.uid;
+    const subsdate = new Date();
+    const todaydate = subsdate.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: '2-digit'
+  });
+
+  console.log(todaydate);
+  totalrevpresent = await getPresenttotalrev(todaydate.toString());
+  console.log(totalrevpresent);
+
     // getUserData(user.uid);
   }
 });
+
+function getSubscriptionExpiry(subscriptionType) {
+  const subscriptionDate = new Date(); // current date/time when user subscribes
+  let expiryDate = new Date(subscriptionDate); // copy of the subscription date
+
+  // Add time based on subscription type
+  switch (subscriptionType) {
+    case "Annual":
+      expiryDate.setFullYear(subscriptionDate.getFullYear() + 1);
+      break;
+    case "Semi-Annual":
+      expiryDate.setMonth(subscriptionDate.getMonth() + 6);
+      break;
+    case "Quarterly":
+      expiryDate.setMonth(subscriptionDate.getMonth() + 3);
+      break;
+    default:
+      throw new Error("Invalid subscription type");
+  }
+
+  return expiryDate;
+}
 
 async function getSubstype(uid) {
     try{
@@ -42,21 +79,22 @@ async function getSubstype(uid) {
         if(snapshot.exists){
             console.log(snapshot.data())
             const data = snapshot.data();
-            const substype = data.subscriptionType;
+            substype = data.subscriptionType;
             let amount = '';
 
             if(substype == 'Annual'){
-                amount = '16,000 php';
-                subsprice = '16000';
+                amount = 'PHP 16,000';
+                subsprice = 16000;
             }else if(substype == 'Semi-Annual'){
-                amount = '8,000 php';
-                subsprice = '8000';
+                amount = 'PHP 8,000';
+                subsprice = 8000;
             }else{
-                amount = '4,000 php';
-                subsprice = '4000';
+                amount = 'PHP 4,000';
+                subsprice = 4000;
             }
 
-            typedisplayer.innerHTML = `Your ${substype} subscription of our system has ended`;
+            typedisplayer.innerHTML = `Your ${substype} subscription has expired. Please renew to continue using
+            our services`;
             paybutton.innerHTML = `Pay ${amount}`;
         }else{
             console.log('Data does not exists')
@@ -68,70 +106,137 @@ async function getSubstype(uid) {
 }
 
 paybutton.addEventListener("click", function () {
-      const options = {
-        method: "POST",
-        headers: {
-          accept: "application/json",
-          "content-type": "application/json",
-          authorization: "Basic c2tfdGVzdF81Z1VZeEx3WHBLcGdaQWdtRnNWWDlQUjQ6",
+  // Show the modal with the loader
+  $("#paymentModal").modal("show");
+
+  const options = {
+    method: "POST",
+    headers: {
+      accept: "application/json",
+      "content-type": "application/json",
+      authorization: "Basic c2tfdGVzdF81Z1VZeEx3WHBLcGdaQWdtRnNWWDlQUjQ6",
+    },
+    body: JSON.stringify({
+      data: {
+        attributes: {
+          amount: parseFloat(subsprice) * 100,
+          description: "Subscription",
+          remarks: "Subscription Renewal",
         },
-        body: JSON.stringify({
-          data: {
-            attributes: {
-              amount: parseFloat(subsprice) * 100,
-              description: "Subscription",
-              remarks: 'Subscription Renewal',
-            },
+      },
+    }),
+  };
+
+  fetch("https://api.paymongo.com/v1/links", options)
+    .then((response) => response.json())
+    .then((response) => {
+      // Open the payment link
+      window.open(response.data.attributes.checkout_url);
+
+      // Poll for payment status
+      const checkStatusInterval = setInterval(() => {
+        const options = {
+          method: "GET",
+          headers: {
+            accept: "application/json",
+            authorization:
+              "Basic c2tfdGVzdF81Z1VZeEx3WHBLcGdaQWdtRnNWWDlQUjQ6",
           },
-        }),
-      };
+        };
 
-      fetch("https://api.paymongo.com/v1/links", options)
-        .then((response) => response.json())
-        .then((response) => {
-          // Show processing modal
-        //   showProcessingModal();
+        fetch(
+          `https://api.paymongo.com/v1/links/${response.data.id}`,
+          options
+        )
+          .then((response) => response.json())
+          .then((statusResponse) => {
+            console.log(statusResponse.data.attributes.status);
 
-          // Open payment link
-          window.open(response.data.attributes.checkout_url);
+            if (statusResponse.data.attributes.status === "paid") {
+              clearInterval(checkStatusInterval); // Stop polling
 
-          const checkStatusInterval = setInterval(() => {
-            const options = {
-              method: "GET",
-              headers: {
-                accept: "application/json",
-                authorization:
-                  "Basic c2tfdGVzdF81Z1VZeEx3WHBLcGdaQWdtRnNWWDlQUjQ6",
-              },
-            };
+              const subsdate = new Date();
+              const expiryDate = getSubscriptionExpiry(substype);
 
-            fetch(
-              `https://api.paymongo.com/v1/links/${response.data.id}`,
-              options
-            )
-              .then((response) => response.json())
-              .then((statusResponse) => {
-                console.log(statusResponse.data.attributes.status);
-                if (statusResponse.data.attributes.status === "paid") {
-                  clearInterval(checkStatusInterval); // Stop polling
+              const todaydate = subsdate.toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "2-digit",
+              });
 
-                  // Update modal content to success
-                //   showPaymentSuccessModal();
+              console.log(`Renewed at: ${subsdate}`);
+              console.log(`Expiry date: ${expiryDate}`);
 
-                  // Add user data and update admin data
-                //   updateAdminData(
-                //     userid,
-                //     email,
-                //     password,
-                //     company,
-                //     selectedPlan,
-                //     expiryDate,
-                //     parseFloat(selectedPrice)
-                //   );
-                }
-              })
-              .catch((err) => console.error(err));
-          }, 5000); // Poll every 5 seconds
-        })
-        .catch((err) => console.error(err));
-  });
+              updateAdminData(todaydate.toString());
+              updateCompanyData(userid, subsdate, expiryDate);
+
+              // Hide the modal
+              $("#paymentModal").modal("hide");
+
+              // Show success alert
+              Swal.fire({
+                icon: "success",
+                title: "Subscription Renewed",
+                text: "You have renewed your subscription. You can now use iLugan again.",
+              }).then(()=>{
+                window.location.assign('/login');
+              });
+            }
+          })
+          .catch((err) => {
+            console.error(err);
+            // Hide the modal if an error occurs
+            $("#paymentModal").modal("hide");
+          });
+      }, 5000); // Poll every 5 seconds
+    })
+    .catch((err) => {
+      console.error(err);
+      // Hide the modal if an error occurs
+      $("#paymentModal").modal("hide");
+    });
+});
+
+
+
+  async function getPresenttotalrev(id) {
+    try{
+      const admindataref = doc(db, `admin/admin1/ilugan/${id}`);
+      const snapshot = await getDoc(admindataref);
+      if(snapshot.exists){
+        console.log(snapshot.data())
+        return snapshot.data().totalrevenue;
+      }else{
+        console.log("sample")
+      }
+    }catch(error){
+      console.error(error)
+    }
+  }
+
+  async function updateAdminData(id) {
+    try{
+      const admindataref = doc(db, `admin/admin1/ilugan/${id}`);
+      await updateDoc(admindataref, {
+        totalrevenue: totalrevpresent + subsprice
+      });
+      
+    }catch(error){
+      console.error(error)
+    }
+  }
+
+
+  async function updateCompanyData(id, newsubsdate, newexpirydate) {
+    try{
+      const companyref = doc(db, `companies/${id}`);
+      await updateDoc(companyref, {
+        subscribedAt: newsubsdate,
+        expiryDate: newexpirydate
+      });
+      
+    }catch(error){
+      console.error(error)
+    }
+  }
+

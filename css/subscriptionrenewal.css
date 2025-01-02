@@ -56,3 +56,51 @@ html {
     margin: 0;
 }
 
+.redesigned-container {
+    background: #ffffff;
+    padding: 30px 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 600px;
+    margin: auto;
+  }
+  
+  .subscription-header h1 {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #294935;
+  }
+  
+  .subtitle {
+    font-size: 1rem;
+    color: #62AF7F;
+    margin-bottom: 20px;
+  }
+  
+  .subscription-content {
+    margin-top: 20px;
+  }
+  
+  .subscription-status {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    color: #333333;
+  }
+  
+  .renew-btn {
+    background-color: #62AF7F;
+    color: white;
+    font-size: 1rem;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .renew-btn:hover {
+    background-color: #4b8f64;
+  }
+  
