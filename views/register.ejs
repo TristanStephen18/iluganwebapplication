@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="../css/register.css" />
+    <title>Create account</title>
+  </head>
+  <body>
+    <div class="header">
+      <img src="../images/logo1.png" alt="Logo" class="logo" />
+      <h1 class="system-title">
+        ILugan: An Intelligent Ultrasonic Sensor Fleet Management System and
+        Seat Reservation for Bus Transportation Companies
+      </h1>
+    </div>
+<!-- <div class="loader"></div> -->
+    <div class="modal" id="termsModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <!-- <div class="loader"></div> -->
+          <h5 class="modal-title">Terms and Conditions</h5>
+        </div>
+        <div class="modal-body">
+          <p>Please read and accept the terms and conditions to continue.</p>
+          <p><strong>Terms and Conditions:</strong></p>
+          <p style="max-height: 200px; overflow-y: auto; padding: 10px; border: 1px solid #ccc; margin-bottom: 5px;">
+            1. Account Information <br> By creating an account, you agree to provide
+            accurate and truthful information. This information will be stored
+            securely in our system. <br>2. Data Access by Admin<br> You acknowledge and
+            consent that the data associated with your account, including
+            personal information and activity within the ILUgan platform, may be
+            accessed by the ILUgan administrators for purposes such as system
+            management, support, and ensuring compliance with these terms.<br>
+            3. Privacy and Security <br>ILUgan values your privacy and will handle your
+            data in accordance with applicable privacy laws. We will not share
+            your information with third parties without your explicit consent
+            unless required by law.<br> 4. User Responsibility <br>You are responsible for
+            maintaining the confidentiality of your account credentials. Any
+            unauthorized use of your account must be reported to us immediately.
+          </p><br>  
+          <input type="checkbox" name="agreedcheckbox" id="agreedcheckbox">
+          <label for="agreedcheckbox" id="agreelabel">I agree to iLugan's Terms and Conditions</label>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" id="acceptTerms">
+            Accept
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-image">
+      <div class="login-card" id="registration">
+        <h2 class="login-title">Create your iLugan Account Now!</h2>
+        <form id="signup-form">
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label for="email">Email</label>
+              <input
+                type="email"
+                class="form-control"
+                id="email"
+                placeholder="Enter email"
+                name="email"
+                required
+              />
+            </div>
+            <div class="form-group col-md-6">
+              <label for="companyName">Company Name</label>
+              <input
+                type="text"
+                class="form-control"
+                id="companyname"
+                placeholder="Enter company name"
+                name="companyname"
+                required
+              />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label for="password">Password</label>
+              <input
+                type="password"
+                class="form-control"
+                id="password"
+                placeholder="Enter password"
+                name="password"
+                required
+              />
+            </div>
+            <div class="form-group col-md-6">
+              <label for="confirmPassword">Confirm Password</label>
+              <input
+                type="password"
+                class="form-control"
+                id="confirmpassword"
+                placeholder="Confirm password"
+                name="confirmpassword"
+                required
+              />
+            </div>
+          </div>
+          <button
+            type="submit"
+            class="btn btn-primary btn-block"
+            id="signupbtn"
+            style="display: none"
+          >
+            Register
+          </button>
+          <p class="register-link">
+            Already Have An Account?
+            <a href="/login" style="color: #28914f">Login Here</a>
+          </p>
+        </form>
+      </div>
+    </div>
+
+    <div class="modal" id="subscriptionModal">
+      <div class="modal-content">
+        <button class="close-modal" id="closeModal">&times;</button>
+        <div class="modal-header">
+          <h5 class="modal-title">Choose Your Subscription Plan</h5>
+        </div>
+        <div class="modal-body text-center">
+          <div class="subscription-card" data-price="16000" data-plan="Annual">
+            <h5>Annual Plan</h5>
+            <p>16,000.00/year</p>
+          </div>
+          <div
+            class="subscription-card"
+            data-price="8000"
+            data-plan="Semi-Annual"
+          >
+            <h5>Semi-Annual Plan</h5>
+            <p>8,000.00/6 months</p>
+          </div>
+          <div
+            class="subscription-card"
+            data-price="4000"
+            data-plan="Quarterly"
+          >
+            <h5>Quarterly Plan</h5>
+            <p>4,000.00/3 months</p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" id="payNow">
+            Pay Now
+          </button>
+        </div>
+        <div class="promp" style="display: none">
+          <h2>Processing payment</h2>
+        </div>
+        <div class="loader"></div>
+      </div>
+    </div>
+
+    <script type="module" src="../scripts/signup.js"></script>
+
+    <script>
+      $(document).ready(function () {
+        // $("#termsModal").show();
+
+        // $("#acceptTerms").click(function () {
+        //   // $("#termsModal").hide();
+          $("#registration").show();
+          $("#signupbtn").show();
+        // });
+
+        // $("#signupbtn").click(function() {
+        //     $("#subscriptionModal").show();
+        // });
+
+        // $(".close-modal").click(function () {
+        //   $("#subscriptionModal").hide();
+        // });
+
+        // const cards = document.querySelectorAll('.subscription-card');
+        // let selectedPlan = "";
+
+        // cards.forEach(card => {
+        //     card.addEventListener('click', function() {
+        //         cards.forEach(c => c.classList.remove('selected'));
+        //         this.classList.add('selected');
+        //         selectedPlan = this.getAttribute('data-plan');
+        //     });
+        // });
+
+        // $("#payNow").click(function() {
+        //     if (selectedPlan) {
+        //         alert("You have selected the " + selectedPlan + " plan. Proceeding to payment.");
+        //     } else {
+        //         alert("Please select a subscription plan.");
+        //     }
+        // });
+      });
+    </script>
+  </body>
+</html>

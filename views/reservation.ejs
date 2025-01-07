@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bus Reservation</title>
+    <link rel="icon" href="../images/newlogo.png" type="image/x-icon">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="../css/reservation.css" />
+  </head>
+  <body>
+    <div class="d-flex">
+      <div class="sidebar p-3">
+        <div class="logo">
+          <img src="../images/newlogo.png" alt="Logo" class="mb-2" />
+          <span>iLugan</span>
+        </div>
+        <ul class="nav flex-column">
+          <li class="nav-item mb-3">
+            <a href="/dashboard" class="nav-link"
+              ><i class="fas fa-tachometer-alt"></i>Dashboard</a
+            >
+          </li>
+          <li class="nav-item mb-3">
+            <a href="/terminals" class="nav-link"
+              ><i class="fas fa-map"></i>Terminal Management</a
+            >
+          </li>
+          <li class="nav-item mb-3">
+            <a href="/tracker" class="nav-link"
+              ><i class="fas fa-map-marker-alt"></i>Bus Location Tracker</a
+            >
+          </li>
+          <li class="nav-item mb-3">
+            <a href="/reservations" class="nav-link"
+              ><i class="fas fa-ticket-alt"></i>Reservation Control</a
+            >
+          </li>
+          <li class="nav-item mb-3">
+            <a href="/busadding" class="nav-link"
+              ><i class="fas fa-bus"></i>Buses</a
+            >
+          </li>
+          <!-- <li class="nav-item mb-3">
+            <a href="/notifications" class="nav-link"
+              ><i class="fas fa-bell"></i>Notifications</a
+            >
+          </li> -->
+          <li class="nav-item mb-3">
+            <a href="/busalerts" class="nav-link"
+              ><i class="fas fa-exclamation-triangle"></i>Bus Alerts</a
+            >
+          </li>
+          <!-- <li class="nav-item mb-3">
+            <a href="/systemlogs" class="nav-link"
+              ><i class="fas fa-clipboard"></i>Logs</a
+            >
+          </li> -->
+          <li class="nav-item mb-3">
+            <a href="/iluganmobile" class="nav-link"
+              ><i class="fas fa-mobile-alt"></i> iLugan Mobile</a
+            >
+          </li>
+          <li class="nav-item mb-3">
+            <a href="/analytics" class="nav-link"
+              ><i class="fas fa-chart-line"></i>Analytics and Reports</a
+            >
+          </li>
+          <li class="nav-item mb-3" id="logout">
+            <a class="nav-link"><i class="fas fa-sign-out-alt"></i>Log Out</a>
+          </li>
+        </ul>
+      </div>
+      <div class="content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h4> Today's Bus Reservations </h4>
+          <div class="top-icons d-flex align-items-center">
+            <!-- <a href="/profile" class="top-icon-link me-3" title="Profile">
+              <i class="fas fa-user" style="margin-right: 20px;"></i>
+            </a> -->
+            <!-- <a href="/notifications" class="top-icon-link me-3" title="Notifications">
+              <i class="fas fa-bell" style="margin-right: 20px;"></i>
+            </a>
+            <a href="/systemlogs" class="top-icon-link" title="System Logs">
+              <i class="fas fa-cogs"></i>
+            </a> -->
+            <button id="reservationhistory" title="View all reservations"><i class="fa-solid fa-clock-rotate-left" style="margin-right: 10px;"></i>All reservations</button>
+          </div>
+        </div>
+        <div id="optionholder" style="margin-bottom: 20px;">
+          <label for="busFilter">Bus Number: </label>
+          <select id="busFilter">
+            <option value="">All Buses</option>
+            <!-- Bus numbers will be dynamically populated here -->
+          </select>
+        </div>
+        <table id="busReservation" class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Res #</th>
+              <th>Bus #</th>
+              <th>Date and Time</th>
+              <th>From</th>
+              <th>To</th>
+              <!-- <th>User ID</th> -->
+              <th>Seat #</th>
+              <th>Type</th>
+              <th>Amount</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="reservations"></tbody>
+        </table>
+      </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script>
+      // $(document).ready(function () {
+      //   $("#busReservation").DataTable();
+      // });
+    </script>
+    <script type="module" src="../scripts/reservations.js"></script>
+    <script type="module" src="../scripts/monitoring.js"></script>
+  </body>
+</html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Alerts</title>
+    <link rel="icon" href="../images/newlogo.png" type="image/x-icon">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="../css/alerts.css">
+  </head>
+  <body>
+    <div class="d-flex">
+      <div class="sidebar p-3">
+        <div class="logo">
+          <img src="../images/newlogo.png" alt="Logo" class="mb-2" />
+          <span>iLugan</span>
+        </div>
+        <ul class="nav flex-column">
+          <li class="nav-item mb-3">
+            <a href="/dashboard" class="nav-link"
+              ><i class="fas fa-tachometer-alt"></i>Dashboard</a
+            >
+          </li>
+          <li class="nav-item mb-3">
+            <a href="/terminals" class="nav-link"
+              ><i class="fas fa-map"></i>Terminal Management</a
+            >
+          </li>
+          <li class="nav-item mb-3">
+            <a href="/tracker" class="nav-link"
+              ><i class="fas fa-map-marker-alt"></i>Bus Location Tracker</a
+            >
+          </li>
+          <li class="nav-item mb-3">
+            <a href="/reservations" class="nav-link"
+              ><i class="fas fa-ticket-alt"></i>Reservation Control</a
+            >
+          </li>
+          <li class="nav-item mb-3">
+            <a href="/busadding" class="nav-link"
+              ><i class="fas fa-bus"></i>Buses</a
+            >
+          </li>
+          <!-- <li class="nav-item mb-3">
+            <a href="/notifications" class="nav-link"
+              ><i class="fas fa-bell"></i>Notifications</a
+            >
+          </li> -->
+          <li class="nav-item mb-3">
+            <a href="/busalerts" class="nav-link"
+              ><i class="fas fa-exclamation-triangle"></i>Bus Alerts</a
+            >
+          </li>
+          <!-- <li class="nav-item mb-3">
+            <a href="/systemlogs" class="nav-link"
+              ><i class="fas fa-clipboard"></i>Logs</a
+            >
+          </li> -->
+          <li class="nav-item mb-3">
+            <a href="/iluganmobile" class="nav-link"
+              ><i class="fas fa-mobile-alt"></i> iLugan Mobile</a
+            >
+          </li>
+          <li class="nav-item mb-3">
+            <a href="/analytics" class="nav-link"
+              ><i class="fas fa-chart-line"></i>Analytics and Reports</a
+            >
+          </li>
+          <li class="nav-item mb-3" id="logout">
+            <a class="nav-link"><i class="fas fa-sign-out-alt"></i>Log Out</a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h2>Bus Alerts</h2>
+          <div class="top-icons d-flex justify-content-between align-items-center">
+            <!-- <a href="/profile" class="top-icon-link me-3" title="Profile">
+              <i class="fas fa-user" style="margin-right: 20px;"></i>
+            </a> -->
+            <a href="/notifications" class="top-icon-link me-3" title="Notifications">
+              <i class="fas fa-bell" style="margin-right: 20px;"></i>
+            </a>
+            <a href="/systemlogs" class="top-icon-link" title="System Logs">
+              <i class="fas fa-cogs"></i>
+            </a>
+          </div>
+        </div>
+        <input type="text" id="searchInput" placeholder="Search by bus number or description" class="form-control mb-3" />
+
+        <div class="container mt-3">
+          <ul class="nav nav-tabs" id="notificationTabs">
+            <li class="nav-item">
+              <a class="nav-link active" id="pending-tab" data-bs-toggle="tab" href="#pending">Pending</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" id="responded-tab" data-bs-toggle="tab" href="#responded">Responded</a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="tab-content">
+          <div class="tab-pane fade show active" id="pending">
+            <div id="pendingNotifications"></div>
+          </div>
+          <div class="tab-pane fade" id="responded">
+            <div id="respondedNotifications"></div>
+          </div>
+        </div>
+
+        <nav aria-label="Page navigation">
+          <ul class="pagination justify-content-center" id="pagination"></ul>
+        </nav>
+      </div>
+    </div>
+
+    <!-- Modal for responding to a notification -->
+    <div class="modal fade" id="responseModal" tabindex="-1" aria-labelledby="responseModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="responseModalLabel">Respond to Emergency</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <textarea id="responseText" class="form-control" rows="3" placeholder="Enter your response here..."></textarea>
+          </div>
+          <div class="modal-footer">
+            <!-- <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button> -->
+            <button type="button" class="btn btn-success" id="sendResponseBtn">Send Response</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="../scripts/notifications.js"></script>
+    <script type="module" src="../scripts/monitoring.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+  </body>
+</html>

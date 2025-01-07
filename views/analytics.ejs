@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Analytic Reports</title>
+    <link rel="icon" href="../images/newlogo.png" type="image/x-icon" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <script
+      src="https://kit.fontawesome.com/2a3bd9e9ce.js"
+      crossorigin="anonymous"
+    ></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.8.0/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.8.0/chart.min.js"></script>
+    <link rel="stylesheet" href="../css/analytics.css" />
+  </head>
+  <body>
+    <div class="d-flex">
+      <div class="sidebar p-3">
+        <div class="logo">
+          <img src="../images/newlogo.png" alt="Logo" class="mb-2" />
+          <span>iLugan</span>
+        </div>
+        <ul class="nav flex-column">
+          <li class="nav-item mb-3">
+            <a href="/dashboard" class="nav-link"
+              ><i class="fas fa-tachometer-alt"></i>Dashboard</a
+            >
+          </li>
+          <li class="nav-item mb-3">
+            <a href="/terminals" class="nav-link"
+              ><i class="fas fa-map"></i>Terminal Management</a
+            >
+          </li>
+          <li class="nav-item mb-3">
+            <a href="/tracker" class="nav-link"
+              ><i class="fas fa-map-marker-alt"></i>Bus Location Tracker</a
+            >
+          </li>
+          <li class="nav-item mb-3">
+            <a href="/reservations" class="nav-link"
+              ><i class="fas fa-ticket-alt"></i>Reservation Control</a
+            >
+          </li>
+          <li class="nav-item mb-3">
+            <a href="/busadding" class="nav-link"
+              ><i class="fas fa-bus"></i>Buses</a
+            >
+          </li>
+          <!-- <li class="nav-item mb-3">
+            <a href="/notifications" class="nav-link"
+              ><i class="fas fa-bell"></i>Notifications</a
+            >
+          </li> -->
+          <li class="nav-item mb-3">
+            <a href="/busalerts" class="nav-link"
+              ><i class="fas fa-exclamation-triangle"></i>Bus Alerts</a
+            >
+          </li>
+          <!-- <li class="nav-item mb-3">
+            <a href="/systemlogs" class="nav-link"
+              ><i class="fas fa-clipboard"></i>Logs</a
+            >
+          </li> -->
+          <li class="nav-item mb-3">
+            <a href="/iluganmobile" class="nav-link"
+              ><i class="fas fa-mobile-alt"></i> iLugan Mobile</a
+            >
+          </li>
+          <li class="nav-item mb-3">
+            <a href="/analytics" class="nav-link"
+              ><i class="fas fa-chart-line"></i>Analytics and Reports</a
+            >
+          </li>
+          <li class="nav-item mb-3" id="logout">
+            <a class="nav-link"><i class="fas fa-sign-out-alt"></i>Log Out</a>
+          </li>
+        </ul>
+      </div>
+      <div class="main-content">
+        <h2 style="margin-bottom: 30px">Analytics and Overview</h2>
+        <div class="filters">
+          <label for="busSelect"
+            ><i class="fas fa-bus" style="margin-right: 10px"></i>BUS NUMBER:
+          </label>
+          <select
+            id="busSelect"
+            class="form-select form-select-sm"
+            style="width: 30%; text-align: center; margin-right: 30px"
+          ></select>
+          <label for="fromdate">From: </label>
+          <input type="date" name="fromdate" id="fromdate" />
+          <label for="todate">To: </label>
+          <input type="date" name="todate" id="todate" />
+        </div>
+        <div class="card shadow-sm mb-4">
+          <div class="card-body">
+            <div class="chart-container">
+              <canvas id="totalRevenueChart"></canvas>
+            </div>
+          </div>
+        </div>
+        <h2>Reservation Overview</h2>
+        <div class="row mb-4">
+          <div class="col-md-6">
+            <div class="card shadow-sm">
+              <div class="card-body">
+                <h5>Current Passengers</h5>
+                <div class="chart-container">
+                  <canvas id="reservationChart"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card shadow-sm">
+              <div class="card-body">
+                <div class="filter-container">
+                  <select name="datefilter" id="datefilter"></select>
+                </div>
+                <h5>Total Passengers</h5>
+                <div class="chart-container">
+                  <canvas id="passengerChart"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="../scripts/analytics.js"></script>
+    <script type="module" src="../scripts/monitoring.js"></script>
+  </body>
+</html>
