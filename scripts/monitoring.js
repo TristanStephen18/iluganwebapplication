@@ -70,7 +70,7 @@ async function getExpiry(uid) {
 
     if (companysnapshot.exists()) {
       const expiredDate = new Date(
-        `${companysnapshot.data().expiryDate.toDate()}`
+        `${companysnapshot.data().subscribedAt.toDate()}`
       );
       setInterval(() => {
         if (isExpired(expiredDate)) {

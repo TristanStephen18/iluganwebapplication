@@ -5,6 +5,7 @@ import {
   getDoc,
   doc,
   updateDoc,
+  setDoc
 } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
 
 // import {bootstrap} from "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css";
@@ -198,6 +199,15 @@ paybutton.addEventListener("click", function () {
 });
 
 
+// async function addtoadmindata(params) {
+//   try{
+//     const 
+//     const adminrefilugandoc = doc(db, `admin/admin1/ilugan/`)
+//   }catch(error){
+
+//   }
+// }
+
 
   async function getPresenttotalrev(id) {
     try{
@@ -223,6 +233,10 @@ paybutton.addEventListener("click", function () {
       
     }catch(error){
       console.error(error)
+      const admindataref = doc(db, `admin/admin1/ilugan/${id}`);
+      await setDoc(admindataref, {
+        totalrevenue: subsprice
+      })
     }
   }
 
